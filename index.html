@@ -885,94 +885,54 @@
     </script>
 
     <!-- import data - BH -->
-    <!-- <script type="text/javascript">
+    <script type="text/javascript">
         // read input data
         window.onload = function() {
 
-            //parse the csv data from the design_explorer_data folder
-            var data = d3.csv.parse("design_explorer_data/GreenSpaceDemoBuilding.csv");
+            //parse the actual file from the server
+            $.ajax({
+                type: "GET",
+                url: "design_explorer_data/GreenSpaceDemoBuilding2.csv",
+                dataType: "text",
+                success: function(myData) {
 
-            if (data==null) return; // loading .csv file failed for some reason
+                    //parse data from the string that the ajax call returns
+                    var data = d3.csv.parse(myData);
 
-            // analyze data and separate them as input/output and general data
-            analyzeInputData(data);
+                    if (data==null) return; // loading .csv file failed for some reason
 
-            // get sliders information based on input data
-            prepareSlidersInfo();
+                    // analyze data and separate them as input/output and general data
+                    analyzeInputData(data);
 
-            // add sliders to the page
-            initiateSliders();
+                    // get sliders information based on input data
+                    prepareSlidersInfo();
 
-            // draw parallel coordinates graph
-            drawParallelCoordinates();
+                    // add sliders to the page
+                    initiateSliders();
 
-            // draw legend in side bar
-            drawLegend();
+                    // draw parallel coordinates graph
+                    drawParallelCoordinates();
 
-            // add sorting divs
-            addSortDropdowns();
+                    // draw legend in side bar
+                    drawLegend();
 
-            // add thumbnails
-            updateImageGrid(graph.data());
+                    // add sorting divs
+                    addSortDropdowns();
 
-            // add place holder image to zoomed area
-            addPlaceHolderImage();
+                    // add thumbnails
+                    updateImageGrid(graph.data());
 
-            // set up events between graphs
-            setupEvents();
+                    // add place holder image to zoomed area
+                    addPlaceHolderImage();
+
+                    // set up events between graphs
+                    setupEvents();
+                }
+            });
+
+
         }
 
-    </script> -->
-    <!-- import data - MR -->
-    <script>
-        // read input data
-        window.onload = function() {
-            var fileInput = document.getElementById('csv-file');
-
-            fileInput.addEventListener('change', function(e) {
-
-                var file = fileInput.files[0];
-                var reader = new FileReader();
-
-                var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.csv|.txt)$/;
-
-
-                if (regex.test(file.name.toLowerCase())) {
-
-                    reader.onload = function(e) {
-
-                        var inputString = e.target.result;
-                        // I need to add some defense here
-                        // separateInputOutputs(e);
-
-                        var data = d3.csv.parse(inputString);
-                        if (data==null) return; // loading .csv file failed for some reason
-
-                        // analyze data and separate them as input/output and general data
-                        analyzeInputData(data);
-                        // get sliders information based on input data
-                        prepareSlidersInfo();
-                        // add sliders to the page
-                        initiateSliders();
-                        // draw parallel coordinates graph
-                        drawParallelCoordinates();
-                        // draw legend in side bar
-                        drawLegend();
-                        // add sorting divs
-                        addSortDropdowns();
-                        // add thumbnails
-                        updateImageGrid(graph.data());
-                        // add place holder image to zoomed area
-                        addPlaceHolderImage();
-                        // set up events between graphs
-                        setupEvents();
-                    }
-                }else{
-                    alert("Please upload a valid CSV file!");
-                }
-                reader.readAsText(file);
-            });
-        }; // end of window.onload
     </script>
 
     <!-- Setting up sliders -->
