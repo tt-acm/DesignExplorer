@@ -311,7 +311,7 @@
             d3.selectAll(".zoomed")
                 .select("img")
                 .data(selectedImage.data())
-                .attr("src",  imgFolder + selectedImage.datum()["img:Image Name"])
+                .attr("src", selectedImage.datum()["img:Image Name"])
                 .attr("title", getTitle);
 
             // highlight the line graph
@@ -737,7 +737,6 @@
     </script>
     <!-- add thumbnail images to both thumbnail divs-->
     <script type="text/javascript">
-        var imgFolder = "./design_explorer_data/img/"; //I should find a better approach for this
 
         function getTitle(data){
 
@@ -788,7 +787,7 @@
                     .style("cursor", "pointer")
                     .append("img")
                     .attr("id", "thumbnails-btm")
-                    .attr("src", function(d){return imgFolder + d["img:Image Name"]})
+                    .attr("src", function(d){return d["img:Image Name"]})
                     .on("click", updateLayoutOnSelect)
                     .attr("title", getTitle);
             
@@ -800,7 +799,7 @@
                     .style("cursor", "pointer")
                     .append("img")
                     .attr("id", "thumbnails-side")
-                    .attr("src", function(d){return imgFolder + d["img:Image Name"]})
+                    .attr("src", function(d){return d["img:Image Name"]})
                     .on("click", updateLayoutOnSelect)
                     .attr("title", getTitle);
         }
@@ -812,7 +811,7 @@
             d3.select("#zoomed")
             .style("height", zoomedHeight)
             .append("img")
-            .attr("src", imgFolder + "placeholder/placeholder.png");
+            .attr("src", "https://raw.githubusercontent.com/tt-acm/DesignExplorer/gh-pages/design_explorer_data/img/placeholder/placeholder.png?token=ACx89Xl7jGRusi88wWHKH97INGjRifH5ks5Vy6YGwA%3D%3D");
         }
 
     </script>
@@ -1138,7 +1137,7 @@
                 // push the image to zoomed area
                 d3.selectAll(".zoomed")
                     .select("img")
-                    .attr("src",  imgFolder + selectedData["img:Image Name"]);
+                    .attr("src",  selectedData["img:Image Name"]);
                 
                 if (currentView=="3D") loadNew3DModel();
                 
@@ -1199,13 +1198,12 @@
     <script type="text/javascript">
         var currentView = "2D";
         var initit3DViewer = true;
-        var threeDFolder = "https://dl.dropboxusercontent.com/u/16228160/D3TestData/threeD/";
 
         // Initiate 3D viewer
         function initiate3DViewer(){
         
             var viewerId = "viewer3d";
-            var jsonFileAddress =  threeDFolder + graph.highlighted()[0].threeD;
+            var jsonFileAddress = graph.highlighted()[0].threeD;
             
             //load JSON file
             d3.json(jsonFileAddress, function( data ){
@@ -1220,7 +1218,7 @@
         // load new models
         function loadNew3DModel(){
 
-            d3.json(threeDFolder + graph.highlighted()[0].threeD, function (data){
+            d3.json(graph.highlighted()[0].threeD, function (data){
                 va3cViewer.loadNewModel(data);
             });
         }
