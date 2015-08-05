@@ -474,6 +474,7 @@
             slidersMapping = {}, // I collect the data for all the input sliders here so I can use it to remap the sliders later
             ids = []; // Here I collect all data based on a unique ID from inputs
 
+
         function analyzeInputData(originalData){
             var keys = d3.keys(originalData[0]);
 
@@ -614,6 +615,30 @@
                     .brushMode("1D-axes")  // enable brushing
                     .interactive()
                     .reorderable();
+
+            
+            // modify labels
+            var inputLabelColor = "tomato",
+                outputLabelColor = "green",
+                inputLabels = d3.keys(inputData[0]),
+                outputLabels = d3.keys(outputData[0]);
+
+            d3.selectAll("text.label")
+                // move every other label up
+                .attr("transform", function(d,i){return "translate (0 , -" + (10 + ((i%2) * 15)) + ")"})
+                .style("fill", function(d){
+                        // change colors for inputs vs outputs
+                        if (inputLabels.indexOf(d) != -1) {
+                            return inputLabelColor; // it is an input
+
+                        } else if (outputLabels.indexOf(d) != -1) {
+                            return outputLabelColor; //it's an output
+                        
+                        } else {
+                            // undefined
+                            return "black";
+                        };
+                    })
         }
     
     </script>
