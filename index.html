@@ -272,6 +272,35 @@
     <!-- Bootstrap Core JavaScript -->
     <script src="bootstrap_side_bar/js/bootstrap.min.js"></script>
 
+    <!-- Hide sliders if user asked for a stripped down version -->
+    <script type="text/javascript">
+        // A dictionary to carry users input to customize the interface
+        var inputParameters = { "min": false}; // currently only a single item, other options to be added later
+
+        
+        // get url parameters
+        // current valid key is on "min" for minimum interface
+        function parseUri(){
+            var pars = window.location.search.replace("?","").split("&")
+            if (pars[0]=="") return null;
+            pars.forEach(function(d){
+                keyValue = d.split("=");
+                inputParameters[keyValue[0].toLowerCase()] = keyValue[1].toLowerCase();
+            })
+        }
+        
+        // read optional url parameters
+        parseUri();
+
+        if(inputParameters["min"] == true){
+            // remove the button so sliders are hidden
+            d3.selectAll("button#menu-toggle").remove();
+        }
+
+
+
+    </script>
+
 
     <!-- Dynamic Divs script -->
     <script>
