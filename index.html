@@ -678,7 +678,14 @@
             d3.selectAll("path.domain")
                 .style("stroke", function(d,i){ return colorset[i];});
         };
-    
+        
+
+        function updateLabels(){
+            d3.selectAll("text.label")
+                // move every other label up
+                .attr("transform", function(d,i){return "translate (0 , -" + (10 + ((i%2) * 15)) + ")"})
+        };
+
     </script>
     
     <!-- draw legend -->
@@ -918,7 +925,6 @@
                 updateImageGrid(newData);
                 updateSlidersTickValues();
             }
-
 
             d3.selectAll("rect.legend").on('click', function(d) {
                     var rect = d3.select(this);
