@@ -650,7 +650,8 @@
             var inputLabelColor = "tomato",
                 outputLabelColor = "green",
                 inputLabels = d3.keys(inputData[0]),
-                outputLabels = d3.keys(outputData[0]);
+                outputLabels = d3.keys(outputData[0])
+                colorset = [];
 
             d3.selectAll("text.label")
                 // move every other label up
@@ -658,17 +659,25 @@
                 .style("fill", function(d){
                         // change colors for inputs vs outputs
                         if (inputLabels.indexOf(d) != -1) {
+                            colorset.push(inputLabelColor);
                             return inputLabelColor; // it is an input
 
                         } else if (outputLabels.indexOf(d) != -1) {
+                            colorset.push(outputLabelColor);
                             return outputLabelColor; //it's an output
                         
                         } else {
                             // undefined
+                            colorset.push("black");
                             return "black";
                         };
-                    })
-        }
+                    });
+
+            
+            //modify axes
+            d3.selectAll("path.domain")
+                .style("stroke", function(d,i){ return colorset[i];});
+        };
     
     </script>
     
@@ -951,9 +960,14 @@
                 
                 var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.csv|.txt)$/;
                     
-            
+
             if (regex.test(file.name.toLowerCase())) {
                 
+                // Update project name
+                var inputFileName = file.name.toUpperCase().replace(".CSV","");
+
+                d3.select("p.navbar-brand").text(inputFileName);
+
                 reader.onload = function(e) {
                 
                     var inputString = e.target.result; 
