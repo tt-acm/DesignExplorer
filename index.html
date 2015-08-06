@@ -52,10 +52,11 @@
     <script type="text/javascript" src="va3c_source_files/js/libs/stats.js"></script>
     <script type="text/javascript" src="va3c_source_files/js/libs/jquery-ui.js"></script>
 
+    
     <!-- Application Files -->
-    <link rel='stylesheet' type='text/css' href='https://rawgit.com/tt-acm/vA3C_viewer/gh-pages/css/vA3C_stylesheet.css'/>  <!-- the vA3C stylesheet -->
-    <script type="text/javascript" src="https://rawgit.com/tt-acm/vA3C_viewer/gh-pages/js/VA3C_APP.js"></script>  <!-- the vA3C library -->
-
+    <link rel='stylesheet' type='text/css' href='https://rawgit.com/tt-acm/Spectacles.WebViewer/gh-pages/css/SPECTACLES.css'/>  <!-- the vA3C stylesheet -->
+    <script type="text/javascript" src="https://rawgit.com/tt-acm/Spectacles.WebViewer/gh-pages/js/SPECTACLES.js"></script>  <!-- the vA3C library -->
+    
     <!-- Pace for loading bar-->
     <link rel='stylesheet' type='text/css' href='pace/pace.css'/>
     <script type="text/javascript" src="pace/pace.min.js"></script>
@@ -1164,7 +1165,7 @@
             //load JSON file
             d3.json(jsonFileAddress, function( data ){
                 //Initialize a VA3C viewer
-                va3cViewer = new VA3C_CONSTRUCTOR($("#" + viewerId), data, function(app){
+                va3cViewer = new SPECTACLES($("#" + viewerId), data, function(app){
                     //call the UI / functionality modules
                     app.setBackgroundColor(0xFFFFFF);
                 });
