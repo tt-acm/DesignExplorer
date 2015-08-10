@@ -84,6 +84,7 @@
             color: red;
              }
 
+    
         #thumbnails-side img,
         #thumbnails-btm img {
             height: 100%;
@@ -108,7 +109,11 @@
         rect.disabled {
             fill: transparent !important;
         }
-        
+
+       .navbar-default {
+            height: 50px; /* overwrite default navbar size */
+       }
+
     </style>
 
 </head>
@@ -127,7 +132,7 @@
                 <span class="icon-bar"></span>
             </button>
             <div class="navbar-header" title="Click to edit project name.">
-                <p class="navbar-brand navbar-text" contenteditable="true">DESIGN EXPLORER</p>
+                <p class="navbar-brand" contenteditable="true">DESIGN EXPLORER</p>
             </div>
         </div>
 
@@ -136,11 +141,11 @@
             <ul class="nav navbar-nav">
                 <li>
                     <p class="navbar-text">
-                        <input type="file" id="csv-file" class="btn btn-default" name="files"/>
+                        <input type="file" id="csv-file" class="btn btn-default btn-sm" name="files"/>
                     </p>
                 </li>
                 <li>
-                    <div class="btn-group navbar-text" role="group" aria-label="selection">
+                    <div class="btn-group btn-group-sm navbar-text" role="group" aria-label="selection">
                             <button id="reset" class="btn btn-default">Reset Selection</button>
                             <button id="remove" class="btn btn-default">Exclude Selection</button>
                             <button id="keep" class="btn btn-default">Zoom to Selection</button>
@@ -620,7 +625,7 @@
             windowHeight = window.innerHeight
             cleanHeight = windowHeight - 60 //- 120
             cleanWidth = windowWidth - 100,
-            graphHeight = 1.4*cleanHeight/3,
+            graphHeight = cleanHeight/3,
             zoomedHeight = cleanHeight - graphHeight,
             opacity = .7;
 
@@ -635,7 +640,7 @@
             // get parallel coordinates         
             graph = d3.parcoords()('#graph')
                 .data(cleanedData)
-                    .margin({ top: 50, left: 20, bottom: 50, right: 20 })
+                    .margin({ top: 50, left: 20, bottom: 10, right: 20 })
                     .alpha(0.6)
                     .mode("queue")
                     .rate(5)
