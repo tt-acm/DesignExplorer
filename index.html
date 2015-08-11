@@ -84,10 +84,21 @@
             color: red;
              }
 
-    
+        .footer {
+            width: 95%;
+            height: 20px;
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+        }
+
+        .credit{
+            margin-left: 1em;
+            margin-bottom: .5em;
+        }
+
         #thumbnails-side img,
         #thumbnails-btm img {
-            height: 100%;
             width: 100%;
             margin-top: 2em;
             }
@@ -102,7 +113,7 @@
             }
 
         #thumbnails-side_container,
-        #thumbnails-btm_container {
+        #thumbnails-btm {
             overflow: auto;
         }
 
@@ -131,9 +142,10 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
+
             <div class="navbar-header" title="Click to edit project name.">
                 <p class="navbar-brand" contenteditable="true">DESIGN EXPLORER</p>
-            </div>
+            </div>           
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -150,6 +162,17 @@
                             <button id="remove" class="btn btn-default">Exclude Selection</button>
                             <button id="keep" class="btn btn-default">Zoom to Selection</button>
                     </div>
+                </li>
+                <li>
+                    <p class="navbar-text">
+                        <button id="keep" class="btn btn-default btn-sm">Save Selection to File</button>
+                    </p>
+                </li>
+                <li>
+                    <a class="navbar-brand" href="http://core.thorntontomasetti.com/" title="@CORE Studio">
+                        <img style="max-width:350px;"
+                        src="./img/CORE logo_horizontal.jpg">
+                    </a>
                 </li>
                 <!--
                 <li>
@@ -197,6 +220,12 @@
                             <div class="col-lg-9">
                                 
                                 <div class="row">
+                                    <div class="credit">
+                                            Design Explorer &copy; Copyright 2015 CORE studio | Thornton Tomasetti |
+                                            <a href="http://core.thorntontomasetti.com/about" target="_blank"> About</a> | 
+                                            <a href="http://core.thorntontomasetti.com/about/services" target="_blank">Services</a> | 
+                                            <a href="http://core.thorntontomasetti.com/about/contact" target="_blank">Contact</a> |
+                                    </div>
                                   <div class="btn-group col-xs-12">
                                     <button type="button" class="btn btn-default btn-xs" id="menu-toggle" title="Show sliders">
                                         <span class="glyphicon glyphicon-triangle-left" aria-hidden="true"></span>
@@ -206,7 +235,6 @@
                                     </button>
                                   </div>
                                 </div>
-
                                 <!-- parallel coordinates -->
                                 <div class="row-fluid">
                                     <div id="graph" class="parcoords collapse in">
@@ -269,7 +297,6 @@
             </div>
         </div>
         <!-- /#page-content-wrapper -->
-
     </div>
     <!-- /#wrapper -->
 
@@ -623,7 +650,7 @@
         //set up heights of divs
         var windowWidth = window.innerWidth,
             windowHeight = window.innerHeight
-            cleanHeight = windowHeight - 60 //- 120
+            cleanHeight = windowHeight - 85 - 24 // 2
             cleanWidth = windowWidth - 100,
             graphHeight = cleanHeight/3,
             zoomedHeight = cleanHeight - graphHeight,
@@ -830,6 +857,7 @@
 
             // attach images
             d3.select("#thumbnails-btm")
+                .style("height", (zoomedHeight-20) + "px") //20px for credit line - 
                 .selectAll("div")
                 .data(data).enter()
                     .append("div")
