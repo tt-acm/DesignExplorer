@@ -97,6 +97,15 @@
             margin-bottom: .5em;
         }
 
+        .fullscreen{
+            top: 0;
+            left: 0;
+            height: 100% !important;
+            width: 100% !important;
+            position: fixed !important;
+            z-index: 999 !important;
+        }
+
         #thumbnails-side img,
         #thumbnails-btm img {
             width: 100%;
@@ -245,17 +254,23 @@
                                 <!-- Zoomed div for zoomed in areas -->
                                 <div class="row-fluid">
                                     <div class="zoomed" id="zoomedArea" style="height:0px">
-                                        <div id="vis" style="float:right">
+                                        <div id="vis" class="pull-right">
                                             <text></text>
                                             <form>
                                                 <label><input type="radio" id="toggleView" name="visMode" value="2D" checked> 2D</label> <!-- show 2D image on load-->
                                                 <label><input type="radio" id="toggleView" name="visMode" value="3D"> 3D</label>
+                                                                                       
+                                            <button type="button" class="btn btn-default btn-xs" id="fullscreentoggle" style="margin-right:10px; margin-left:5px; margin-top: 2px;">
+                                                <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
+                                            </button>
+
                                             </form>
+
                                         </div>
                                         <div id = "viewer3d" style="width:100%; height:100%" class="hidden">
                                             <!-- place holder for the viewer -->
                                         </div>
-                                        <div class="zoomed" id = "zoomed">
+                                        <div class="zoomed" id = "zoomed" style="width:100%; height:100%">
                                             <!-- place holder for the image -->
                                         </div>
                                         <!-- <h1>Zoomed</h1> -->
@@ -807,11 +822,17 @@
 
             sortingBtn.on("click", function(){
                 ascending = !ascending;
+                
+                d3.select(this)
+                    .select("span")
+                        .attr("class", function(){ return ascending? "glyphicon glyphicon-circle-arrow-up":"glyphicon glyphicon-circle-arrow-down"})
+                
                 updateImageGrid(graph.brushed());
             });
         }
 
     </script>
+
     <!-- add thumbnail images to both thumbnail divs-->
     <script type="text/javascript">
 
@@ -893,7 +914,7 @@
         }
 
     </script>
-
+   
     <!-- set up events between charts and graphs -->
     <script type="text/javascript">
         
@@ -1280,6 +1301,7 @@
     <script type="text/javascript">
         var currentView = "2D";
         var initit3DViewer = true;
+        var fullscreen = false;
 
         // Initiate 3D viewer
         function initiate3DViewer(){
@@ -1319,16 +1341,18 @@
                 initit3DViewer = false;
                 // change the size to be full screen first
                 // so the viewer initiates with the maximum size
-                d3.select("#viewer3d").style("height", cleanHeight + "px");
+                //d3.select("#viewer3d").style("height", cleanHeight + "px");
                 
                 // initiate the viewer
                 initiate3DViewer();
             } else if (currentView=="3D") {
 
                 // user is changing to 3D view so let's load it.
-                loadNew3DModel();
+                //$.when(loadNew3DModel()).then(va3cViewer.viewerDiv.resize());
+                loadNew3DModel();          
             }
 
+            
             var onOff = {"2D": ["zoomed", "viewer3d"], "3D": ["viewer3d", "zoomed"]};
             
             d3.select("#" + onOff[currentView][0])
@@ -1338,7 +1362,42 @@
                 .attr("class", "zoomed hidden");
           }
 
+
+        // active and de-activate full screen mode
+        d3.select("button#fullscreentoggle")
+            .on("click", toggleFullscreen);
+        
+
+        function toggleFullscreen(){
+
+            fullscreen = !fullscreen;
+
+            // select zoomed Div and change style
+            d3.select("#zoomedArea")
+                .attr("class", function(){return fullscreen? "zoomed fullscreen":"zoomed"});
+
+            //make sure width and height are 100%
+
+            d3.select("#viewer3d")
+                .style("width", "100%")
+                .style("height", "100%");
+
+            d3.select("#zoomed")
+                .style("width", "100%")
+                .style("height", "100%");
+            
+            //change full screen icon
+            d3.select("button#fullscreentoggle").select("span")
+                .attr("class", function(){
+                    return fullscreen? "glyphicon glyphicon-resize-small":"glyphicon glyphicon-fullscreen"
+                });
+
+            initit3DViewer? 0:va3cViewer.viewerDiv.resize();
+
+        }
+
     </script>
+
 
 
 </body>
