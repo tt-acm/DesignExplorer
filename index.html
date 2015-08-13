@@ -84,6 +84,28 @@
             color: red;
              }
 
+        /* centered columns styles */
+        .row-centered {
+            text-align:center;
+        }
+        
+        .col-centered {
+            display:inline-block;
+            float:none;
+            /* reset the text-align */
+            text-align:left;
+            /* inline-block space fix */
+            margin-right:-4px;
+        }
+
+        .vertical-center {
+            min-height: 100%;  /* Fallback for browsers do NOT support vh unit */
+            min-height: 100vh; /* These two lines are counted as one           */
+
+            display: flex;
+            align-items: center;
+        }
+
         .footer {
             width: 95%;
             height: 20px;
@@ -161,9 +183,11 @@
         <div class="collapse navbar-collapse" id="buttons-navbar-collapse-1">
             <ul class="nav navbar-nav">
                 <li>
+                    <!--
                     <p class="navbar-text">
                         <input type="file" id="csv-file" class="btn btn-default btn-sm" name="files"/>
                     </p>
+                    -->
                 </li>
                 <li>
                     <div class="btn-group btn-group-sm navbar-text" role="group" aria-label="selection">
@@ -309,6 +333,36 @@
                         </div>            
                     </div>
                 </div>
+            </div>
+            <div class="row-fluid col-lg-12 row-centered vertical-center fullscreen" id="welcome">
+                    <div class="col-lg-12 col-centered" >
+                        <h1 class="text-center"> Welcome to Design Explorer!</h1>
+                        <br>
+                        <h4 class="text-center">
+                            Design Explorer makes exploring multi-dimensional design space enjoying and meaningful!
+                        </h4>
+                        <br><br>
+                        <h3 class="text-center"> To get started import your file</h3>
+                        <br>
+                        <input type="file" id="csv-file" class="btn btn-success btn-lg center-block" name="files"/>
+                        <br>
+                        <h3 class="text-center"> or try one of sample design sets </h3>
+                        <br>
+                                <button id="sample1" class="btn btn-info btn-lg center-block">Replace with image grid!</button>
+                                <br>
+                                <button id="sample2" class="btn btn-info btn-lg center-block">Replace with image grid!</button>
+                                <br>
+                                <button id="sample3" class="btn btn-info btn-lg center-block">Replace with image grid!</button>
+                                <br>
+                        <h2 class="text-center"> Happy Exploring! </h2>
+                        <br><br>
+                        <h5 class="text-center">
+                            Design Explorer &copy; Copyright 2015 CORE studio | Thornton Tomasetti |
+                            <a href="http://core.thorntontomasetti.com/about" target="_blank"> About</a> | 
+                            <a href="http://core.thorntontomasetti.com/about/services" target="_blank">Services</a> | 
+                            <a href="http://core.thorntontomasetti.com/about/contact" target="_blank">Contact</a> |
+                        </h5>
+                    </div>
             </div>
         </div>
         <!-- /#page-content-wrapper -->
@@ -1038,6 +1092,9 @@
                     var data = d3.csv.parse(inputString);
 
                     if (data==null) return; // loading .csv file failed for some reason
+
+                    // remove welcome div
+                    d3.select("#welcome").remove();
                     
                     // analyze data and separate them as input/output and general data
                     analyzeInputData(data);
