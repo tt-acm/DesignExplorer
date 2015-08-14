@@ -96,7 +96,8 @@
     background: none;
 }
 
-@media(min-width:768px) {
+
+@media(min-width:0px) {
     #wrapper {
         padding-left: 250px;
     }
