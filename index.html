@@ -156,6 +156,10 @@
             height: 50px; /* overwrite default navbar size */
        }
 
+       .Spectacles_Footer{
+        visibility: hidden;
+       }
+
     </style>
 
 </head>
@@ -1396,12 +1400,10 @@
             if (currentView=="3D" && initit3DViewer){
                 
                 initit3DViewer = false;
-                // change the size to be full screen first
-                // so the viewer initiates with the maximum size
-                //d3.select("#viewer3d").style("height", cleanHeight + "px");
                 
                 // initiate the viewer
-                initiate3DViewer();
+                initiate3DViewer()
+
             } else if (currentView=="3D") {
 
                 // user is changing to 3D view so let's load it.
@@ -1417,6 +1419,13 @@
             
             d3.select("#" + onOff[currentView][1])
                 .attr("class", "zoomed hidden");
+
+            // remove spectacles footer
+            d3.select(".Spectacles_Footer").remove();
+            
+            // resize the view
+            va3cViewer.viewerDiv.resize();
+
           }
 
 
