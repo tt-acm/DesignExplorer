@@ -147,6 +147,7 @@
         #thumbnails-side_container,
         #thumbnails-btm {
             overflow: auto;
+            height: 100%;
         }
 
         rect.disabled {
@@ -523,6 +524,7 @@
             if (cleanedData.length==0) return; // don't let the user change the size before loading the file
 
             var height = d3.select("#graph").style("height").replace("px", "");
+            
             if (height!=0){
                 // collapse
                 d3.select("#graph")
@@ -530,11 +532,19 @@
                     .transition().duration(200)
                     .style("height", "0px");
 
+
                 if (graph.highlight().length!=0){
                     
                     d3.selectAll(".zoomed")
-                        .transition().duration(2000).style("height", cleanHeight + "px");
-                    
+                        .transition().duration(1)
+                        .style("height", cleanHeight + "px")
+                        .each("end", function(){
+                            // resize view
+                            if(currentView=="3D"){
+                                va3cViewer.viewerDiv.resize();
+                            }
+                        });
+
                     }else{
                     
                     d3.select("#thumbnails-btm_container")
@@ -934,10 +944,16 @@
             // I think eventually I will change this to a filter function
             d3.select("#thumbnails-btm").selectAll("div").remove();
             d3.select("#thumbnails-side").selectAll("div").remove();
+            
+            var pcHeight = d3.select("#graph")
+                .style("height").replace("px", "");
+
+            d3.select("#thumbnails-btm_container")
+                .style("height", (cleanHeight - pcHeight) + "px");
 
             // attach images
             d3.select("#thumbnails-btm")
-                .style("height", (zoomedHeight-20) + "px") //20px for credit line - 
+                //.style("height", "100%") //20px for credit line - 
                 .selectAll("div")
                 .data(data).enter()
                     .append("div")
