@@ -132,6 +132,7 @@
         #thumbnails-btm img {
             width: 100%;
             margin-top: 2em;
+            border: .2em solid black;
             }
 
         #zoomed img,
@@ -410,7 +411,7 @@
     <!-- Dynamic Divs script -->
     <script>
         var isAnyItemSelected = false;
-
+        
         // side bar for sliders
         $("#menu-toggle").click(function(e) {
             e.preventDefault();
@@ -446,7 +447,7 @@
                 .select("img")
                 .data(selectedImage.data())
                 .attr("src", selectedImage.datum()["img:Image Name"])
-                .attr("title", getTitle);
+                .attr("title", getTitle);           
 
             // highlight the line graph
             graph.highlight(selectedImage.data());
