@@ -28,6 +28,12 @@
     
     <!-- D3 Parallel Coordinates CSS -->
     <link rel="stylesheet" type="text/css" href="./pc_source_files/css/d3.parcoords.css">
+
+    <!-- Radar Chart -->
+    <script type="text/javascript" src="./radar_source_files/radar-chart.js"></script>
+
+    <!-- Radar Chart CSS -->
+    <link rel="stylesheet" type="text/css" href="./radar_source_files/radar-chart.css"/>
     
     <!-- Bootstrap Core CSS -->
     <link href="bootstrap_side_bar/css/bootstrap.min.css" rel="stylesheet">
@@ -592,25 +598,56 @@
         // update radar chart
         function updateRadarChart(){
 
-            d3.select("#radarChart")
-                .html(function(){
-                    // get all the results and put them there as text
-                    var outputKeys = d3.keys(outputData[0]);
-                    var selectedData = graph.highlighted()[0];
-                    var results = [];
+            var outputKeys = d3.keys(outputData[0]);
+            var selectedData = graph.highlighted();
+            var selectedDataFormatted = [];
+            if (!graph.brushed()) {
+                var displayedData = cleanedData;
+            } else {
+                var displayedData = graph.brushed();
+            }
 
-                    outputKeys.forEach(function(outputKey){
-                        results.push(outputKey + ": " + selectedData[outputKey]);
-                    });
+            //format data for radar chart
+            selectedData.forEach(function(d) {
+                var axesData = [];
 
-                    return  "<br>" + results.join("<br>") + "<br><br><br>";
-                });
+                outputKeys.forEach(function(outputKey) {
+
+                    var scale = d3.scale.linear()
+                        .domain([d3.min(displayedData, function(d) { return parseFloat(d[outputKey]); }), d3.max(displayedData, function(d) { return parseFloat(d[outputKey]); })])
+                        .range([0, 100]);
+
+                    axesData.push({
+                        axis: outputKey,
+                        value: scale(parseFloat(d[outputKey]))
+                    })
+                })
+
+                selectedDataFormatted.push({ axes: axesData }); 
+            })
+
+            //configure radar chart
+            var cfg = ({
+                //w: d3.selectAll(".background").attr("height"),
+                //h: d3.selectAll(".background").attr("height"),
+                w: 200,
+                h: 200,
+                color: function(d) { return "grey"; },
+                maxValue: 100
+            });
+
+            RadarChart.draw("#radarChart", selectedDataFormatted, cfg);
+
+            //did not work using CSS
+            d3.selectAll(".legend")
+                .style("fill", "green")
+                .style("font-size", 9);
         }
 
         // clean radar chart
         function cleanRadarChart(){
-
-            d3.select("#radarChart").html("");
+            
+            d3.selectAll(".radar-chart").remove();
         }
 
     </script>
