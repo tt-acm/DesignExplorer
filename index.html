@@ -1072,9 +1072,10 @@
             // Keep brushed
             d3.select("#keep")
                 .on("click", function() {
+
                     var newData = graph.brushed();
                     
-                    if (newData.length == 0){
+                    if (newData == false || newData.length == 0){
                         alert("You need to select some data to be kept!")
                     }else{
                         // update graph with new data
@@ -1087,7 +1088,7 @@
                     
                     var selectedData = graph.brushed();
                     
-                    if (selectedData.length == 0){
+                    if (selectedData == false || selectedData.length == 0){
                         alert("You need to select some data to be removed!")
                     }else{
                         // update graph with new data
