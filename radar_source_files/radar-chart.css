@@ -1,10 +1,12 @@
 .radar-chart .level {
-  stroke: grey;
+  stroke: black;
+  color: black;
   stroke-width: 0.5;
+  opacity: 0.5;
 }
 
 .radar-chart .axis line {
-  stroke: grey;
+  stroke: green;
   stroke-width: 1;
 }
 .radar-chart .axis .legend {
@@ -15,13 +17,13 @@
   dy:1em;
 }
 .radar-chart .axis .legend.left {
-  text-anchor: start;
+  text-anchor: end;
 }
 .radar-chart .axis .legend.middle {
   text-anchor: middle;
 }
 .radar-chart .axis .legend.right {
-  text-anchor: end;
+  text-anchor: start;
 }
 
 .radar-chart .tooltip {

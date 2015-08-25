@@ -633,7 +633,11 @@
                 color: function(d) { return "grey"; },
                 radius: 3,
                 maxValue: 100,
-                ExtraWidthX: 200,
+                extraWidthX: 266.25 - 200, //width of div - width of graph
+                extraWidthY: 60,
+                translateX: ((266.25 - 200) / 2), //(width of div - width of graph) / 2
+                translateY: 10,
+                levels: 5
             });
 
             RadarChart.draw("#radarChart", selectedDataFormatted, cfg);

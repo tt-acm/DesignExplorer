@@ -1,3 +1,32 @@
+//some changes taken from: http://bl.ocks.org/nbremer/6506614
+//wraps text to a new line if longer than width
+//source: http://bl.ocks.org/mbostock/7555321
+function wrap(text, width) {
+    text.each(function() {
+        var text = d3.select(this),
+            words = text.text().split(/\s+/).reverse(),
+            word,
+            line = [],
+            lineNumber = 0,
+            lineHeight = 1.1, //ems
+            y = text.attr("y"),
+            x = text.attr("x"),
+            dy = 0.32,
+            tspan = text.text(null).append("tspan").attr("x", x).attr("y", y).attr("dy", dy + "em");
+        
+        while (word = words.pop()) {
+            line.push(word);
+            tspan.text(line.join(" "));
+            if (tspan.node().getComputedTextLength() > width) {
+                line.pop();
+                tspan.text(line.join(" "));
+                line = [word];
+                tspan = text.append("tspan").attr("x", x).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+            }
+        }
+    })
+}
+
 var RadarChart = {
   defaultConfig: {
     containerClass: 'radar-chart',
@@ -15,6 +44,10 @@ var RadarChart = {
     axisText: true,
     circles: true,
     radius: 5,
+    translateX: 0,
+    translateY: 0,
+    extraWidthX: 0,
+    extraWidthY: 0,
     backgroundTooltipColor: "#555",
     backgroundTooltipOpacity: "0.7",
     tooltipColor: "white",
@@ -156,9 +189,11 @@ var RadarChart = {
             axis.select('text')
               .attr('class', function(d, i){
                 var p = getHorizontalPosition(i, 0.5);
+                var v = getVerticalPosition(i, 0.5);
 
                 return 'legend ' +
-                  ((p < 0.4) ? 'left' : ((p > 0.6) ? 'right' : 'middle'));
+                  ((p < 0.4) ? 'left ' : ((p > 0.6) ? 'right ' : 'middle ')) +
+                  ((v < 0.4) ? 'top' : ((v > 0.6) ? 'bottom' : 'middle'));
               })
               .attr('dy', function(d, i) {
                 var p = getVerticalPosition(i, 0.5);
@@ -167,6 +202,17 @@ var RadarChart = {
               .text(function(d) { return d.name; })
               .attr('x', function(d, i){ return d.xOffset+ (cfg.w/2-radius2)+getHorizontalPosition(i, radius2, cfg.factorLegend); })
               .attr('y', function(d, i){ return d.yOffset+ (cfg.h/2-radius2)+getVerticalPosition(i, radius2, cfg.factorLegend); });
+
+            //manual adjustments
+            d3.select("#radarChart").selectAll(".legend").call(wrap, 50);
+            d3.select("#radarChart").selectAll(".legend").filter(".left")
+              .attr("transform", "translate(-10, -10)");
+            d3.select("#radarChart").selectAll(".legend").filter(".right")
+              .attr("transform", "translate(0, -3)");
+            d3.select("#radarChart").selectAll(".legend").filter(".top")
+              .attr("transform", "translate(0, -3)");
+            d3.select("#radarChart").selectAll(".legend").filter(".bottom")
+              .attr("transform", "translate(0, 3)");
           }
         }
 
@@ -318,10 +364,13 @@ var RadarChart = {
     var cfg = chart.config();
 
     d3.select(id).select('svg').remove();
-    d3.select(id)
+
+    var g = d3.select(id)
       .append("svg")
-      .attr("width", cfg.w)
-      .attr("height", cfg.h)
+      .attr("width", cfg.w + cfg.extraWidthX)
+      .attr("height", cfg.h + cfg.extraWidthY)
+      .append("g")
+      .attr("transform", "translate(" + cfg.translateX + "," + cfg.translateY + ")")
       .datum(d)
       .call(chart);
   }
