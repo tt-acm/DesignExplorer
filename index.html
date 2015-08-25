@@ -444,6 +444,9 @@
         function updateLayoutOnSelect(){
             
             var selectedImage = d3.select(this);
+
+            // update rating based
+            setStarValue(selectedImage.data()[0].Rating);
             
             // find height of parallel coordinate
             // to find the height for zoomed div
@@ -705,6 +708,14 @@
                 outputData.push(outputParams);
                 cleanedData.push(cleanedParams);
             });
+        
+        // add rating of 0 to all the options if not already there
+        if (keys.indexOf("Rating")==-1){
+
+            cleanedData.forEach(function(d){
+                d.Rating = 0;
+            });
+        }
 
         }
 
@@ -806,7 +817,6 @@
                     .brushMode("1D-axes")  // enable brushing
                     .interactive()
                     .reorderable();
-
             
             // modify labels
             var inputLabelColor = "tomato",
@@ -1100,11 +1110,13 @@
                 updateSlidersTickValues();
             }
 
+            
             d3.selectAll("rect.legend").on('click', function(d) {
                     var rect = d3.select(this);
                     var name = d.name;
                     var enabled = true;
                     
+
                     if (rect.attr('class') === 'disabled')
                         {
                             rect.attr('class', '');
@@ -1120,9 +1132,27 @@
 
                     // get active dimensios to update parallel coordinate charts
                     var activeDimensions = dimensions.filter(function(d){return (d.enabled) ? 1 : 0}).map(function(d){return d.name});
-                    graph.dimensions(activeDimensions);
-                });  
-        }
+                    graph.dimensions(activeDimensions).autoscale();
+                    if(graph.highlighted().length!=0) graph.highlight(graph.highlighted());
+                });
+
+            
+
+            //turn off rating rectangle
+            d3.selectAll("rect.legend")
+                .attr("class", function(d){ 
+                    
+                    if (d.name=="Rating"){
+                        d.enabled = false;
+                        return 'disabled';
+                    }
+                });
+            
+            // remove Rating for on page load
+            var activeDimensions = dimensions.filter(function(d){return d.name!="Rating";}).map(function(d){return d.name;});
+            graph.dimensions(activeDimensions);
+
+            }
 
     </script>
 
@@ -1526,14 +1556,23 @@
 
     </script>
 
-    <!-- Rating system -->
     <script type="text/javascript">
-        
+        // Rating system           
         // submit the value on change
         $('.star').rating({
             callback: function(value, link){
             // 'value' is the value selected
-            alert("This design option is rated " + value);
+            //alert("This design option is rated " + value);
+
+            // update rating value
+            graph.highlighted()[0].Rating = value;
+
+            // this method is not really optimized. I couldn't find a solution just to change
+            // extent of dimensions for just rating axis            
+            graph.data(graph.data()).render().interactive().reorderable().autoscale();
+
+            // highlight selected option
+            graph.highlight(graph.highlighted());
        
             }
         });
@@ -1549,10 +1588,7 @@
                 .attr("class", function(d, i){return i<value? onClass:offClass;});
 
             }
-
     </script>
-
-
 
 </body>
 
