@@ -214,7 +214,7 @@
                 </li>
                 <li>
                     <p class="navbar-text">
-                        <button id="keep" class="btn btn-default btn-sm">Save Selection to File</button>
+                        <button id="savecsv" class="btn btn-default btn-sm" onclick = saveToCSV()>Save Selection to File</button>
                     </p>
                 </li>
                 <li>
@@ -1588,6 +1588,37 @@
                 .attr("class", function(d, i){return i<value? onClass:offClass;});
 
             }
+    </script>
+
+
+    <script type="text/javascript">
+
+        function saveToCSV(){
+            
+            // modified from http://stackoverflow.com/questions/14964035/how-to-export-javascript-array-info-to-csv-on-client-side
+            var data = graph.data();
+            
+            var csvContent = "data:attachment/csv;charset=utf-8,";
+            
+            csvContent += d3.keys(data[0]).join(",") + "\n" //add first row
+            
+            data.forEach(function(infoArray, index){
+                dataString = d3.values(infoArray).join(",");
+                csvContent += index < data.length ? dataString+ "\n" : dataString;
+
+            }); 
+            
+            csvContent = encodeURI(csvContent);
+
+            var a = d3.select("body")
+                    .append("a")
+                    .attr("href", csvContent)
+                    .attr("target", '_blank')
+                    .attr("download",'DesignExplorer_SelectedResults.csv');
+
+            a[0][0].click();
+        }
+
     </script>
 
 </body>
