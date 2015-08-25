@@ -43,7 +43,7 @@
   fill-opacity: 0.1;
 }
 .radar-chart.focus .area.focused {
-  fill-opacity: 0.7;
+  fill-opacity: 0.5;
 }
 
 .radar-chart .circle {

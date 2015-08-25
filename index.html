@@ -486,7 +486,7 @@
             enableAllSliders();
 
             // report outputs
-            updateRadarChart(); // this is a place holder
+            updateRadarChart(); 
 
             var radarHeight = d3.select("#radarChart")
                 .style("height").replace("px", "");
@@ -601,11 +601,6 @@
             var outputKeys = d3.keys(outputData[0]);
             var selectedData = graph.highlighted();
             var selectedDataFormatted = [];
-            if (!graph.brushed()) {
-                var displayedData = cleanedData;
-            } else {
-                var displayedData = graph.brushed();
-            }
 
             //format data for radar chart
             selectedData.forEach(function(d) {
@@ -614,7 +609,7 @@
                 outputKeys.forEach(function(outputKey) {
 
                     var scale = d3.scale.linear()
-                        .domain([d3.min(displayedData, function(d) { return parseFloat(d[outputKey]); }), d3.max(displayedData, function(d) { return parseFloat(d[outputKey]); })])
+                        .domain([d3.min(graph.data(), function(d) { return parseFloat(d[outputKey]); }), d3.max(graph.data(), function(d) { return parseFloat(d[outputKey]); })])
                         .range([0, 100]);
 
                     axesData.push({
@@ -633,7 +628,9 @@
                 w: 200,
                 h: 200,
                 color: function(d) { return "grey"; },
-                maxValue: 100
+                radius: 3,
+                maxValue: 100,
+                ExtraWidthX: 200,
             });
 
             RadarChart.draw("#radarChart", selectedDataFormatted, cfg);
@@ -646,8 +643,9 @@
 
         // clean radar chart
         function cleanRadarChart(){
-            
+
             d3.selectAll(".radar-chart").remove();
+
         }
 
     </script>
@@ -1064,7 +1062,6 @@
             // Keep brushed
             d3.select("#keep")
                 .on("click", function() {
-                    
                     var newData = graph.brushed();
                     
                     if (newData.length == 0){

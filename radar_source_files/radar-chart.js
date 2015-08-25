@@ -26,42 +26,10 @@ var RadarChart = {
   chart: function() {
     // default config
     var cfg = Object.create(RadarChart.defaultConfig);
-    function setTooltip(tooltip, msg){
-      if(msg == false || msg == undefined){
-        tooltip.classed("visible", 0);
-        tooltip.select("rect").classed("visible", 0);
-      }else{
-        tooltip.classed("visible", 1);
-
-        var container = tooltip.node().parentNode;
-        var coords = d3.mouse(container);
-
-        tooltip.select("text").classed('visible', 1).style("fill", cfg.tooltipColor);
-        var padding=5;
-        var bbox = tooltip.select("text").text(msg).node().getBBox();
-
-        tooltip.select("rect")
-        .classed('visible', 1).attr("x", 0)
-        .attr("x", bbox.x - padding)
-        .attr("y", bbox.y - padding)
-        .attr("width", bbox.width + (padding*2))
-        .attr("height", bbox.height + (padding*2))
-        .attr("rx","5").attr("ry","5")
-        .style("fill", cfg.backgroundTooltipColor).style("opacity", cfg.backgroundTooltipOpacity);
-        tooltip.attr("transform", "translate(" + (coords[0]+10) + "," + (coords[1]-10) + ")")
-      }
-    }
+    
     function radar(selection) {
       selection.each(function(data) {
         var container = d3.select(this);
-        var tooltip = container.selectAll('g.tooltip').data([data[0]]);
-        
-        var tt = tooltip.enter()
-          .append('g')
-          .classed('tooltip', true)
-        
-        tt.append('rect').classed("tooltip", true);
-        tt.append('text').classed("tooltip", true);
 
         // allow simple notation
         data = data.map(function(datum) {
@@ -75,7 +43,6 @@ var RadarChart = {
         var maxValue = Math.max(cfg.maxValue, d3.max(data, function(d) {
           return d3.max(d.axes, function(o){ return o.value; });
         }));
-        console.log("maxValue: " + maxValue);
 
         var allAxis = data[0].axes.map(function(i, j){ return {name: i.axis, xOffset: (i.xOffset)?i.xOffset:0, yOffset: (i.yOffset)?i.yOffset:0}; });
         var total = allAxis.length;
@@ -218,13 +185,11 @@ var RadarChart = {
             d3.event.stopPropagation();
             container.classed('focus', 1);
             d3.select(this).classed('focused', 1);
-            setTooltip(tooltip, dd.className);
           })
           .on('mouseout', function(){
             d3.event.stopPropagation();
             container.classed('focus', 0);
             d3.select(this).classed('focused', 0);
-            setTooltip(tooltip, false);
           });
 
         polygon.exit()
@@ -285,13 +250,11 @@ var RadarChart = {
             .classed({circle: 1, 'd3-enter': 1})
             .on('mouseover', function(dd){
               d3.event.stopPropagation();
-              setTooltip(tooltip, dd[0].value);
               //container.classed('focus', 1);
               //container.select('.area.radar-chart-serie'+dd[1]).classed('focused', 1);
             })
             .on('mouseout', function(dd){
               d3.event.stopPropagation();
-              setTooltip(tooltip, false);
               container.classed('focus', 0);
               //container.select('.area.radar-chart-serie'+dd[1]).classed('focused', 0);
               //No idea why previous line breaks tooltip hovering area after hoverin point.
@@ -328,10 +291,7 @@ var RadarChart = {
 
           var cg_node = circleGroups.node();
           cg_node.parentNode.appendChild(cg_node);
-
-          // ensure tooltip is upmost layer
-          var tooltipEl = tooltip.node();
-          tooltipEl.parentNode.appendChild(tooltipEl);
+          
         }
       });
     }
