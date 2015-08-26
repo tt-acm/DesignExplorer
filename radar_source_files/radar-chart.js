@@ -227,17 +227,7 @@ var RadarChart = {
         var polygon = container.selectAll(".area").data(data, cfg.axisJoin);
 
         polygon.enter().append('polygon')
-          .classed({area: 1, 'd3-enter': 1})
-          .on('mouseover', function (dd){
-            d3.event.stopPropagation();
-            container.classed('focus', 1);
-            d3.select(this).classed('focused', 1);
-          })
-          .on('mouseout', function(){
-            d3.event.stopPropagation();
-            container.classed('focus', 0);
-            d3.select(this).classed('focused', 0);
-          });
+          .classed({area: 1, 'd3-enter': 1});
 
         polygon.exit()
           .classed('d3-exit', 1) // trigger css transition
@@ -245,6 +235,7 @@ var RadarChart = {
             .remove();
 
         polygon
+          .attr("id", function(d) { return d.className; })
           .each(function(d, i) {
             var classed = {'d3-exit': 0}; // if exiting element is being reused
             classed['radar-chart-serie' + i] = 1;
@@ -294,18 +285,7 @@ var RadarChart = {
           });
 
           circle.enter().append('circle')
-            .classed({circle: 1, 'd3-enter': 1})
-            .on('mouseover', function(dd){
-              d3.event.stopPropagation();
-              //container.classed('focus', 1);
-              //container.select('.area.radar-chart-serie'+dd[1]).classed('focused', 1);
-            })
-            .on('mouseout', function(dd){
-              d3.event.stopPropagation();
-              container.classed('focus', 0);
-              //container.select('.area.radar-chart-serie'+dd[1]).classed('focused', 0);
-              //No idea why previous line breaks tooltip hovering area after hoverin point.
-            });
+            .classed({circle: 1, 'd3-enter': 1});
 
           circle.exit()
             .classed('d3-exit', 1) // trigger css transition
@@ -340,6 +320,7 @@ var RadarChart = {
           cg_node.parentNode.appendChild(cg_node);
           
         }
+
       });
     }
 
@@ -358,11 +339,27 @@ var RadarChart = {
       return radar;
     };
 
+    //highlight a single polygon
+    radar.highlight = function(data) {
+      data.forEach(function(d) {
+
+        //dim all other lines
+        d3.selectAll(".area")
+          .style("stroke", "rgb(200,200,200)");
+
+        //highlight data lines
+        d3.selectAll("#" + getID(d))
+          .moveToFront()
+          .style("stroke", "grey")
+          .style("stroke-width", 3);
+      })
+    }
+
     return radar;
   },
   draw: function(id, d, options) {
-    var chart = RadarChart.chart().config(options);
-    var cfg = chart.config();
+    rc = RadarChart.chart().config(options);
+    var cfg = rc.config();
 
     d3.select(id).select('svg').remove();
 
@@ -373,6 +370,95 @@ var RadarChart = {
       .append("g")
       .attr("transform", "translate(" + cfg.translateX + "," + cfg.translateY + ")")
       .datum(d)
-      .call(chart);
+      .call(rc);
   }
 };
+
+//remove white space from a string
+//http://stackoverflow.com/questions/5964373/is-there-a-difference-between-s-g-and-s-g
+function removeWhiteSpace(str) {
+    return str.replace(/\s+/g, "");
+} 
+
+//remove parenthesis from a string
+function removeParentheses(str) {
+    return str.replace(/[()]/g, "");
+}
+
+//remove + from a string
+function removePlusSign(str) {
+    return str.replace(/\++/g, "");
+}
+
+//remove & from a string
+function removeAmpersand(str) {
+    return str.replace(/\&+/g, "");
+}
+
+//remove / from a string
+function removeSlash(str) {
+    return str.replace(/\/+/g, "");
+}
+
+//remove . from a string
+function removePeriod(str) {
+    return str.replace(/\.+/g, "");
+}
+
+//remove % from a string
+function removePercent(str) {
+    return str.replace(/\%+/g, "");
+}
+
+function cleanString(str) {
+    return removeWhiteSpace(removeParentheses(removePlusSign(removeAmpersand(removeSlash(removePeriod(removePercent(str)))))));
+}
+
+//unique id for each 
+function getID(d) {
+  var id = "polygon";
+  var keys = d3.keys(outputData[0]);
+
+  keys.forEach(function(key) {
+    id += "_" + cleanString(d[key].toString());
+  })
+
+  return id;
+}
+
+//format data
+function formatData(d) {
+  var axesData = [],
+    keys = d3.keys(outputData[0]);
+
+  keys.forEach(function(key) {
+      var scale = d3.scale.linear()
+        .domain([d3.min(graph.data(), function(d) { return parseFloat(d[key]); }), d3.max(graph.data(), function(d) { return parseFloat(d[key]); })])
+        .range([0, 100]);
+
+      axesData.push({
+        axis: key,
+        value: scale(parseFloat(d[key]))
+      })
+  })
+
+  return {className: getID(d), axes: axesData};
+}
+
+//moves selection to the front of the DOM
+d3.selection.prototype.moveToFront = function() {
+  return this.each(function(){
+    this.parentNode.appendChild(this);
+  });
+};
+
+//moves selectin to the back of the DOM
+d3.selection.prototype.moveToBack = function() { 
+    return this.each(function() { 
+        var firstChild = this.parentNode.firstChild; 
+        if (firstChild) { 
+            this.parentNode.insertBefore(this, firstChild); 
+        } 
+    }); 
+};
+

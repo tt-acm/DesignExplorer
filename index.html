@@ -427,7 +427,11 @@
         // side bar for sliders
         $("#menu-toggle").click(function(e) {
             e.preventDefault();
-            $("#wrapper").toggleClass("toggled");
+            //based on http://stackoverflow.com/questions/10321393/jquery-function-on-toggleclass-complete
+            //does not work correctly
+            $("#wrapper").toggleClass("toggled").promise().done(function() {
+                resizeRadarChart();
+            })
         });
 
         // toggel between selected and not selected modes
@@ -485,6 +489,14 @@
             // report outputs
             updateRadarChart(); 
 
+            //highlight the radar chart
+            /*
+            d3.selectAll("#" + getID(selectedImage.data()[0]))
+                .style("fill-opacity", 0.5)
+                .style("stroke-width", 3);
+            */
+            rc.highlight(selectedImage.data());
+
             var radarHeight = d3.select("#radarChart")
                 .style("height").replace("px", "");
 
@@ -494,6 +506,7 @@
                 .style("height", (cleanHeight - radarHeight) + "px");
 
             isAnyItemSelected = true;
+
         };
 
 
@@ -525,8 +538,8 @@
             // enable sliders
             disableAllSliders();
 
-            // clean radar chart
-            cleanRadarChart();
+            // unhighlight the radar chart
+            updateRadarChart();
 
             isAnyItemSelected = false;
         };
@@ -593,28 +606,18 @@
 
         // update radar chart - populates radar chart with highlighted data
         function updateRadarChart(){
-
-            var outputKeys = d3.keys(outputData[0]);
-            var selectedData = graph.highlighted();
-            var selectedDataFormatted = [];
-
             //format data for radar chart
+            var outputKeys = d3.keys(outputData[0]);
+            
+            if (graph.brushed().length > 0) {
+                var selectedData = graph.brushed();
+            } else {
+                var selectedData = graph.data();
+            }  
+            selectedDataFormatted = [];
+
             selectedData.forEach(function(d) {
-                var axesData = [];
-
-                outputKeys.forEach(function(outputKey) {
-
-                    var scale = d3.scale.linear()
-                        .domain([d3.min(graph.data(), function(d) { return parseFloat(d[outputKey]); }), d3.max(graph.data(), function(d) { return parseFloat(d[outputKey]); })])
-                        .range([0, 100]);
-
-                    axesData.push({
-                        axis: outputKey,
-                        value: scale(parseFloat(d[outputKey]))
-                    })
-                })
-
-                selectedDataFormatted.push({ axes: axesData }); 
+                selectedDataFormatted.push(formatData(d));
             })
 
             //get height, width for radar chart
@@ -625,11 +628,11 @@
             var rcDimension = Math.min(pcHeight, divWidth) - 65;
 
             //configure radar chart
-            var cfg = ({
+            cfg = ({
                 w: rcDimension,
                 h: rcDimension,
                 color: function(d) { return "grey"; },
-                radius: 3,
+                radius: 4,
                 maxValue: 100,
                 extraWidthX: divWidth - rcDimension, 
                 extraWidthY: 65,
@@ -637,6 +640,28 @@
                 translateY: 65 / 2,
                 levels: 5,
             });
+
+            RadarChart.draw("#radarChart", selectedDataFormatted, cfg);
+
+            //move lines to back
+            d3.selectAll(".area").moveToBack();
+
+            //did not work using CSS
+            d3.selectAll(".legend")
+                .style("fill", "green")
+                .style("font-size", 9);
+        }
+
+        //resize radar chart
+        function resizeRadarChart() {
+            var divWidth = d3.select("#thumbnails-side").style("width").replace("px", "");
+            var pcHeight = d3.select("#graph").style("height").replace("px", "");
+            var rcDimension = Math.min(pcHeight, divWidth) - 65;
+
+            cfg.w = rcDimension;
+            cfg.h = rcDimension;
+            cfg.extraWidthX = divWidth - rcDimension;
+            cfg.translateX = (divWidth - rcDimension) / 2;
 
             RadarChart.draw("#radarChart", selectedDataFormatted, cfg);
 
@@ -648,65 +673,7 @@
 
         // clean radar chart - populates radar chart with all relevant data
         function cleanRadarChart() {
-
-            var outputKeys = d3.keys(outputData[0]),
-                emptyBrushSelection = true;
-
-            if (graph.brushed().length > 0) {
-                var selectedData = graph.brushed();
-            } else {
-                var selectedData = graph.data();
-            }    
-
-            var selectedDataFormatted = [];
-
-            //format data for radar chart
-            selectedData.forEach(function(d) {
-                var axesData = [];
-
-                outputKeys.forEach(function(outputKey) {
-
-                    var scale = d3.scale.linear()
-                        .domain([d3.min(graph.data(), function(d) { return parseFloat(d[outputKey]); }), d3.max(graph.data(), function(d) { return parseFloat(d[outputKey]); })])
-                        .range([0, 100]);
-
-                    axesData.push({
-                        axis: outputKey,
-                        value: scale(parseFloat(d[outputKey]))
-                    })
-                })
-
-                selectedDataFormatted.push({ axes: axesData }); 
-            })
-
-            //get height, width for radar chart
-            //we want the graph to be centered above the thumbnails, if possible
-            //65px is to fit text
-            var divWidth = d3.select("#thumbnails-side").style("width").replace("px", "");
-            var pcHeight = d3.select("#graph").style("height").replace("px", "");
-            var rcDimension = Math.min(pcHeight, divWidth) - 65;
-
-            //configure radar chart
-            var cfg = ({
-                w: rcDimension,
-                h: rcDimension,
-                color: function(d) { return "grey"; },
-                radius: 3,
-                maxValue: 100,
-                extraWidthX: divWidth - rcDimension, 
-                extraWidthY: 65,
-                translateX: (divWidth - rcDimension) / 2, 
-                translateY: 65 / 2,
-                levels: 5,
-            });
-
-            RadarChart.draw("#radarChart", selectedDataFormatted, cfg);
-
-            //did not work using CSS
-            d3.selectAll(".legend")
-                .style("fill", "green")
-                .style("font-size", 9);
-
+            d3.selectAll(".radar-chart").remove();
         }
 
     </script>
@@ -1117,7 +1084,7 @@
 
              graph.on("brushend", function(d){
                 //updates graph with brushed data
-                cleanRadarChart();
+                updateRadarChart();
                 
                 // if nothing is highlighted return                                
                 if (graph.highlight().length==0) return;
@@ -1267,7 +1234,7 @@
                     drawParallelCoordinates();
 
                     //draw radar chart
-                    cleanRadarChart();
+                    updateRadarChart();
 
                     // draw legend in side bar
                     drawLegend();
