@@ -290,31 +290,35 @@
                                     <div class="zoomed" id="zoomedArea" style="height:0px">
 
                                         <div class="pull-right" id="vis">
-                                        <form>
-                                               
-                                                    <label><input type="radio" id="toggleView" name="visMode" value="2D" checked> 2D</label> <!-- show 2D image on load-->
-                                                    <label><input type="radio" id="toggleView" name="visMode" value="3D"> 3D</label>
-                                                                                           
-                                                <button type="button" class="btn btn-default btn-xs" id="fullscreentoggle" style="margin-right:10px; margin-left:5px; margin-top: 2px;">
+                                            <form>
+                                                   
+                                                <label><input type="radio" id="toggleView" name="visMode" value="2D" checked> 2D</label> <!-- show 2D image on load-->
+                                                <label><input type="radio" id="toggleView" name="visMode" value="3D"> 3D</label>
+                                                
+                                                <button type="button" class="btn btn-default btn-xs" id="toggleComments" style="margin-right:10px; margin-left:5px; margin-top: 2px;" title="Add Comments">
+                                                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                                                </button>
+                                                <button type="button" class="btn btn-default btn-xs" id="fullscreentoggle" style="margin-right:10px; margin-left:5px; margin-top: 2px;" title="Full Screen Toggle">
                                                     <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
                                                 </button>
-                                        </form>
-                                        <form>
+
+                                            </form>
+                                            <form>
                                                 <!--rating div-->
                                                 <input class="star" type="radio" name="rating" value="1"/>
                                                 <input class="star" type="radio" name="rating" value="2"/>
                                                 <input class="star" type="radio" name="rating" value="3"/>
                                                 <input class="star" type="radio" name="rating" value="4"/>
                                                 <input class="star" type="radio" name="rating" value="5"/>
-                                        </form>
+
+                                            </form>
                                         </div>
-                                        <div id = "viewer3d" style="width:100%; height:100%" class="hidden">
-                                            <!-- place holder for the viewer -->
-                                        </div>
-                                        <div class="zoomed" id = "zoomed" style="width:100%; height:100%">
-                                            <!-- place holder for the image -->
-                                        </div>
-                                        <!-- <h1>Zoomed</h1> -->
+                                            <div id = "viewer3d" style="width:100%; height:100%" class="hidden">
+                                                <!-- place holder for the viewer -->
+                                            </div>
+                                            <div class="zoomed" id = "zoomed" style="width:100%; height:100%">
+                                                <!-- place holder for the image -->
+                                            </div>
                                     </div>
                                 </div>
                             </div> <!-- end of left side charts-->
@@ -1596,8 +1600,7 @@
         $('.star').rating({
             callback: function(value, link){
             // 'value' is the value selected
-            //alert("This design option is rated " + value);
-
+            //alert("This design option is rated " + value);            
             // update rating value
             graph.highlighted()[0].Rating = value;
 
@@ -1607,13 +1610,18 @@
 
             // highlight selected option
             graph.highlight(graph.highlighted());
-       
+
             }
         });
 
 
         // set the value for rating based on the current value
         function setStarValue(value){
+
+            // remove any current value
+            $('.star').data('rating').current=undefined; // set current value to undefined
+            
+            // set current value to undefined            
             var offClass = "star-rating rater-0 star star-rating-applied star-rating-live";
             var onClass = offClass + " star-rating-on";
 
