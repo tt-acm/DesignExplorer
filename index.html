@@ -328,7 +328,7 @@
                                 </div>
                                 
                                 <div class="row">
-                                    <div id="radarChart" class="col-lg-12 collaps in" style="font-size:14px; font-weight:bold">
+                                    <div id="radarChart" class="col-lg-12 collaps in center-block" style="font-size:14px; font-weight:bold">
                                         <!-- <h5>Radar Chart Place Holder</h5> -->
                                     </div>
                                 </div>
@@ -591,7 +591,7 @@
     <!-- radar chart -->
     <script type="text/javascript">
 
-        // update radar chart
+        // update radar chart - populates radar chart with highlighted data
         function updateRadarChart(){
 
             var outputKeys = d3.keys(outputData[0]);
@@ -617,21 +617,25 @@
                 selectedDataFormatted.push({ axes: axesData }); 
             })
 
-            //we want the graph to be centered above the thumbnails
+            //get height, width for radar chart
+            //we want the graph to be centered above the thumbnails, if possible
+            //65px is to fit text
             var divWidth = d3.select("#thumbnails-side").style("width").replace("px", "");
+            var pcHeight = d3.select("#graph").style("height").replace("px", "");
+            var rcDimension = Math.min(pcHeight, divWidth) - 65;
 
             //configure radar chart
             var cfg = ({
-                w: divWidth - 65,
-                h: divWidth - 65,
+                w: rcDimension,
+                h: rcDimension,
                 color: function(d) { return "grey"; },
                 radius: 3,
                 maxValue: 100,
-                extraWidthX: 65, 
+                extraWidthX: divWidth - rcDimension, 
                 extraWidthY: 65,
-                translateX: (65 / 2), 
-                translateY: (65 / 2),
-                levels: 5
+                translateX: (divWidth - rcDimension) / 2, 
+                translateY: 65 / 2,
+                levels: 5,
             });
 
             RadarChart.draw("#radarChart", selectedDataFormatted, cfg);
@@ -642,13 +646,18 @@
                 .style("font-size", 9);
         }
 
-        // clean radar chart
-        function cleanRadarChart(){
+        // clean radar chart - populates radar chart with all relevant data
+        function cleanRadarChart() {
 
-            //d3.selectAll(".radar-chart").remove();
+            var outputKeys = d3.keys(outputData[0]),
+                emptyBrushSelection = true;
 
-            var outputKeys = d3.keys(outputData[0]);
-            var selectedData = graph.data();
+            if (graph.brushed().length > 0) {
+                var selectedData = graph.brushed();
+            } else {
+                var selectedData = graph.data();
+            }    
+
             var selectedDataFormatted = [];
 
             //format data for radar chart
@@ -670,21 +679,25 @@
                 selectedDataFormatted.push({ axes: axesData }); 
             })
 
-            //we want the graph to be centered above the thumbnails
+            //get height, width for radar chart
+            //we want the graph to be centered above the thumbnails, if possible
+            //65px is to fit text
             var divWidth = d3.select("#thumbnails-side").style("width").replace("px", "");
+            var pcHeight = d3.select("#graph").style("height").replace("px", "");
+            var rcDimension = Math.min(pcHeight, divWidth) - 65;
 
             //configure radar chart
             var cfg = ({
-                w: divWidth - 65,
-                h: divWidth - 65,
+                w: rcDimension,
+                h: rcDimension,
                 color: function(d) { return "grey"; },
                 radius: 3,
                 maxValue: 100,
-                extraWidthX: 65, 
+                extraWidthX: divWidth - rcDimension, 
                 extraWidthY: 65,
-                translateX: (65 / 2), 
-                translateY: (65 / 2),
-                levels: 5
+                translateX: (divWidth - rcDimension) / 2, 
+                translateY: 65 / 2,
+                levels: 5,
             });
 
             RadarChart.draw("#radarChart", selectedDataFormatted, cfg);
@@ -1098,13 +1111,16 @@
 
             // brushing events for parallel coordinates graph
             graph.on("brush", function(d) {
-                        updateImageGrid(d);
+                updateImageGrid(d);
+                
             });
 
              graph.on("brushend", function(d){
+                //updates graph with brushed data
+                cleanRadarChart();
                 
                 // if nothing is highlighted return                                
-                if (graph.highlight().lenght==0) return;
+                if (graph.highlight().length==0) return;
 
                 // in case highlighted data not in brused then deselect
                 if (graph.brushed().length == inputData.length || graph.brushed().indexOf(graph.highlight()[0])==-1){

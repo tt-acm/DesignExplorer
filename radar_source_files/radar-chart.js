@@ -213,14 +213,7 @@ var RadarChart = {
               .attr("transform", "translate(0, -3)");
             d3.select("#radarChart").selectAll(".legend").filter(".bottom")
               .attr("transform", "translate(0, 3)");
-
-            //transition onto page nicely
-            d3.select("#radarChart").selectAll(".area")
-              .style("opacity", 0)
-              .transition().duration(1100)
-                .style("stroke-opacity", 1)
-                .style("fill-opacity", 0.5);
-
+  
           }
         }
 
