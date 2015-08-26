@@ -355,6 +355,15 @@ var RadarChart = {
       })
     }
 
+    //shows only polygons bound to data
+    radar.updateData = function(data) {
+      d3.selectAll(".area").attr("visibility", "hidden");
+
+      data.forEach(function(d) {
+        d3.selectAll("#" + getID(d)).attr("visibility", "shown");
+      })
+    }
+
     return radar;
   },
   draw: function(id, d, options) {
@@ -371,6 +380,12 @@ var RadarChart = {
       .attr("transform", "translate(" + cfg.translateX + "," + cfg.translateY + ")")
       .datum(d)
       .call(rc);
+
+    /*
+    d3.selectAll("radar-chart").style("opacity", 0)
+      .transition().duration(2000)
+      .style("opacity", 1);\
+    */
   }
 };
 

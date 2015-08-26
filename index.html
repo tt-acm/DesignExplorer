@@ -423,20 +423,24 @@
     <!-- Dynamic Divs script -->
     <script>
         var isAnyItemSelected = false;
+        var isToggled = true;
         
         // side bar for sliders
         $("#menu-toggle").click(function(e) {
             e.preventDefault();
-            //based on http://stackoverflow.com/questions/10321393/jquery-function-on-toggleclass-complete
-            //does not work correctly
-            $("#wrapper").toggleClass("toggled").promise().done(function() {
-                resizeRadarChart();
-            })
+
+            //$("#wrapper").toggleClass("toggled");
+            isToggled = !isToggled;
+            d3.select("#wrapper")
+                .classed("toggled", isToggled)
+                .transition().duration(500) //length of toggle animation
+                .each("end", function() {
+                    resizeRadarChart();
+                })
         });
 
         // toggel between selected and not selected modes
         // d3.selectAll(".thumbnail-image").on("click", updateLayout);
-        
         
         // update layout on select
         function updateLayoutOnSelect(){
@@ -486,15 +490,7 @@
             // enable sliders
             enableAllSliders();
 
-            // report outputs
-            updateRadarChart(); 
-
             //highlight the radar chart
-            /*
-            d3.selectAll("#" + getID(selectedImage.data()[0]))
-                .style("fill-opacity", 0.5)
-                .style("stroke-width", 3);
-            */
             rc.highlight(selectedImage.data());
 
             var radarHeight = d3.select("#radarChart")
@@ -653,6 +649,7 @@
         }
 
         //resize radar chart
+        //return to this
         function resizeRadarChart() {
             var divWidth = d3.select("#thumbnails-side").style("width").replace("px", "");
             var pcHeight = d3.select("#graph").style("height").replace("px", "");
@@ -669,9 +666,14 @@
             d3.selectAll(".legend")
                 .style("fill", "green")
                 .style("font-size", 9);
+
+            rc.highlight(graph.highlighted());
+
         }
 
-        // clean radar chart - populates radar chart with all relevant data
+        window.onresize(resizeRadarChart());
+
+        // clean radar chart
         function cleanRadarChart() {
             d3.selectAll(".radar-chart").remove();
         }
@@ -1078,13 +1080,13 @@
 
             // brushing events for parallel coordinates graph
             graph.on("brush", function(d) {
+                rc.updateData(graph.brushed());
+
                 updateImageGrid(d);
                 
             });
 
              graph.on("brushend", function(d){
-                //updates graph with brushed data
-                updateRadarChart();
                 
                 // if nothing is highlighted return                                
                 if (graph.highlight().length==0) return;
