@@ -539,7 +539,8 @@
             disableAllSliders();
 
             // unhighlight the radar chart
-            updateRadarChart();
+            //updateRadarChart();
+            rc.unhighlight();
 
             isAnyItemSelected = false;
         };
@@ -655,10 +656,15 @@
         //resize radar chart
         //return to this
         function resizeRadarChart() {
+            
             var divWidth = d3.select("#thumbnails-side").style("width").replace("px", "");
             var pcHeight = d3.select("#graph").style("height").replace("px", "");
-            var rcDimension = Math.min(pcHeight, divWidth) - 65;
-
+            if (pcHeight > 0) {
+                var rcDimension = Math.min(pcHeight, divWidth) - 65;
+            } else {
+                var rcDimension = divWidth - 65;
+            }
+            
             cfg.w = rcDimension;
             cfg.h = rcDimension;
             cfg.extraWidthX = divWidth - rcDimension;
@@ -672,10 +678,10 @@
                 .style("font-size", 9);
 
             rc.highlight(graph.highlighted());
-
+            
         }
 
-        window.onresize(resizeRadarChart());
+        //window.onresize(resizeRadarChart());
 
         // clean radar chart
         function cleanRadarChart() {
@@ -1085,13 +1091,11 @@
             // brushing events for parallel coordinates graph
             graph.on("brush", function(d) {
                 rc.updateData(graph.brushed());
-
                 updateImageGrid(d);
                 
             });
 
              graph.on("brushend", function(d){
-                
                 // if nothing is highlighted return                                
                 if (graph.highlight().length==0) return;
 
@@ -1144,7 +1148,7 @@
                 updateImageGrid(newData);
                 updateSlidersTickValues();
             }
-
+            
             
             d3.selectAll("rect.legend").on('click', function(d) {
                     var rect = d3.select(this);

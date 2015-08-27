@@ -339,20 +339,29 @@ var RadarChart = {
       return radar;
     };
 
-    //highlight a single polygon
+    //highlight an array of data
     radar.highlight = function(data) {
-      data.forEach(function(d) {
-
+        
         //dim all other lines
         d3.selectAll(".area")
-          .style("stroke", "rgb(200,200,200)");
+          .style("stroke", "rgb(200,200,200)")
+          .style("stroke-width", 1);
 
-        //highlight data lines
-        d3.selectAll("#" + getID(d))
-          .moveToFront()
-          .style("stroke", "grey")
-          .style("stroke-width", 3);
-      })
+        data.forEach(function(d) {
+          //highlight data lines
+          d3.selectAll("#" + getID(d))
+            .moveToFront()
+            .style("stroke", "grey")
+            .style("stroke-width", 3);
+        })
+    }
+
+    //unhighlight the radar chart
+    radar.unhighlight = function() {
+      //back to normal
+      d3.selectAll(".area")
+        .style("stroke", "grey")
+        .style("stroke-width", 1);
     }
 
     //shows only polygons bound to data
@@ -362,10 +371,15 @@ var RadarChart = {
       data.forEach(function(d) {
         d3.selectAll("#" + getID(d)).attr("visibility", "shown");
       })
+
+      graph.highlighted().forEach(function(d) {
+        d3.selectAll("#" + getID(d)).attr("visibility", "shown");
+      })
     }
 
     return radar;
   },
+
   draw: function(id, d, options) {
     rc = RadarChart.chart().config(options);
     var cfg = rc.config();
@@ -380,12 +394,6 @@ var RadarChart = {
       .attr("transform", "translate(" + cfg.translateX + "," + cfg.translateY + ")")
       .datum(d)
       .call(rc);
-
-    /*
-    d3.selectAll("radar-chart").style("opacity", 0)
-      .transition().duration(2000)
-      .style("opacity", 1);\
-    */
   }
 };
 
