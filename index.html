@@ -326,7 +326,7 @@
                             <div class="col-lg-3">
                                 
                                 <div class="row-fluid">
-                                    <button type="button" class="btn btn-default btn-xs" data-toggle="collapse" data-target="#radarChart">
+                                    <button type="button" class="btn btn-default btn-xs" id="rcgraph" data-toggle="collapse" data-target="#radarChart">
                                         <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
                                     </button>
                                 </div>
@@ -428,7 +428,7 @@
     <script>
         var isAnyItemSelected = false;
         var isToggled = true;
-        
+
         // side bar for sliders
         $("#menu-toggle").click(function(e) {
             e.preventDefault();
@@ -546,8 +546,18 @@
 
 
         // hide/show parallel coordinates
-        d3.select("#pcgraph").on("click", function(){
+        d3.select("#pcgraph").on("click", parcoordsCollapse);
 
+        //hide/show radar chart
+        //this adds to the bootstraps collapse functionality
+        d3.select("#rcgraph").on("click", function() {
+            if (!isAnyItemSelected) {
+                parcoordsCollapse();
+            } 
+         })
+
+        //toggles parallel coordinate graph between collapsed and expanded states
+        function parcoordsCollapse() {
             if (cleanedData.length==0) return; // don't let the user change the size before loading the file
 
             var height = d3.select("#graph").style("height").replace("px", "");
@@ -573,6 +583,9 @@
                         });
 
                     }else{
+
+                        //mirror collapse behavior with radar chart
+                        $("#radarChart").collapse("hide");
                     
                     d3.select("#thumbnails-btm_container")
                         .transition().duration(1000).style("height", cleanHeight + "px");                        
@@ -591,13 +604,16 @@
                     d3.selectAll(".zoomed")
                         .transition().duration(2000).style("height", zoomedHeight + "px");
                     }else{
+
+                        //mirror collapse behavior with radar chart
+                        $("#radarChart").collapse("show");
                     
-                    d3.select("#thumbnails-btm_container")
-                        .transition().duration(1000).style("height", zoomedHeight + "px");                        
+                        d3.select("#thumbnails-btm_container")
+                            .transition().duration(1000).style("height", zoomedHeight + "px");                        
                     }
             }
+        }
 
-        });
 
     </script>
 
