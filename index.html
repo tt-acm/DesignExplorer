@@ -512,6 +512,7 @@
 
         // update layout on select
         function updateLayoutOnDeselect(){
+
             // find height of parallel coordinate
             // to find the height for thumbnail div
             var pcHeight = d3.select("#graph")
@@ -541,23 +542,14 @@
             // unhighlight the radar chart
             rc.unhighlight();
 
+            //show radar chart
+            $("#radarChart").collapse("show");
+        
             isAnyItemSelected = false;
         };
 
-
         // hide/show parallel coordinates
-        d3.select("#pcgraph").on("click", parcoordsCollapse);
-
-        //hide/show radar chart
-        //this adds to the bootstraps collapse functionality
-        d3.select("#rcgraph").on("click", function() {
-            if (!isAnyItemSelected) {
-                parcoordsCollapse();
-            } 
-         })
-
-        //toggles parallel coordinate graph between collapsed and expanded states
-        function parcoordsCollapse() {
+        d3.select("#pcgraph").on("click", function() {
             if (cleanedData.length==0) return; // don't let the user change the size before loading the file
 
             var height = d3.select("#graph").style("height").replace("px", "");
@@ -596,7 +588,8 @@
                 // collapse in
                 d3.select("#graph")
                     .transition("ease out").attr("class", "parcoords collapse in")
-                    .transition().duration(2000)
+                    .transition().duration(350)
+                    //.transition().duration(2000)
                     .style("height", graphHeight + "px");
 
                 // if there is a selecion let it in
@@ -612,7 +605,47 @@
                             .transition().duration(1000).style("height", zoomedHeight + "px");                        
                     }
             }
-        }
+        });
+
+        //hide/show radar chart
+        d3.select("#rcgraph").on("click", function() {
+
+            if (cleanedData.length==0) return; // don't let the user change the size before loading the file
+            
+            var height = d3.select("#radarChart").style("height").replace("px", "");
+
+            if (height > 1) {
+                if (!isAnyItemSelected) {
+                    //collapse parcoords if there is nothing selected
+                    d3.select("#graph")
+                        .attr("class", "parcoords collapse 2s")
+                        .transition().duration(200)
+                        .style("height", "0px");
+
+                    d3.select("#thumbnails-btm_container")
+                        .transition().duration(1000).style("height", cleanHeight + "px");
+                }
+
+                //collapse radar chart
+                $("#radarChart").collapse("hide");
+
+            } else {
+                if (!isAnyItemSelected) {
+                    //expand parcoords
+                    d3.select("#graph")
+                        .transition("ease out").attr("class", "parcoords collapse in")
+                        .transition().duration(350)
+                        //.transition().duration(2000)
+                        .style("height", graphHeight + "px");
+
+                    d3.select("#thumbnails-btm_container")
+                            .transition().duration(1000).style("height", zoomedHeight + "px");
+                }
+                
+                //expand radar chart
+                $("#radarChart").collapse("show");
+            }
+        })
 
 
     </script>
