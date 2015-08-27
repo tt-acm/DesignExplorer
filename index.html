@@ -539,7 +539,6 @@
             disableAllSliders();
 
             // unhighlight the radar chart
-            //updateRadarChart();
             rc.unhighlight();
 
             isAnyItemSelected = false;
@@ -677,11 +676,12 @@
                 .style("fill", "green")
                 .style("font-size", 9);
 
-            rc.highlight(graph.highlighted());
             
-        }
+            if (graph.highlighted().length > 0) {
+                rc.highlight(graph.highlighted());
+            }
 
-        //window.onresize(resizeRadarChart());
+        }
 
         // clean radar chart
         function cleanRadarChart() {
@@ -1144,6 +1144,7 @@
 
             function updateGraph(newData){
                 graph.data(newData).render().interactive().reorderable().autoscale();
+                updateRadarChart();
                 updateLayoutOnDeselect();                        
                 updateImageGrid(newData);
                 updateSlidersTickValues();
@@ -1431,6 +1432,9 @@
                 
                 // update chart
                 graph.highlight([selectedData]);
+
+                //update radar chart
+                rc.highlight([selectedData]);
 
                 // push the image to zoomed area
                 d3.selectAll(".zoomed")
