@@ -1,7 +1,7 @@
 .radar-chart .level {
   stroke: rgb(60,60,60);
   color: rgb(60,60,60);
-  stroke-width: 0.5;
+  stroke-width: 1;
 }
 
 .radar-chart .axis line {

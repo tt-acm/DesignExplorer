@@ -676,11 +676,13 @@
             var pcHeight = d3.select("#graph").style("height").replace("px", "");
             var rcDimension = Math.min(pcHeight, divWidth) - 65;
 
+            radarGrey = "rgb(160,160,160)";
+
             //configure radar chart
             cfg = ({
                 w: rcDimension,
                 h: rcDimension,
-                color: function(d) { return "grey"; },
+                color: function(d) { return radarGrey; },
                 radius: 4,
                 maxValue: 100,
                 extraWidthX: divWidth - rcDimension, 
@@ -720,12 +722,14 @@
 
             RadarChart.draw("#radarChart", selectedDataFormatted, cfg);
 
+            //move lines to back
+            d3.selectAll(".area").moveToBack();
+
             //did not work using CSS
             d3.selectAll(".legend")
                 .style("fill", "green")
                 .style("font-size", 9);
 
-            
             if (graph.highlighted().length > 0) {
                 rc.highlight(graph.highlighted());
             }
@@ -1275,6 +1279,8 @@
                     // separateInputOutputs(e);
                     
                     var data = d3.csv.parse(inputString);
+
+                    //originalDataLength = data.length;
 
                     if (data==null) return; // loading .csv file failed for some reason
 
