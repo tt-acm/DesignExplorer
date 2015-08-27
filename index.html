@@ -1646,8 +1646,9 @@
         function saveToCSV(){
             
             // modified from http://stackoverflow.com/questions/14964035/how-to-export-javascript-array-info-to-csv-on-client-side
-            var data = graph.data();
+            var data = graph.brushed()==false? graph.data(): graph.brushed();
             
+
             var csvContent = "data:attachment/csv;charset=utf-8,";
             
             csvContent += d3.keys(data[0]).join(",") + "\n" //add first row
