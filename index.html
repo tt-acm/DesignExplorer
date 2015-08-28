@@ -1043,6 +1043,10 @@
             // add change event to resort images
             select.on("change", function(d) {
                 sortBy = d3.select(this).property("value");
+                
+                // update the value in other dropdown menu
+                d3.selectAll("select option").filter(function(d){return d == sortBy;}).attr("selected", "true");
+
                 updateImageGrid(graph.brushed());
             })
 
@@ -1062,8 +1066,7 @@
             sortingBtn.on("click", function(){
                 ascending = !ascending;
                 
-                d3.select(this)
-                    .select("span")
+                sortingBtn.selectAll("span")
                         .attr("class", function(){ return ascending? "glyphicon glyphicon-circle-arrow-up":"glyphicon glyphicon-circle-arrow-down"})
                 
                 updateImageGrid(graph.brushed());
