@@ -1,4 +1,5 @@
 //some changes taken from: http://bl.ocks.org/nbremer/6506614
+
 //wraps text to a new line if longer than width
 //source: http://bl.ocks.org/mbostock/7555321
 function wrap(text, width) {
@@ -48,14 +49,12 @@ var RadarChart = {
     translateY: 0,
     extraWidthX: 0,
     extraWidthY: 0,
-    backgroundTooltipColor: "#555",
-    backgroundTooltipOpacity: "0.7",
-    tooltipColor: "white",
     axisJoin: function(d, i) {
       return d.className || i;
     },
     transitionDuration: 300
   },
+
   chart: function() {
     // default config
     var cfg = Object.create(RadarChart.defaultConfig);
@@ -84,14 +83,16 @@ var RadarChart = {
 
         container.classed(cfg.containerClass, 1);
 
-        function getPosition(i, range, factor, func){
+        function getPosition(i, range, factor, func) {
           factor = typeof factor !== 'undefined' ? factor : 1;
           return range * (1 - factor * func(i * cfg.radians / total));
         }
-        function getHorizontalPosition(i, range, factor){
+
+        function getHorizontalPosition(i, range, factor) {
           return getPosition(i, range, factor, Math.sin);
         }
-        function getVerticalPosition(i, range, factor){
+
+        function getVerticalPosition(i, range, factor) {
           return getPosition(i, range, factor, Math.cos);
         }
 
@@ -186,25 +187,26 @@ var RadarChart = {
           }
 
           if(cfg.axisText) {
-            axis.select('text')
-              .attr('class', function(d, i){
-                var p = getHorizontalPosition(i, 0.5);
-                var v = getVerticalPosition(i, 0.5);
 
-                return 'legend ' +
-                  ((p < 0.4) ? 'left ' : ((p > 0.6) ? 'right ' : 'middle ')) +
-                  ((v < 0.4) ? 'top' : ((v > 0.6) ? 'bottom' : 'middle'));
-              })
-              .attr('dy', function(d, i) {
-                var p = getVerticalPosition(i, 0.5);
-                return ((p < 0.1) ? '1em' : ((p > 0.9) ? '0' : '0.5em'));
-              })
-              .text(function(d) { return d.name; })
-              .attr('x', function(d, i){ return d.xOffset+ (cfg.w/2-radius2)+getHorizontalPosition(i, radius2, cfg.factorLegend); })
-              .attr('y', function(d, i){ return d.yOffset+ (cfg.h/2-radius2)+getVerticalPosition(i, radius2, cfg.factorLegend); });
-
-            //adjust labels based on their bounding boxes and the available space if there are four output values
+            //adjust labels based on their bounding boxes and the available space if there are four output values 
             if (allAxis.length == 4) {
+              axis.select('text')
+                .attr('class', function(d, i){
+                  var p = getHorizontalPosition(i, 0.5);
+                  var v = getVerticalPosition(i, 0.5);
+
+                  return 'legend ' +
+                    ((p < 0.4) ? 'left ' : ((p > 0.6) ? 'right ' : 'middle ')) +
+                    ((v < 0.4) ? 'top' : ((v > 0.6) ? 'bottom' : 'middle'));
+                })
+                .attr('dy', function(d, i) {
+                  var p = getVerticalPosition(i, 0.5);
+                  return ((p < 0.1) ? '1em' : ((p > 0.9) ? '0' : '0.5em'));
+                })
+                .text(function(d) { return d.name; })
+                .attr('x', function(d, i){ return d.xOffset+ (cfg.w/2-radius2)+getHorizontalPosition(i, radius2, cfg.factorLegend); })
+                .attr('y', function(d, i){ return d.yOffset+ (cfg.h/2-radius2)+getVerticalPosition(i, radius2, cfg.factorLegend); });
+
               d3.select("#radarChart").selectAll(".legend").filter(".left").call(wrap, cfg.extraWidthX / 2);
               d3.select("#radarChart").selectAll(".legend").filter(".right").call(wrap, cfg.extraWidthX / 2);
               d3.select("#radarChart").selectAll(".legend").filter(".top").call(wrap, 50);
@@ -259,8 +261,24 @@ var RadarChart = {
               var yDiffRight = (bboxRight.y + (bboxRight.height / 2)) - ((cfg.h/2-radius2)+getVerticalPosition(3, radius2, cfg.factor));
               d3.select("#radarChart").selectAll(".legend").filter(".right")
                 .attr("transform", "translate(" + (paddingRight - xDiffRight) + "," + (-yDiffRight) + ")");
+            } else {
+                axis.select("text")
+                  .attr("class", "legend")
+                  .text(function(d){ return d.name; })
+                  .attr("text-anchor", "middle")
+                  .attr("dy", "1.5em")
+                  .attr("transform", function(d, i){return "translate(0, -10)"})
+                  .attr("x", function(d, i){ return (cfg.w/2-radius2)+getHorizontalPosition(i, radius2, cfg.factor); })
+                  .attr("y", function(d, i){ return (cfg.h/2-radius2)+getVerticalPosition(i, radius2, cfg.factor); })
+                  .each(function(d, i) {
+                    var wrappedText = d3.select(this).call(wrap, 45); //change this
+                    var bbox = wrappedText.node().getBBox();
+                    var yTarget = (cfg.h/2-radius2)+getVerticalPosition(i, radius2, cfg.factor);
+                    wrappedText.attr("transform", "translate(" + ((bbox.width / 2) * Math.cos((i+1)*cfg.radians/total)) + "," + 
+                      (-(bbox.height / 2) * (Math.sin(i+1)*cfg.radians/total)) + ")");
+                  })
+                }
             }
-          }
         }
 
         // content
@@ -270,6 +288,7 @@ var RadarChart = {
             axis.y = (cfg.h/2-radius2)+getVerticalPosition(i, radius2, (parseFloat(Math.max(axis.value, 0))/maxValue)*cfg.factor);
           });
         });
+
         var polygon = container.selectAll(".area").data(data, cfg.axisJoin);
 
         polygon.enter().append('polygon')
@@ -376,8 +395,7 @@ var RadarChart = {
       }
       if(arguments.length > 1) {
         cfg[arguments[0]] = arguments[1];
-      }
-      else {
+      } else {
         d3.entries(value || {}).forEach(function(option) {
           cfg[option.key] = option.value;
         });
@@ -407,6 +425,7 @@ var RadarChart = {
 
     //unhighlight the radar chart
     radar.unhighlight = function() {
+
       //back to normal
       d3.selectAll(".area")
         .style("stroke", radarGrey)
@@ -414,10 +433,12 @@ var RadarChart = {
 
       //move all level lines to back
       d3.selectAll(".area").moveToBack();
+
     }
 
     //shows only polygons bound to data
     radar.updateData = function(data) {
+
       d3.selectAll(".area").attr("visibility", "hidden");
 
       data.forEach(function(d) {
@@ -427,6 +448,7 @@ var RadarChart = {
       graph.highlighted().forEach(function(d) {
         d3.selectAll("#" + getID(d)).attr("visibility", "shown");
       })
+
     }
 
     return radar;
@@ -447,6 +469,7 @@ var RadarChart = {
       .datum(d)
       .call(rc);
   }
+
 };
 
 //remove white space from a string
