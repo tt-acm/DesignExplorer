@@ -920,7 +920,8 @@
                     .render()
                     .brushMode("1D-axes")  // enable brushing
                     .interactive()
-                    .reorderable();
+                    .reorderable()
+                    .scale("Rating", [0,5]).updateAxes(); // set initial domain for rating
             
             // modify labels
             var inputLabelColor = "tomato",
@@ -1239,7 +1240,9 @@
 
                     // get active dimensios to update parallel coordinate charts
                     var activeDimensions = dimensions.filter(function(d){return (d.enabled) ? 1 : 0}).map(function(d){return d.name});
-                    graph.dimensions(activeDimensions).autoscale();
+                    
+                    graph.dimensions(activeDimensions);
+
                     if(graph.highlighted().length!=0) graph.highlight(graph.highlighted());
                 });
 
@@ -1683,7 +1686,7 @@
 
             // this method is not really optimized. I couldn't find a solution just to change
             // extent of dimensions for just rating axis            
-            graph.data(graph.data()).render().interactive().reorderable().autoscale();
+            graph.data(graph.data()).render().interactive().reorderable();
 
             // highlight selected option
             graph.highlight(graph.highlighted());
