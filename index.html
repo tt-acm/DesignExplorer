@@ -399,7 +399,6 @@
         // A dictionary to carry users input to customize the interface
         var inputParameters = { "min": false}; // currently only a single item, other options to be added later
 
-        
         // get url parameters
         // current valid key is on "min" for minimum interface
         function parseUri(){
@@ -561,6 +560,11 @@
                     .transition().duration(200)
                     .style("height", "0px");
 
+                //disable buttons
+                d3.select("#reset").classed("disabled", true);
+                d3.select("#remove").classed("disabled", true);
+                d3.select("#keep").classed("disabled", true);
+
 
                 if (graph.highlight().length!=0){
                     
@@ -592,6 +596,11 @@
                     //.transition().duration(2000)
                     .style("height", graphHeight + "px");
 
+                //enable buttons
+                d3.select("#reset").classed("disabled", false);
+                d3.select("#remove").classed("disabled", false);
+                d3.select("#keep").classed("disabled", false);
+
                 // if there is a selecion let it in
                 if (graph.highlight().length!=0){
                     d3.selectAll(".zoomed")
@@ -622,6 +631,11 @@
                         .transition().duration(200)
                         .style("height", "0px");
 
+                    //disable buttons
+                    d3.select("#reset").classed("disabled", true);
+                    d3.select("#remove").classed("disabled", true);
+                    d3.select("#keep").classed("disabled", true);
+
                     d3.select("#thumbnails-btm_container")
                         .transition().duration(1000).style("height", cleanHeight + "px");
                 }
@@ -638,6 +652,11 @@
                         //.transition().duration(2000)
                         .style("height", graphHeight + "px");
 
+                    //enable buttons
+                    d3.select("#reset").classed("disabled", false);
+                    d3.select("#remove").classed("disabled", false);
+                    d3.select("#keep").classed("disabled", false);
+
                     d3.select("#thumbnails-btm_container")
                             .transition().duration(1000).style("height", zoomedHeight + "px");
                 }
@@ -653,16 +672,11 @@
     <!-- radar chart -->
     <script type="text/javascript">
 
-        // update radar chart - populates radar chart with highlighted data
+        // update radar chart
         function updateRadarChart(){
             //format data for radar chart
             var outputKeys = d3.keys(outputData[0]);
-            
-            if (graph.brushed().length > 0) {
-                var selectedData = graph.brushed();
-            } else {
-                var selectedData = graph.data();
-            }  
+            var selectedData = graph.data();
             selectedDataFormatted = [];
 
             selectedData.forEach(function(d) {
@@ -670,7 +684,7 @@
             })
 
             //get height, width for radar chart
-            //we want the graph to be centered above the thumbnails, if possible
+            //we want the graph to be centered above the thumbnails
             //65px is to fit text
             var divWidth = d3.select("#thumbnails-side").style("width").replace("px", "");
             var pcHeight = d3.select("#graph").style("height").replace("px", "");
@@ -704,7 +718,6 @@
         }
 
         //resize radar chart
-        //return to this
         function resizeRadarChart() {
             
             var divWidth = d3.select("#thumbnails-side").style("width").replace("px", "");
@@ -719,6 +732,7 @@
             cfg.h = rcDimension;
             cfg.extraWidthX = divWidth - rcDimension;
             cfg.translateX = (divWidth - rcDimension) / 2;
+            cfg.transitionDuration = 0;
 
             RadarChart.draw("#radarChart", selectedDataFormatted, cfg);
 

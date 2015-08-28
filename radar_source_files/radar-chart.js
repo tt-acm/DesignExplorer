@@ -295,10 +295,10 @@ var RadarChart = {
           .classed({area: 1, 'd3-enter': 1});
 
         polygon.exit()
-          .classed('d3-exit', 1) // trigger css transition
-          .transition().duration(cfg.transitionDuration)
+          //.classed('d3-exit', 1) // trigger css transition
+          //.transition().duration(cfg.transitionDuration)
             .remove();
-
+        
         polygon
           .attr("id", function(d) { return d.className; })
           .each(function(d, i) {

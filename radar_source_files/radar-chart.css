@@ -39,6 +39,7 @@
 /* area transition when hovering */
 .radar-chart .area {
   stroke-width: 1;
+  stroke-opacity: 1;
   fill-opacity: 0;
 }
 
@@ -51,6 +52,8 @@
   transition: opacity 300ms, fill-opacity 200ms;
   opacity: 1;
 }
+
 .radar-chart .d3-enter, .radar-chart .d3-exit {
-  opacity: 0;
+  /*opacity: 0;*/
+  opacity: 1;
 }
