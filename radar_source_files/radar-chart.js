@@ -195,7 +195,7 @@ var RadarChart = {
                   var p = getHorizontalPosition(i, 0.5);
                   var v = getVerticalPosition(i, 0.5);
 
-                  return 'legend ' +
+                  return 'rclegend ' +
                     ((p < 0.4) ? 'left ' : ((p > 0.6) ? 'right ' : 'middle ')) +
                     ((v < 0.4) ? 'top' : ((v > 0.6) ? 'bottom' : 'middle'));
                 })
@@ -207,16 +207,16 @@ var RadarChart = {
                 .attr('x', function(d, i){ return d.xOffset+ (cfg.w/2-radius2)+getHorizontalPosition(i, radius2, cfg.factorLegend); })
                 .attr('y', function(d, i){ return d.yOffset+ (cfg.h/2-radius2)+getVerticalPosition(i, radius2, cfg.factorLegend); });
 
-              d3.select("#radarChart").selectAll(".legend").filter(".left").call(wrap, cfg.extraWidthX / 2);
-              d3.select("#radarChart").selectAll(".legend").filter(".right").call(wrap, cfg.extraWidthX / 2);
-              d3.select("#radarChart").selectAll(".legend").filter(".top").call(wrap, 50);
-              d3.select("#radarChart").selectAll(".legend").filter(".bottom").call(wrap, 50);
+              d3.select("#radarChart").selectAll(".rclegend").filter(".left").call(wrap, cfg.extraWidthX / 2);
+              d3.select("#radarChart").selectAll(".rclegend").filter(".right").call(wrap, cfg.extraWidthX / 2);
+              d3.select("#radarChart").selectAll(".rclegend").filter(".top").call(wrap, 50);
+              d3.select("#radarChart").selectAll(".rclegend").filter(".bottom").call(wrap, 50);
 
               //use get bounding box for each text group
-              var bboxTop = d3.select("#radarChart").selectAll(".legend").filter(".top").node().getBBox();
-              var bboxLeft = d3.select("#radarChart").selectAll(".legend").filter(".left").node().getBBox();
-              var bboxBottom = d3.select("#radarChart").selectAll(".legend").filter(".bottom").node().getBBox();
-              var bboxRight = d3.select("#radarChart").selectAll(".legend").filter(".right").node().getBBox();
+              var bboxTop = d3.select("#radarChart").selectAll(".rclegend").filter(".top").node().getBBox();
+              var bboxLeft = d3.select("#radarChart").selectAll(".rclegend").filter(".left").node().getBBox();
+              var bboxBottom = d3.select("#radarChart").selectAll(".rclegend").filter(".bottom").node().getBBox();
+              var bboxRight = d3.select("#radarChart").selectAll(".rclegend").filter(".right").node().getBBox();
               var bboxContainer = d3.select(".radar-chart").node().getBBox();
 
               //transform each off of axis: padding of 3px, center the left and right labels
@@ -245,25 +245,25 @@ var RadarChart = {
               }
 
               var yDiffTop = (cfg.w/2-radius2)+getVerticalPosition(0, radius2, cfg.factor) - (bboxTop.y + bboxTop.height)
-              d3.select("#radarChart").selectAll(".legend").filter(".top")
+              d3.select("#radarChart").selectAll(".rclegend").filter(".top")
                 .attr("transform", "translate(0," + (yDiffTop - paddingTop) + ")");
             
               var yDiffBottom = bboxBottom.y - ((cfg.h/2-radius2)+getVerticalPosition(2, radius2, cfg.factor));
-              d3.select("#radarChart").selectAll(".legend").filter(".bottom")
+              d3.select("#radarChart").selectAll(".rclegend").filter(".bottom")
                 .attr("transform", "translate(0," + (paddingBottom - yDiffBottom) + ")");
             
               var xDiffLeft = ((cfg.w/2-radius2)+getHorizontalPosition(1, radius2, cfg.factor)) - (bboxLeft.x + bboxLeft.width);
               var yDiffLeft = (bboxLeft.y + (bboxLeft.height / 2)) - ((cfg.h/2-radius2)+getVerticalPosition(1, radius2, cfg.factor));
-              d3.select("#radarChart").selectAll(".legend").filter(".left")
+              d3.select("#radarChart").selectAll(".rclegend").filter(".left")
                 .attr("transform", "translate(" + (xDiffLeft - paddingLeft) + "," + (-yDiffLeft) + ")");
               
               var xDiffRight = bboxRight.x - ((cfg.w/2-radius2)+getHorizontalPosition(3, radius2, cfg.factor));
               var yDiffRight = (bboxRight.y + (bboxRight.height / 2)) - ((cfg.h/2-radius2)+getVerticalPosition(3, radius2, cfg.factor));
-              d3.select("#radarChart").selectAll(".legend").filter(".right")
+              d3.select("#radarChart").selectAll(".rclegend").filter(".right")
                 .attr("transform", "translate(" + (paddingRight - xDiffRight) + "," + (-yDiffRight) + ")");
             } else {
                 axis.select("text")
-                  .attr("class", "legend")
+                  .attr("class", "rclegend")
                   .text(function(d){ return d.name; })
                   .attr("text-anchor", "middle")
                   .attr("dy", "1.5em")
@@ -295,8 +295,8 @@ var RadarChart = {
           .classed({area: 1, 'd3-enter': 1});
 
         polygon.exit()
-          //.classed('d3-exit', 1) // trigger css transition
-          //.transition().duration(cfg.transitionDuration)
+          .classed('d3-exit', 1) // trigger css transition
+          .transition().duration(cfg.transitionDuration)
             .remove();
         
         polygon

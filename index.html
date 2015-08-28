@@ -543,7 +543,7 @@
 
             //show radar chart
             $("#radarChart").collapse("show");
-        
+
             isAnyItemSelected = false;
         };
 
@@ -676,7 +676,12 @@
         function updateRadarChart(){
             //format data for radar chart
             var outputKeys = d3.keys(outputData[0]);
-            var selectedData = graph.data();
+            if (graph.brushed().length > 0) {
+                var selectedData = graph.brushed();
+            } else {
+               var selectedData = graph.data();
+            }
+            //var selectedData = graph.brushed();
             selectedDataFormatted = [];
 
             selectedData.forEach(function(d) {
@@ -712,7 +717,7 @@
             d3.selectAll(".area").moveToBack();
 
             //did not work using CSS
-            d3.selectAll(".legend")
+            d3.selectAll(".rclegend")
                 .style("fill", "green")
                 .style("font-size", 9);
         }
@@ -740,9 +745,14 @@
             d3.selectAll(".area").moveToBack();
 
             //did not work using CSS
-            d3.selectAll(".legend")
+            d3.selectAll(".rclegend")
                 .style("fill", "green")
                 .style("font-size", 9);
+
+            if (graph.brushed().length > 0) {
+               rc.updateData(graph.brushed()); 
+           }
+            
 
             if (graph.highlighted().length > 0) {
                 rc.highlight(graph.highlighted());
@@ -814,7 +824,7 @@
             });
         
         // add rating of 0 to all the options if not already there
-        if (keys.indexOf("Rating")==-1){
+        if (keys.indexOf("Rating")==-1) {
 
             cleanedData.forEach(function(d){
                 d.Rating = 0;
@@ -956,7 +966,6 @@
                 .style("stroke", function(d,i){ return colorset[i];});
         };
         
-
         function updateLabels(){
             d3.selectAll("text.label")
                 // move every other label up
@@ -1164,6 +1173,7 @@
             });
 
              graph.on("brushend", function(d){
+
                 // if nothing is highlighted return                                
                 if (graph.highlight().length==0) return;
 

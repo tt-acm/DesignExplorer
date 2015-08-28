@@ -9,20 +9,20 @@
   stroke-width: 1;
   shape-rendering: crispEdges;
 }
-.radar-chart .axis .legend {
+.radar-chart .axis .rclegend {
   font-family: sans-serif;
   font-size: 10px;
 }
-.radar-chart .axis .legend.top {
+.radar-chart .axis .rclegend.top {
   dy:1em;
 }
-.radar-chart .axis .legend.left {
+.radar-chart .axis .rclegend.left {
   text-anchor: end;
 }
-.radar-chart .axis .legend.middle {
+.radar-chart .axis .rclegend.middle {
   text-anchor: middle;
 }
-.radar-chart .axis .legend.right {
+.radar-chart .axis .rclegend.right {
   text-anchor: start;
 }
 
@@ -54,6 +54,5 @@
 }
 
 .radar-chart .d3-enter, .radar-chart .d3-exit {
-  /*opacity: 0;*/
   opacity: 1;
 }
