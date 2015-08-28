@@ -1047,7 +1047,7 @@
                 // update the value in other dropdown menu
                 d3.selectAll("select option").filter(function(d){return d == sortBy;}).attr("selected", "true");
 
-                updateImageGrid(graph.brushed());
+                updateImageGrid(graph.brushed(), false);
             })
 
             // add option to reverse sorting order
@@ -1069,7 +1069,7 @@
                 sortingBtn.selectAll("span")
                         .attr("class", function(){ return ascending? "glyphicon glyphicon-circle-arrow-up":"glyphicon glyphicon-circle-arrow-down"})
                 
-                updateImageGrid(graph.brushed());
+                updateImageGrid(graph.brushed(), false);
             });
         }
 
@@ -1093,7 +1093,7 @@
             //return title.join(" &#013; "); //I tried to add them for each line but it didn't work
         }
 
-        function updateImageGrid(data){
+        function updateImageGrid(data, resizeImageDiv){
             
             // this is based on bootstraps 12 column grid
             // we can replace it with a fancier version later
@@ -1117,12 +1117,14 @@
             // I think eventually I will change this to a filter function
             d3.select("#thumbnails-btm").selectAll("div").remove();
             d3.select("#thumbnails-side").selectAll("div").remove();
-            
+                        
             var pcHeight = d3.select("#graph")
                 .style("height").replace("px", "");
 
-            d3.select("#thumbnails-btm_container")
-                .style("height", (cleanHeight - pcHeight) + "px");
+            if (resizeImageDiv){
+                d3.select("#thumbnails-btm_container")
+                    .style("height", (cleanHeight - pcHeight) + "px");
+            }
 
             // attach images
             d3.select("#thumbnails-btm")
@@ -1171,7 +1173,7 @@
             // brushing events for parallel coordinates graph
             graph.on("brush", function(d) {
                 rc.updateData(graph.brushed());
-                updateImageGrid(d);
+                updateImageGrid(d, false);
                 
             });
 
@@ -1227,7 +1229,7 @@
                 graph.data(newData).render().interactive().reorderable().autoscale();
                 updateRadarChart();
                 updateLayoutOnDeselect();                        
-                updateImageGrid(newData);
+                updateImageGrid(newData, false);
                 updateSlidersTickValues();
             }
             
@@ -1339,7 +1341,7 @@
                     addSortDropdowns();
 
                     // add thumbnails
-                    updateImageGrid(graph.data());
+                    updateImageGrid(graph.data(), true); // true will set the size of btm div
 
                     // add place holder image to zoomed area
                     addPlaceHolderImage();
