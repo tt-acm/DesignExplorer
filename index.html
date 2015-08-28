@@ -1225,13 +1225,13 @@
                     var enabled = true;
                     
 
-                    if (rect.attr('class') === 'disabled')
+                    if (rect.attr('class') === 'legend disabled')
                         {
-                            rect.attr('class', '');
+                            rect.attr('class', 'legend');
                         }
                     else
                         {
-                            rect.attr('class', 'disabled');
+                            rect.attr('class', 'legend disabled');
                             enabled = false;
                         }
 
@@ -1254,7 +1254,7 @@
                     
                     if (d.name=="Rating"){
                         d.enabled = false;
-                        return 'disabled';
+                        return 'legend disabled';
                     }
                 });
             
@@ -1675,12 +1675,33 @@
     </script>
 
     <script type="text/javascript">
-        // Rating system           
+        // Rating system
+        var firstRating = true;
+
         // submit the value on change
         $('.star').rating({
             callback: function(value, link){
             // 'value' is the value selected
-            //alert("This design option is rated " + value);            
+            if (firstRating==true){
+                
+                //turn on rating rectangle
+                d3.selectAll("rect.legend")
+                    .attr("class", function(d){ 
+                        
+                        if (d.name=="Rating"){
+                            d.enabled = true;
+                            return 'legend';
+                        }
+                    });
+
+                // add Rating to dimensions
+                graph.dimensions(graph.dimensions().concat("Rating"));
+
+                firstRating = false;
+            }
+
+            // check if this is the first rating
+
             // update rating value
             graph.highlighted()[0].Rating = value;
 
