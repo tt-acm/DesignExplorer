@@ -624,6 +624,7 @@
             var height = d3.select("#radarChart").style("height").replace("px", "");
 
             if (height > 1) {
+                
                 if (!isAnyItemSelected) {
                     //collapse parcoords if there is nothing selected
                     d3.select("#graph")
@@ -642,6 +643,11 @@
 
                 //collapse radar chart
                 $("#radarChart").collapse("hide");
+
+                // set height for thumbnails-side_container
+                d3.select("#thumbnails-side_container")
+                    .transition().duration(1500)
+                    .style("height", cleanHeight + "px");
 
             } else {
                 if (!isAnyItemSelected) {
@@ -663,6 +669,18 @@
                 
                 //expand radar chart
                 $("#radarChart").collapse("show");
+
+                // not the best practice - I should get it to work in a cleaner way
+                setTimeout( function(){
+
+                    var rcheight = d3.select("#radarChart").style("height").replace("px", "");
+                
+                    // set height for thumbnails-side_container
+                    d3.select("#thumbnails-side_container")
+                        .transition().duration(1000)
+                        .style("height", (cleanHeight - rcheight)  + "px");
+                    }, 500);
+
             }
         })
 
