@@ -957,6 +957,11 @@
             zoomedHeight = cleanHeight - graphHeight,
             opacity = .7;
 
+
+        var color = d3.scale.linear()
+                .range(["#3182bd", "#f33"]);
+
+
         function drawParallelCoordinates(){
             // set the height for graph div - this is critical otherwise
             // parallel coordinates graph will be drawn by height of 0px
@@ -969,7 +974,7 @@
             graph = d3.parcoords()('#graph')
                 .data(cleanedData)
                     .margin({ top: 50, left: 20, bottom: 10, right: 20 })
-                    .alpha(0.6)
+                    .alpha(0.3)
                     .mode("queue")
                     .rate(5)
                     .color("grey")
@@ -1010,13 +1015,42 @@
             //modify axes
             d3.selectAll("path.domain")
                 .style("stroke", function(d,i){ return colorset[i];});
+
+            // set color change
+            // set the initial coloring based on the 3rd column
+            update_colors( graph.dimensions()[0]);
+
+            // click label to activate coloring
+            graph.svg.selectAll(".dimension")
+                .on("click", update_colors);
+                    //.selectAll(".label")
+                    //.style("font-size", "14px"); // change font sizes of selected lable
         };
+        
         
         function updateLabels(){
             d3.selectAll("text.label")
                 // move every other label up
                 .attr("transform", function(d,i){return "translate (0 , -" + (10 + ((i%2) * 15)) + ")"})
         };
+
+
+        // update color and font weight of chart based on axis selection
+        function update_colors(dimension) { 
+            // change the fonts to bold
+            graph.svg.selectAll(".dimension")
+                .style("font-weight", "normal")
+                .filter(function(d) { return d == dimension; })
+                    .style("font-weight", "bold");
+
+            // change color of lines
+            // set domain of color scale
+            var values = graph.data().map(function(d){return parseFloat(d[dimension])}); 
+            color.domain([d3.min(values), d3.max(values)]);
+            
+            // change colors for each line
+            graph.color(function(d){return color([d[dimension]])}).render();
+        };      
 
     </script>
     
@@ -1185,6 +1219,7 @@
                     .attr("src", function(d){return d["img:Image Name"]})
                     .on("click", updateLayoutOnSelect)
                     .attr("title", getTitle);
+                    //.attr("border-color", function(d).return color());
             
             d3.select("#thumbnails-side")
                 .selectAll("div")
