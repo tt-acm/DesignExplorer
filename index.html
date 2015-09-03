@@ -168,10 +168,17 @@
         #thumbnails-side img,
         #thumbnails-btm img {
             width: 100%;
-            margin-top: 2em;
-            border: .2em solid black;
+            margin-top: 1em;
             border-radius: 50%;
             }
+
+        #thumbnails-side img {
+            border: .3em solid;
+        }
+
+        #thumbnails-btm img {
+            border: .5em solid;
+        }
 
         #zoomed img,
         #zoomedArea img {
@@ -729,9 +736,14 @@
             }
             //var selectedData = graph.brushed();
             selectedDataFormatted = [];
+            radarChartColors = [];
 
             selectedData.forEach(function(d) {
                 selectedDataFormatted.push(formatData(d));
+                //debugger;
+
+                radarChartColors.push(color(d[pcIsColoredBy]));
+
             })
 
             //get height, width for radar chart
@@ -747,7 +759,7 @@
             cfg = ({
                 w: rcDimension,
                 h: rcDimension,
-                color: function(d) { return radarGrey; },
+                color: function(){return radarGrey;},
                 radius: 4,
                 maxValue: 100,
                 extraWidthX: divWidth - rcDimension, 
@@ -961,6 +973,8 @@
         var color = d3.scale.linear()
                 .range(["#3182bd", "#f33"]);
 
+        var pcIsColoredBy;
+
 
         function drawParallelCoordinates(){
             // set the height for graph div - this is critical otherwise
@@ -977,7 +991,6 @@
                     .alpha(0.3)
                     .mode("queue")
                     .rate(5)
-                    .color("grey")
                     .render()
                     .brushMode("1D-axes")  // enable brushing
                     .interactive()
@@ -989,7 +1002,7 @@
                 outputLabelColor = "green",
                 inputLabels = d3.keys(inputData[0]),
                 outputLabels = d3.keys(outputData[0])
-                colorset = [];
+                colorset = []; //color set for lables
 
             d3.selectAll("text.label")
                 // move every other label up
@@ -1018,7 +1031,8 @@
 
             // set color change
             // set the initial coloring based on the 3rd column
-            update_colors( graph.dimensions()[0]);
+            pcIsColoredBy = graph.dimensions()[0]; 
+            update_colors(pcIsColoredBy);
 
             // click label to activate coloring
             graph.svg.selectAll(".dimension")
@@ -1037,6 +1051,9 @@
 
         // update color and font weight of chart based on axis selection
         function update_colors(dimension) { 
+
+            pcIsColoredBy = dimension; 
+
             // change the fonts to bold
             graph.svg.selectAll(".dimension")
                 .style("font-weight", "normal")
@@ -1050,6 +1067,11 @@
             
             // change colors for each line
             graph.color(function(d){return color([d[dimension]])}).render();
+
+            // change border color for images
+            d3.selectAll("img#thumbnails-btm").style("border-color", function(d){ return color(d[dimension]);});
+            d3.selectAll("img#thumbnails-side").style("border-color", function(d){ return color(d[dimension]);});
+
         };      
 
     </script>
@@ -1218,8 +1240,8 @@
                     .attr("id", "thumbnails-btm")
                     .attr("src", function(d){return d["img:Image Name"]})
                     .on("click", updateLayoutOnSelect)
-                    .attr("title", getTitle);
-                    //.attr("border-color", function(d).return color());
+                    .attr("title", getTitle)
+                    .style("border-color", function(d){ return color(d[pcIsColoredBy]);});
             
             d3.select("#thumbnails-side")
                 .selectAll("div")
@@ -1231,7 +1253,8 @@
                     .attr("id", "thumbnails-side")
                     .attr("src", function(d){return d["img:Image Name"]})
                     .on("click", updateLayoutOnSelect)
-                    .attr("title", getTitle);
+                    .attr("title", getTitle)
+                    .style("border-color", function(d){ return color(d[pcIsColoredBy]);});
         }
 
 
