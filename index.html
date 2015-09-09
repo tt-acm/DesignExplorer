@@ -163,6 +163,7 @@
             width: 100% !important;
             position: fixed !important;
             z-index: 1001 !important;
+            overflow: auto;
         }
 
         #thumbnails-side img,
@@ -199,6 +200,12 @@
         #thumbnails-btm_container,
         #zoomedArea {
             overflow: hidden;
+        }
+
+        
+        #legend{
+            overflow-y: auto;
+            overflow-x: hidden;  
         }
 
         rect.disabled {
@@ -282,7 +289,7 @@
                 <div id= "sliders-heading" class="sidebar-brand" style="text-align:center">
                     LOAD YOUR DATA!
                 </div>
-                <div class="inputSliders col-xs-12" id="inputSliders">
+                <div class="inputSliders col-xs-11" id="inputSliders">
                     <form class="sliders"> <!-- I will use this form to disable all the sliders together. -->
                     </form>
                 </div>
@@ -1088,7 +1095,7 @@
         function drawLegend(){
 
             // add text
-            d3.select("#legend-heading").text("LEGEND");
+            //d3.select("#legend-heading").text("LEGEND");
 
             // get width and height for legend area
             var legendWidth = d3.select("#legend").style("width").replace("px", "");
@@ -1098,7 +1105,8 @@
             dimensions = graph.dimensions().map(function(d){return {name: d, enabled:true};});
 
             // find size of the square based on the height
-            var legendSquareSize = 16; //Math.max(legendHeight/(graph.dimensions().length + 4), 12);
+            //var legendSquareSize = 16;
+            var legendSquareSize = Math.max(legendHeight/(graph.dimensions().length + 4), 12);
 
             // create one group for each rect and text
             var legend = d3.select("#legend").append("svg")
@@ -1477,7 +1485,7 @@
         function initiateSliders(){
             // this just runs first onload of the page
             // all the sliders should be disabled on load until the user select one of the options
-            d3.select(".sidebar-brand").text("INPUT SLIDERS");
+            //d3.select(".sidebar-brand").text("INPUT SLIDERS");
 
             // insert divs for sliders
             d3.selectAll("#inputSliders")
