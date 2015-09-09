@@ -104,10 +104,10 @@
         }
         
         div {
-            overflow: hidden;
             background-color: white;
         }
         
+
         input {
            display: inline-block;
            font-family: sans-serif;
@@ -189,10 +189,16 @@
             margin-right:auto;
             }
 
-        #thumbnails-side_container,
+        #thumbnails-side,
         #thumbnails-btm {
             overflow: auto;
             height: 100%;
+        }
+
+        
+        #thumbnails-btm_container,
+        #zoomedArea {
+            overflow: hidden;
         }
 
         rect.disabled {
@@ -1263,8 +1269,8 @@
             // just toggle between 2d and 3d
             d3.select("#zoomed")
             .style("height", zoomedHeight)
-            .append("img")
-            .attr("src", "https://raw.githubusercontent.com/tt-acm/DesignExplorer/gh-pages/design_explorer_data/img/placeholder/placeholder.png?token=ACx89Xl7jGRusi88wWHKH97INGjRifH5ks5Vy6YGwA%3D%3D");
+            .append("img");
+            //.attr("src", "https://raw.githubusercontent.com/tt-acm/DesignExplorer/gh-pages/design_explorer_data/img/placeholder/placeholder.png?token=ACx89Xl7jGRusi88wWHKH97INGjRifH5ks5Vy6YGwA%3D%3D");
         }
 
     </script>
