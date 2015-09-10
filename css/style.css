@@ -1,0 +1,17 @@
+/*custom cs*/
+.btn{
+    margin: 5px;
+}
+
+#welcome{
+    background-color: rgba(0, 0, 0, 0.30);
+}
+
+#welcomeContainer{
+    background-color: #ffffff;
+    opacity: 1;
+    z-index: 1000;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
