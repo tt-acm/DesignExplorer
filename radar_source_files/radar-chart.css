@@ -5,7 +5,7 @@
 }
 
 .radar-chart .axis line {
-  stroke: green;
+  stroke: steelblue;
   stroke-width: 1;
   shape-rendering: crispEdges;
 }

@@ -794,7 +794,7 @@
 
             //did not work using CSS
             d3.selectAll(".rclegend")
-                .style("fill", "green")
+                .style("fill", "steelblue")
                 .style("font-size", 9);
         }
 
@@ -822,7 +822,7 @@
 
             //did not work using CSS
             d3.selectAll(".rclegend")
-                .style("fill", "green")
+                .style("fill", "steelblue")
                 .style("font-size", 9);
 
             if (graph.brushed().length > 0) {
@@ -1016,8 +1016,8 @@
                     .scale("Rating", [0,5]).updateAxes(); // set initial domain for rating
             
             // modify labels
-            var inputLabelColor = "tomato",
-                outputLabelColor = "green",
+            var inputLabelColor = "black",
+                outputLabelColor = "steelblue",
                 inputLabels = d3.keys(inputData[0]),
                 outputLabels = d3.keys(outputData[0])
                 colorset = []; //color set for lables
