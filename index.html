@@ -239,8 +239,8 @@
                 <span class="icon-bar"></span>
             </button>
 
-            <div class="navbar-header" title="Click to edit project name.">
-                <p class="navbar-brand" contenteditable="true">DESIGN EXPLORER</p>
+            <div class="navbar-header" title="Design Explorer">
+                <img style="max-width:350px; padding-top: 10px;" src="./img/DesignExplorerLogo3.png">
             </div>           
         </div>
 
@@ -259,18 +259,9 @@
                             <button id="reset" class="btn btn-default">Reset Selection</button>
                             <button id="remove" class="btn btn-default">Exclude Selection</button>
                             <button id="keep" class="btn btn-default">Zoom to Selection</button>
+                            <button id="savecsv" class="btn btn-default btn-sm" onclick = saveToCSV()>Save Selection to File</button>
+                            <button id="info" class="btn btn-default btn-sm">Info</button>
                     </div>
-                </li>
-                <li>
-                    <p class="navbar-text">
-                        <button id="savecsv" class="btn btn-default btn-sm" onclick = saveToCSV()>Save Selection to File</button>
-                    </p>
-                </li>
-                <li>
-                    <a class="navbar-brand" href="http://core.thorntontomasetti.com/" title="@CORE Studio">
-                        <img style="max-width:350px;"
-                        src="./img/CORE logo_horizontal.jpg">
-                    </a>
                 </li>
             </ul>
         </div>
@@ -305,10 +296,8 @@
                 <div class="row">
                     <div class="col-lg-12">
                             <div class="credit">
-                                    Design Explorer &copy; Copyright 2015 CORE studio | Thornton Tomasetti |
-                                    <a href="http://core.thorntontomasetti.com/about" target="_blank"> About</a> | 
-                                    <a href="http://core.thorntontomasetti.com/about/services" target="_blank">Services</a> | 
-                                    <a href="http://core.thorntontomasetti.com/about/contact" target="_blank">Contact</a> |
+                                    &copy; Copyright 2015
+                                    <a href="http://core.thorntontomasetti.com/" target="_blank"> CORE studio</a> | Thornton Tomasetti
                             </div>
                     </div>
                 </div>
@@ -1404,9 +1393,9 @@
 
     </script>
 
-    <!-- import data -->
+    <!-- import data  //  onload functions to close intro window and read input data -->
     <script>
-        // onload functions to close intro window and read input data
+
         window.onload = function() {
 
             //function to close intro window div
