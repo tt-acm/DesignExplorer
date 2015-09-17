@@ -1398,6 +1398,39 @@
     <!-- import data  //  onload functions to close intro window and read input data -->
     <script>
 
+        function loadDataToDesignExplorer(data)
+            {
+            // analyze data and separate them as input/output and general data
+            analyzeInputData(data);
+
+            // get sliders information based on input data
+            prepareSlidersInfo();
+
+            // add sliders to the page
+            initiateSliders();
+
+            // draw parallel coordinates graph
+            drawParallelCoordinates();
+
+            //draw radar chart
+            updateRadarChart();
+
+            // draw legend in side bar
+            drawLegend();
+
+            // add sorting divs
+            addSortDropdowns();
+
+            // add thumbnails
+            updateImageGrid(graph.data(), true); // true will set the size of btm div
+
+            // add place holder image to zoomed area
+            addPlaceHolderImage();
+
+            // set up events between graphs
+            setupEvents();
+            }
+
         window.onload = function() {
 
             //function to close intro window div
@@ -1434,40 +1467,7 @@
 
                     //originalDataLength = data.length;
 
-                    if (data==null) return; // loading .csv file failed for some reason
-
-                    // remove welcome div
-                    d3.select("#welcome").remove();
-                    
-                    // analyze data and separate them as input/output and general data
-                    analyzeInputData(data);
-
-                    // get sliders information based on input data
-                    prepareSlidersInfo();
-
-                    // add sliders to the page
-                    initiateSliders();
-
-                    // draw parallel coordinates graph
-                    drawParallelCoordinates();
-
-                    //draw radar chart
-                    updateRadarChart();
-
-                    // draw legend in side bar
-                    drawLegend();
-
-                    // add sorting divs
-                    addSortDropdowns();
-
-                    // add thumbnails
-                    updateImageGrid(graph.data(), true); // true will set the size of btm div
-
-                    // add place holder image to zoomed area
-                    addPlaceHolderImage();
-
-                    // set up events between graphs
-                    setupEvents();
+                    if (data!=null) loadDataToDesignExplorer(data);
                 }
 
 
@@ -1478,6 +1478,12 @@
                 reader.readAsText(file);
             });
 
+        // load default data
+
+        //parse the csv data from the design_explorer_data folder
+        var defaultData = d3.csv.parse("design_explorer_data/AIA building.csv");
+
+        loadDataToDesignExplorer(defaultData);
         }; // end of window.onload
     </script>
 
