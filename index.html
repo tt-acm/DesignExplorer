@@ -1478,12 +1478,12 @@
                 reader.readAsText(file);
             });
 
+
         // load default data
-
         //parse the csv data from the design_explorer_data folder
-        var defaultData = d3.csv.parse("design_explorer_data/AIA building.csv");
+        d3.csv("design_explorer_data/default_onload.csv", loadDataToDesignExplorer);
 
-        loadDataToDesignExplorer(defaultData);
+        //loadDataToDesignExplorer(defaultData);
         }; // end of window.onload
     </script>
 
