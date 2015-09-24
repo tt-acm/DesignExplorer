@@ -37,9 +37,6 @@ function overwriteInitialGlobalValues(){
 		// Let me (github.com/mostaphaRoudsari) know if you know a better solution
 	*/
 
-	//isAnyItemSelected = false;
-    //isToggled = true;
-
 	originalData, //csv as it is imported
     cleanedData = [], //all the columns to be used for parallel coordinates
     inputData = [],  // columns with input values - to be used for sliders

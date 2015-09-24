@@ -269,25 +269,6 @@
                     </p>
 
                 </li>
-                <li>
-                    <div class="btn-group btn-group-sm navbar-text" role="group" aria-label="selection">
-                            <button id="reset" class="btn btn-default">Reset Selection</button>
-                            <button id="remove" class="btn btn-default">Exclude Selection</button>
-                            <button id="keep" class="btn btn-default">Zoom to Selection</button>
-                            <button id="savecsv" class="btn btn-default btn-sm" onclick = saveToCSV()>Save Selection to File</button>
-                            <a href="https://github.com/tt-acm/DesignExplorer/wiki" class="btn btn-default btn-sm" target="_blank">
-                                Info <span class="glyphicon glyphicon-new-window"></span>
-                            </a>
-
-                    </div>
-
-                </li>
-                <li>
-                    <p class="navbar-text" style="padding-top: 8px;">
-                    &copy; Copyright 2015
-                            <a href="http://core.thorntontomasetti.com/" target="_blank"> CORE studio</a> | Thornton Tomasetti
-                    </p>
-                </li>
             </ul>
         </div>
         <!-- /.navbar-collapse -->
@@ -295,7 +276,6 @@
     </nav>
 
     <div id="wrapper" class="toggled">
-           
         <!-- Sidebar -->
         <div id="sidebar-wrapper">
             <ul class="sidebar-nav">
@@ -324,14 +304,21 @@
                             <div class="col-lg-9">
                                 
                                 <div class="row">
-                                  <div class="btn-group col-xs-12">
-                                    <button type="button" class="btn btn-default btn-xs" id="menu-toggle" title="Show sliders">
-                                        <span class="glyphicon glyphicon-triangle-left" aria-hidden="true"></span>
-                                    </button>
-                                    <button type="button" class="btn btn-default btn-xs" id ="pcgraph" data-toggle="collapse">
-                                        <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
-                                    </button>
-                                  </div>
+                                    <div class="btn-group col-xs-12">
+                                        <button type="button" class="btn btn-default btn-xs" id="menu-toggle" title="Show sliders">
+                                            <span class="glyphicon glyphicon-triangle-left" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-default btn-xs" id ="pcgraph" data-toggle="collapse">
+                                            <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+                                        </button>
+                                        <button id="reset" class="btn btn-default btn-xs">Reset Selection</button>
+                                        <button id="remove" class="btn btn-default btn-xs">Exclude Selection</button>
+                                        <button id="keep" class="btn btn-default btn-xs">Zoom to Selection</button>
+                                        <button id="savecsv" class="btn btn-default btn-xs" onclick = saveToCSV()>Save Selection to File</button>
+                                        <a href="https://github.com/tt-acm/DesignExplorer/wiki" class="btn btn-default btn-xs" target="_blank">
+                                            Info <span class="glyphicon glyphicon-new-window"></span>
+                                        </a>
+                                    </div>
                                 </div>
                                 <!-- parallel coordinates -->
                                 <div class="row-fluid">
@@ -381,9 +368,14 @@
                             <div class="col-lg-3">
                                 
                                 <div class="row-fluid">
-                                    <button type="button" class="btn btn-default btn-xs" id="rcgraph" data-toggle="collapse" data-target="#radarChart">
-                                        <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
-                                    </button>
+                                    <div class="btn-group col-xs-12">
+                                        <a href="http://core.thorntontomasetti.com/" class="btn btn-default btn-xs" target="_blank">
+                                            &copy; Copyright 2015 CORE studio | Thornton Tomasetti
+                                        </a>
+                                        <button type="button" class="btn btn-default btn-xs" id="rcgraph" data-toggle="collapse" data-target="#radarChart">
+                                            <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+                                        </button>
+                                    </div>
                                 </div>
                                 
                                 <div class="row">
