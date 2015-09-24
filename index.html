@@ -98,6 +98,9 @@
     <script src='./rating_source_files/jquery.rating.js' type="text/javascript" language="javascript"></script>
     <link href='./rating_source_files/jquery.rating.css' type="text/css" rel="stylesheet"/>
 
+    <!-- Design Explorer Scripts -->
+    <script src='./js/DesignExplorer.js' type="text/javascript" language="javascript"></script>
+
     <style>
         body {
            font-family: sans-serif;
@@ -407,11 +410,7 @@
                             Design Explorer is an open source web interface for exploring multi-dimensional design spaces!
                         </h4>
                         <br><br>
-                        <h3 class="text-center"> To get started import your file</h3>
-                        <br>
-                        <!--<input type="file" id="csv-file" class="btn btn-success btn-lg center-block" name="files"/>-->
-                        <br>
-                        <h3 class="text-center"> or try one of sample design sets </h3>
+                        <h3 class="text-center">Try one of sample design sets</h3>
                         <br>
                                 <button id="sample1" class="btn btn-info btn-lg center-block">Replace with image grid!</button>
                                 <br>
@@ -461,9 +460,6 @@
             // remove the button so sliders are hidden
             d3.selectAll("button#menu-toggle").remove();
         }
-
-
-
     </script>
 
 
@@ -481,13 +477,9 @@
             d3.select("#wrapper")
                 .classed("toggled", isToggled)
                 .transition().duration(500) //length of toggle animation
-                .each("end", function() {
-                    resizeRadarChart();
-                })
+                .each("end", resizeRadarChart())
         });
 
-        // toggel between selected and not selected modes
-        // d3.selectAll(".thumbnail-image").on("click", updateLayout);
         
         // update layout on select
         function updateLayoutOnSelect(){
@@ -743,6 +735,7 @@
             } else {
                var selectedData = graph.data();
             }
+            
             //var selectedData = graph.brushed();
             selectedDataFormatted = [];
             radarChartColors = [];
@@ -791,6 +784,8 @@
 
         //resize radar chart
         function resizeRadarChart() {
+            
+            return;
             
             var divWidth = d3.select("#thumbnails-side").style("width").replace("px", "");
             var pcHeight = d3.select("#graph").style("height").replace("px", "");
@@ -861,18 +856,18 @@
 
                 keys.forEach(function(key, i){
                     
-                    if (key.startsWith("in:")){
+                    if (key.trim().startsWith("in:")){
                     
-                        inputParams[key.replace("in:", "")] = row[key];
-                        cleanedParams[key.replace("in:", "")] = row[key];
+                        inputParams[key.replace("in:", "").trim()] = row[key];
+                        cleanedParams[key.replace("in:", "").trim()] = row[key];
                     
-                    }else if(key.startsWith("out:")){
+                    }else if(key.trim().startsWith("out:")){
                     
-                        outputParams[key.replace("out:", "")] = row[key];
-                        cleanedParams[key.replace("out:", "")] = row[key]; 
+                        outputParams[key.replace("out:", "").trim()] = row[key];
+                        cleanedParams[key.replace("out:", "").trim()] = row[key]; 
                     
                     }else{
-                        cleanedParams[key] = row[key]; // I need to add case for image and 3D here later
+                        cleanedParams[key.trim()] = row[key]; // I need to add case for image and 3D here later
                     }
                 });
 
@@ -997,9 +992,9 @@
             graph = d3.parcoords()('#graph')
                 .data(cleanedData)
                     .margin({ top: 50, left: 20, bottom: 10, right: 20 })
-                    .alpha(0.3)
+                    .alpha(0.2)
                     .mode("queue")
-                    .rate(5)
+                    .rate(20)
                     .render()
                     .brushMode("1D-axes")  // enable brushing
                     .interactive()
@@ -1287,8 +1282,8 @@
             // brushing events for parallel coordinates graph
             graph.on("brush", function(d) {
                 rc.updateData(graph.brushed());
-                updateImageGrid(d, false);
                 
+                updateImageGrid(d, false);
             });
 
              graph.on("brushend", function(d){
@@ -1434,14 +1429,16 @@
         window.onload = function() {
 
             //function to close intro window div
-            document.getElementById('close').onclick = function(){
-                this.parentNode.parentNode.parentNode
-                .removeChild(this.parentNode.parentNode);
-                return false;
+            document.getElementById('close').onclick = function(){               
+                d3.select("#welcome").remove();
             };
 
             var fileInput = document.getElementById('csv-file');
+            
             fileInput.addEventListener('change', function(e) {
+
+                unloadPageContent();
+                overwriteInitialGlobalValues();
                 
                 var file = fileInput.files[0];
                 var reader = new FileReader();
