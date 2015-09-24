@@ -6,6 +6,7 @@ function unloadPageContent(){
 		// Only base HTML objects will remain in the page afterwards
 		// Use this in case you want to load new data to the page
 	*/
+	overwriteInitialGlobalValues();
 
 	d3.select("div.legend").selectAll("*").remove(); // remove legend
 
@@ -36,8 +37,8 @@ function overwriteInitialGlobalValues(){
 		// Let me (github.com/mostaphaRoudsari) know if you know a better solution
 	*/
 
-	isAnyItemSelected = false;
-    isToggled = true;
+	//isAnyItemSelected = false;
+    //isToggled = true;
 
 	originalData, //csv as it is imported
     cleanedData = [], //all the columns to be used for parallel coordinates
@@ -54,4 +55,30 @@ function overwriteInitialGlobalValues(){
     selectedDataFormatted = [];
 
     firstRating = true; // variable for star rating
+
+    //set up heights of divs ro default
+    windowWidth = window.innerWidth,
+    windowHeight = window.innerHeight
+    cleanHeight = windowHeight - 85 - 24 // 2
+    cleanWidth = windowWidth - 100,
+    graphHeight = cleanHeight/3,
+    zoomedHeight = cleanHeight - graphHeight;    
+	
+	pcHeight = d3.select("#graph").style("height").replace("px", "");
+	// hide zoomed area
+    d3.selectAll(".zoomed").transition().duration(1500).style("height", "0px");
+    // show btm thumbnail
+    d3.select("#thumbnails-btm_container").transition().duration(1000).style("height", (cleanHeight - pcHeight) + "px");
+	// hide side thumbnail
+    d3.select("#thumbnails-side_container").transition().duration(1500).style("height", "0px");
+
+
+    // re-set the viewer to 2D
+    currentView = "2D";
+    // set view toggle to 2D
+    d3.select("input#toggleView").property("checked", "true");
+    
+    initit3DViewer = true;
+    d3.select("#zoomed").attr("class", "zoomed");
+    d3.select("#viewer3d").attr("class", "zoomed hidden");
 }
