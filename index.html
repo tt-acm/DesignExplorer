@@ -33,7 +33,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Design Explorer</title>
+    <title>Design Explorer 2</title>
     
     <link rel="shortcut icon" href="favicon.ico">
     <link rel="icon" type="image/png" href="favicon.png">
@@ -100,6 +100,7 @@
 
     <!-- Design Explorer Scripts -->
     <script src='./js/designExplorer.js' type="text/javascript" language="javascript"></script>
+
 
     <style>
         body {
@@ -230,9 +231,28 @@
        }
 
        .sampleImage:hover img{
-        border-color: black;
-        border-width: .2em solid;
+			border-color: black;
+			border-width: .2em solid;
        }
+	   
+	   input#csv-file {
+			opacity: 0;
+			top: 0;
+			right: 0;
+			margin: 0;
+			padding: 0;
+			filter: alpha(opacity=0);
+			position: absolute;
+		}
+
+	   .file-upload{
+	        position: relative;
+			overflow: hidden;
+			height: 2.2em;
+			border-width: 0px;
+			width: 10em;
+			border-radius: 10em;
+	   }
 
     </style>
 
@@ -240,6 +260,67 @@
 
 </head>
 
+<script>
+function MP_getGoogleIDandLoad() {
+	
+    var googleSheetLink= document.getElementById("googleSheetLink").value.split("/");
+    var googleImgFolderLink= document.getElementById("googleImgFolderLink").value.split("/");
+	
+	
+	var googleSheetLinkID = googleSheetLink[5];
+	var googleImgFolderLinkID = googleImgFolderLink[googleImgFolderLink.length-1];
+	if(googleSheetLinkID.length>0 && googleImgFolderLinkID.length>0){
+		
+		document.getElementById("googleSheetLinkID").value= googleSheetLinkID;
+		document.getElementById("googleImgFolderLinkID").value= googleImgFolderLinkID;
+
+		//var userlink = "http://mebd.azurewebsites.net/DesignExplorer/index.html?GSHEET=" + googleSheetLinkID + "&GFOLDER="+googleImgFolderLinkID;
+		
+		
+		var filePath = "https://spreadsheets.google.com/feeds/cells/"+googleSheetLinkID+"/1/public/values?alt=json";
+		// remove the current selection 
+		unloadPageContent();
+		// load the new GoogleSheet
+		d3.json(filePath, cleanAndLoadForDE);
+		getStillLink();
+	}else {alert("You have to put Google Drive Folder information first!");}
+	//alert(googleImgFolderLinkID);
+	
+    
+	}
+
+function getUrlVars() {
+	var vars = {};
+	var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+	vars[key] = value;
+	});
+	return vars;
+}
+
+function getStillLink(){
+	if (document.getElementById("googleSheetLinkID").value.length>0){
+		var msg = "http://mebd.azurewebsites.net/DesignExplorer/?GSHEET="+document.getElementById("googleSheetLinkID").value+"&GFOLDER="+document.getElementById("googleImgFolderLinkID").value;
+		window.prompt("This is the link that you can access next time without inputing Google Drive links!", msg);
+	}else{alert("You have to put Google Drive Folder information first!");}
+}
+
+
+
+	
+function changeLabelSize(size){
+	if(size == "largeLabel"){
+		d3.selectAll(".label")
+		.style("font-size", "95%");
+	}else if(size == "mediumLabel"){
+		d3.selectAll(".label")
+		.style("font-size", "85%");
+	}else if(size == "smallLabel"){
+		d3.selectAll(".label")
+		.style("font-size", "75%");
+	}
+	
+}
+</script>
 <body>
 
     <!-- Navbar -->
@@ -255,7 +336,7 @@
             </button>
 
             <div class="navbar-header" title="Design Explorer">
-                <img style="max-width:350px; padding-top: 10px;" src="./img/DesignExplorerLogo3.png">
+                <img style="max-width:350px; padding-top: 10px;" src="./img/DesignExplorerLogo2.png">
             </div>           
         </div>
 
@@ -264,9 +345,26 @@
             <ul class="nav navbar-nav">
                 <li>
                     <!--button to load csv uncommented-->
-                    <p class="navbar-text">
-                        <input type="file" id="csv-file" class="btn btn-default btn-sm" name="files"/>
+                    
+					<p class="navbar-text">
+                        <input type="text" id="googleSheetLink" class="btn btn-default btn-sm" name="sheet" style="border-radius: 20px 0 0 20px; width: 15em; height: 2.2em;" placeholder = "Google Spreadsheets Link"/>
+					</p>
+					<p class="navbar-text" style="margin-left: -1px;">
+						<input type="text" id="googleImgFolderLink" class="btn btn-default btn-sm" name="imgfolder" style="border-radius: 0; width: 15em; height: 2.2em;"placeholder = "Google Drive Folder Link"/>
+					</p>
+                        <input type="text" id="googleSheetLinkID" class="btn btn-default btn-hd" name="sheet" placeholder = "sheetsID" style="display: none;"/>
+						<input type="text" id="googleImgFolderLinkID" class="btn btn-default btn-hd" name="imgfolder" placeholder = "FolderID" style="display: none;"/>
+					<p class="navbar-text" style="margin-left: -1px;">
+						<button onclick="MP_getGoogleIDandLoad()" class="file-upload" style="border-radius:0 20px 20px 0;">Load Data</button>
                     </p>
+					<p style="float:left; margin: 20px 0 0 15px;"> OR </p>
+					<p class="navbar-text">
+						<button class="file-upload">  
+							<input type="file" id="csv-file" class="btn btn-default btn-sm-upload" name="files" /> Upload CSV
+						</button>
+                    </p>
+					
+					
 
                 </li>
             </ul>
@@ -304,7 +402,7 @@
                             <div class="col-lg-9">
                                 
                                 <div class="row">
-                                    <div class="btn-group col-xs-12">
+                                    <div class="btn-group col-xs-12" style=" width: auto;">
                                         <button type="button" class="btn btn-default btn-xs" id="menu-toggle" title="Show sliders">
                                             <span class="glyphicon glyphicon-triangle-left" aria-hidden="true"></span>
                                         </button>
@@ -315,10 +413,21 @@
                                         <button id="remove" class="btn btn-default btn-xs">Exclude Selection</button>
                                         <button id="keep" class="btn btn-default btn-xs">Zoom to Selection</button>
                                         <button id="savecsv" class="btn btn-default btn-xs" onclick = saveToCSV()>Save Selection to File</button>
+										<button id="stilllink" class="btn btn-default btn-xs" onclick = getStillLink()>My Static Link</button>
+										<a class="btn btn-default btn-xs" href="http://www.mpendesign.com/category/tutorial/" target="_blank">Tutorial</a>
                                         <a href="https://github.com/tt-acm/DesignExplorer/wiki" class="btn btn-default btn-xs" target="_blank">
                                             Info <span class="glyphicon glyphicon-new-window"></span>
                                         </a>
                                     </div>
+									
+									<!-- Change label size -->
+									
+									<div class="btn-group col-xs-12" style=" width: auto;">
+                                        <button id="LL" class="btn btn-default btn-xs" onclick = changeLabelSize("largeLabel")>L</button>
+                                        <button id="MM" class="btn btn-default btn-xs" onclick = changeLabelSize("mediumLabel")>M</button>
+                                        <button id="SS" class="btn btn-default btn-xs" onclick = changeLabelSize("smallLabel")>S</button>
+                                    </div>
+									
                                 </div>
                                 <!-- parallel coordinates -->
                                 <div class="row-fluid">
@@ -408,13 +517,15 @@
                     <button id="close" class="btn btn-default btn-sm pull-right">
                         <span class="glyphicon glyphicon-remove"></span>
                     </button>
-                        <h1 class="text-center"> Welcome to Design Explorer!</h1>
+                        <h1 class="text-center"> Welcome to Design Explorer 2!</h1>
                         <br>
                         <h4 class="text-center">
                             Design Explorer is an open source web interface for exploring multi-dimensional design spaces!
                         </h4>
-                        <br><br>
+                        <br>
+						
                         <h3 class="text-center">Try one of sample design sets</h3>
+						<h5 class="text-center"><a href="http://www.mpendesign.com/category/tutorial/" target="_blank" >Tutorial</a></h5>
                         <br>
                         <div class="row">
                             <div class="col-sm-4">
@@ -430,12 +541,18 @@
                         </div>
                         <div class="col-lg-12">
                             <h2 class="text-center"> Happy Exploring! </h2>
-                            <br><br>
+                            <h5 class="text-center" style="color: #E6E6E6;">This site will be no longer accessable ater the official new version being released.<br>Please visit the original <a href="http://tt-acm.github.io/DesignExplorer/" target="_blank">Design Explorer 1</a> for more information.</h5><br>
                             <h5 class="text-center">
                                 Design Explorer &copy; Copyright 2015 CORE studio | Thornton Tomasetti |
                                 <a href="http://core.thorntontomasetti.com/about" target="_blank"> About</a> |
                                 <a href="http://core.thorntontomasetti.com/about/services" target="_blank">Services</a> |
                                 <a href="http://core.thorntontomasetti.com/about/contact" target="_blank">Contact</a> |
+                            </h5>
+							<h5 class="text-center">
+                                Updated by 
+                                <a href="http://www.mpendesign.com" target="_blank">Mingbo Peng</a> |
+                                <a href="http://www.mebd-penndesign.info/" target="_blank">MEBD</a> |
+                                <a href="https://www.design.upenn.edu/" target="_blank">PennDesign</a> |
                             </h5>
                         </div>
                     </div>
@@ -478,7 +595,7 @@
     <script type="text/javascript">
         
         sampleFiles = {
-                1:"design_explorer_data/LittleRedBox.csv",
+                 1:"design_explorer_data/LittleRedBox.csv",
                 2: "design_explorer_data/default_onload.csv",
                 3: "design_explorer_data/AIA building.csv"
                     }
@@ -543,12 +660,28 @@
                 .style("height", "0px");
 
             // push the image to zoomed area
+			
+			
+			var imgLink;
+			var userInputs = document.getElementById("googleImgFolderLinkID").value;
+			if(userInputs.length >0){
+				//loadImgfrom inputs
+				imgLink = function(d){return "http://www.googledrive.com/host/"+ userInputs + "/"+selectedImage.datum()["img"]};
+			
+			}else{
+			
+				imgLink = selectedImage.datum()["img"];
+		
+			}
+			
+	
             d3.selectAll(".zoomed")
                 .select("img")
                 .data(selectedImage.data())
-                .attr("src", selectedImage.datum()["img"])
+                .attr("src", imgLink)
                 .attr("title", getTitle);           
 
+				
             // highlight the line graph
             graph.highlight(selectedImage.data());
 
@@ -880,12 +1013,13 @@
             currentSliderValues = {}, // collector for values 
             allDataCollector = {},
             slidersMapping = {}, // I collect the data for all the input sliders here so I can use it to remap the sliders later
-            ids = []; // Here I collect all data based on a unique ID from inputs
+            ids = [], // Here I collect all data based on a unique ID from inputs
+			googleFolderLink;
 
 
         function analyzeInputData(originalData){
             var keys = d3.keys(originalData[0]);
-
+			
             originalData.forEach(function(row, rowCount){
                 
                 var inputParams = {},
@@ -893,7 +1027,7 @@
                     cleanedParams = {};
 
                 keys.forEach(function(key, i){
-                    
+				
                     if (key.trim().startsWith("in:")){
                     
                         inputParams[key.replace("in:", "").trim()] = row[key];
@@ -905,6 +1039,7 @@
                         cleanedParams[key.replace("out:", "").trim()] = row[key]; 
                     
                     }else{
+						outputParams[key.trim()] = row[key];
                         cleanedParams[key.trim()] = row[key]; // I need to add case for image and 3D here later
                     }
                 });
@@ -1271,7 +1406,28 @@
                     .style("height", (cleanHeight - pcHeight) + "px");
             }
 
-            // attach images
+            // attach images ---------------------------------------------------------------------------------------------------
+			var imgLink;
+			var userInputs = document.getElementById("googleImgFolderLinkID").value;
+			var isUrlInputs = window.location.href.toUpperCase().search("GFOLDER");
+			if(userInputs.length >0){
+				//loadImgfrom inputs
+				imgLink = function(d){return "http://www.googledrive.com/host/"+ document.getElementById("googleImgFolderLinkID").value + "/"+d["img"]};
+			
+			}else if (isUrlInputs > 0 && userInputs.length <=0){
+			
+				//loadImgfrom GET
+				googleFolderLinkID = getUrlVars()["GFOLDER"];
+				imgLink = function(d){return "http://www.googledrive.com/host/"+ googleFolderLinkID + "/"+d["img"]};
+				
+			}else{
+			
+				imgLink = function(d){return d["img"]};
+		
+			}
+			
+
+			
             d3.select("#thumbnails-btm")
                 //.style("height", "100%") //20px for credit line - 
                 .selectAll("div")
@@ -1281,7 +1437,7 @@
                     .style("cursor", "pointer")
                     .append("img")
                     .attr("id", "thumbnails-btm")
-                    .attr("src", function(d){return d["img"]})
+                    .attr("src", imgLink)
                     .on("click", updateLayoutOnSelect)
                     .attr("title", getTitle)
                     .style("border-color", function(d){ return color(d[pcIsColoredBy]);});
@@ -1294,7 +1450,7 @@
                     .style("cursor", "pointer")
                     .append("img")
                     .attr("id", "thumbnails-side")
-                    .attr("src", function(d){return d["img"]})
+                    .attr("src", imgLink)
                     .on("click", updateLayoutOnSelect)
                     .attr("title", getTitle)
                     .style("border-color", function(d){ return color(d[pcIsColoredBy]);});
@@ -1463,60 +1619,143 @@
             // set up events between graphs
             setupEvents();
             }
+		
+		//load GoogleSheet Json data_ Mingbo Peng Modified-------------------------------------------------------------------- 
+		function cleanAndLoadForDE(data) 
+		{
+			var data = mapEntries(data);
+			loadDataToDesignExplorer(data);
+			//onsole.log(data);
+		}
+		
+		//reMap Json from GoogleSheet_ Mingbo Peng Modified-------------------------------------------------------------------- 
+		function mapEntries(json, realrowlength, skip)
+		{
+		  if (!skip) skip = 1;
+		  var dataframe = new Array();
+		  
+		  var row = new Array();
+		  for (var i=0; i < json.feed.entry.length; i++) {
+			
+			var entry = json.feed.entry[i];
 
-        window.onload = function() {
+				if (entry.gs$cell.col == '1') {
+				  if (row != null) {
+				  
+					if ((!realrowlength || row.length === realrowlength) && (skip  === 0)){
+					   dataframe.push(row);
+					} else {
+					   if (skip > 0) skip--;
+					}
+				  }
+				
+				  var row = new Array();
+				}
+			row.push(entry.content.$t);
+		  } 
+		  
+		  dataframe.push(row);
+		  
+		  //console.log(dataframe[0]);
+		  var headers = dataframe[0];
+		  var obj;
+		  var objs = [];
+		  for (var j = 1; j< dataframe.length; j++){
+		  //console.log("j:"+j);
+			  obj = loopHeaders(headers,dataframe[j]);
+			  //console.log(obj);
+			  objs.push(obj);
+		  }
+		  //console.log(objs);
 
-            //function to close intro window div
-            d3.select("#close")
-                .on("click", function(){d3.select("#welcome").remove();});
-
-            var fileInput = document.getElementById('csv-file');
-            
-            fileInput.addEventListener('change', function(e) {
-
-                unloadPageContent();
-                
-                var file = fileInput.files[0];
-                var reader = new FileReader();
-                
-                var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.csv|.txt)$/;
-                    
-
-            if (regex.test(file.name.toLowerCase())) {
-                
-                // Update project name
-                var inputFileName = file.name.toUpperCase().replace(".CSV","");
-
-                d3.select("p.navbar-brand").text(inputFileName);
-
-                reader.onload = function(e) {
-                
-                    var inputString = e.target.result; 
-
-                    // I need to add some defense here
-                    // separateInputOutputs(e);
-                    
-                    var data = d3.csv.parse(inputString);
-
-                    //originalDataLength = data.length;
-
-                    if (data!=null) loadDataToDesignExplorer(data);
-                }
+		  return objs;
+		}
+		
+		//add heaters Json _ Mingbo Peng Modified------------------------------------------------------------------------------ 
+		function loopHeaders(headers,data)
+		{
+		var obj = {};
+		for (var i =0 ; i< headers.length; i++){
+		
+					obj[headers[i]]= data[i];
+			  }
+		return obj;
+		}
+		
+		
+        window.onload = function() 
+		{
+			if (window.location.href.toUpperCase().search("GSHEET")>0 && window.location.href.toUpperCase().search("GFOLDER")>0){
+                 // this is old user with google drive files.
+				d3.select("#welcome").remove();
+				var googleSheetLinkID = getUrlVars()["GSHEET"];
+				var googleImgFolderLinkID = getUrlVars()["GFOLDER"];
+				
+				document.getElementById("googleSheetLinkID").value= googleSheetLinkID;
+				document.getElementById("googleImgFolderLinkID").value= googleImgFolderLinkID;
+				
+				var filePath = "https://spreadsheets.google.com/feeds/cells/"+googleSheetLinkID+"/1/public/values?alt=json";
+				// remove the current selection 
+				unloadPageContent();
+				// load the new GoogleSheet
+				d3.json(filePath, cleanAndLoadForDE);
 
 
-            }else{
-                    alert("Please upload a valid CSV file!");
-                }
+			}else{
+			
+					//function to close intro window div
+					d3.select("#close")
+						.on("click", function(){d3.select("#welcome").remove();});
 
-                reader.readAsText(file);
-            });
+					var fileInput = document.getElementById('csv-file');
+					
+					fileInput.addEventListener('change', function(e) {
+
+						unloadPageContent();
+						
+						var file = fileInput.files[0];
+						var reader = new FileReader();
+						
+						var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.csv|.txt)$/;
+							
+
+					if (regex.test(file.name.toLowerCase())) {
+						
+						// Update project name
+						var inputFileName = file.name.toUpperCase().replace(".CSV","");
+
+						d3.select("p.navbar-brand").text(inputFileName);
+
+						reader.onload = function(e) {
+						
+							var inputString = e.target.result; 
+
+							// I need to add some defense here
+							// separateInputOutputs(e);
+							
+							var data = d3.csv.parse(inputString);
+
+							//originalDataLength = data.length;
+
+							if (data!=null) loadDataToDesignExplorer(data);
+						}
 
 
-        // load default data
-        //parse the csv data from the design_explorer_data folder
-        d3.csv("design_explorer_data/default_onload.csv", loadDataToDesignExplorer);
+					}else{
+							alert("Please upload a valid CSV file!");
+						}
 
-        //loadDataToDesignExplorer(defaultData);
+						reader.readAsText(file);
+					});
+
+
+				// load default data
+				//parse the csv data from the design_explorer_data folder
+				d3.csv("http://tt-acm.github.io/DesignExplorer/design_explorer_data/default_onload.csv", loadDataToDesignExplorer);
+				//d3.json("https://spreadsheets.google.com/feeds/cells/1vNEiXJoP1xJdGGuByz-6UaV6NURkemltgDgT66TkPGk/1/public/values?alt=json", cleanAndLoadForDE);
+				//loadDataToDesignExplorer(defaultData);
+				
+			}
         }; // end of window.onload
     </script>
 
@@ -1752,6 +1991,7 @@
         function initiate3DViewer(){
         
             var viewerId = "viewer3d";
+			//var jsonFileAddress = function(d){return "http://www.googledrive.com/host/"+ userInputs + "/"+graph.highlighted()[0].threeD};
             var jsonFileAddress = graph.highlighted()[0].threeD;
             
             //load JSON file
