@@ -3486,7 +3486,7 @@ select[multiple].form-group-lg .form-control, textarea.form-group-lg .form-contr
     color: #fff;
     background-color: #31b0d5;
     border-color: #269abc
-}
+} 
 
 .btn-info.active, .btn-info:active, .open > .dropdown-toggle.btn-info {
     background-image: none
@@ -3592,7 +3592,12 @@ select[multiple].form-group-lg .form-control, textarea.form-group-lg .form-contr
     padding: 5px 10px;
     font-size: 12px;
     line-height: 1.5;
-    border-radius: 3px
+    border-radius: 5px;
+
+}
+
+.btn-group-sm > .btn, .btn-hd {
+    display:none;
 }
 
 .btn-group-xs > .btn, .btn-xs {
@@ -4703,7 +4708,7 @@ select[multiple].input-group-sm > .form-control, select[multiple].input-group-sm
 @media (min-width: 768px) {
     .navbar-text {
         float: left;
-        margin-right: 15px;
+        margin-right: 0px;
         margin-left: 15px
     }
 }

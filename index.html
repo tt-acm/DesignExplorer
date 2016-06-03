@@ -299,7 +299,7 @@ function getUrlVars() {
 
 function getStillLink(){
 	if (document.getElementById("googleSheetLinkID").value.length>0){
-		var msg = "http://mebd.azurewebsites.net/DesignExplorer/?GSHEET="+document.getElementById("googleSheetLinkID").value+"&GFOLDER="+document.getElementById("googleImgFolderLinkID").value;
+		var msg = window.location.href+"?GSHEET="+document.getElementById("googleSheetLinkID").value+"&GFOLDER="+document.getElementById("googleImgFolderLinkID").value;
 		window.prompt("This is the link that you can access next time without inputing Google Drive links!", msg);
 	}else{alert("You have to put Google Drive Folder information first!");}
 }
