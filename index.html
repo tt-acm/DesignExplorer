@@ -262,7 +262,7 @@
 
 <script>
 function MP_getGoogleIDandLoad() {
-	
+	document.getElementById('csv-file').value = "";
     var googleSheetLink= document.getElementById("googleSheetLink").value.split("/");
     var googleImgFolderLink= document.getElementById("googleImgFolderLink").value.split("/");
 	
@@ -304,9 +304,6 @@ function getStillLink(){
 	}else{alert("You have to put Google Drive Folder information first!");}
 }
 
-
-
-	
 function changeLabelSize(size){
 	if(size == "largeLabel"){
 		d3.selectAll(".label")
@@ -363,8 +360,6 @@ function changeLabelSize(size){
 							<input type="file" id="csv-file" class="btn btn-default btn-sm-upload" name="files" /> Upload CSV
 						</button>
                     </p>
-					
-					
 
                 </li>
             </ul>
@@ -419,15 +414,12 @@ function changeLabelSize(size){
                                             Info <span class="glyphicon glyphicon-new-window"></span>
                                         </a>
                                     </div>
-									
 									<!-- Change label size -->
-									
 									<div class="btn-group col-xs-12" style=" width: auto;">
                                         <button id="LL" class="btn btn-default btn-xs" onclick = changeLabelSize("largeLabel")>L</button>
                                         <button id="MM" class="btn btn-default btn-xs" onclick = changeLabelSize("mediumLabel")>M</button>
                                         <button id="SS" class="btn btn-default btn-xs" onclick = changeLabelSize("smallLabel")>S</button>
                                     </div>
-									
                                 </div>
                                 <!-- parallel coordinates -->
                                 <div class="row-fluid">
@@ -1039,7 +1031,7 @@ function changeLabelSize(size){
                         cleanedParams[key.replace("out:", "").trim()] = row[key]; 
                     
                     }else{
-						outputParams[key.trim()] = row[key];
+						
                         cleanedParams[key.trim()] = row[key]; // I need to add case for image and 3D here later
                     }
                 });
@@ -1409,25 +1401,16 @@ function changeLabelSize(size){
             // attach images ---------------------------------------------------------------------------------------------------
 			var imgLink;
 			var userInputs = document.getElementById("googleImgFolderLinkID").value;
-			var isUrlInputs = window.location.href.toUpperCase().search("GFOLDER");
 			if(userInputs.length >0){
 				//loadImgfrom inputs
-				imgLink = function(d){return "http://www.googledrive.com/host/"+ document.getElementById("googleImgFolderLinkID").value + "/"+d["img"]};
+				imgLink = function(d){return "http://www.googledrive.com/host/"+ userInputs + "/"+d["img"]};
 			
-			}else if (isUrlInputs > 0 && userInputs.length <=0){
-			
-				//loadImgfrom GET
-				googleFolderLinkID = getUrlVars()["GFOLDER"];
-				imgLink = function(d){return "http://www.googledrive.com/host/"+ googleFolderLinkID + "/"+d["img"]};
-				
 			}else{
 			
 				imgLink = function(d){return d["img"]};
 		
 			}
-			
-
-			
+		
             d3.select("#thumbnails-btm")
                 //.style("height", "100%") //20px for credit line - 
                 .selectAll("div")
@@ -1703,52 +1686,11 @@ function changeLabelSize(size){
 
 			}else{
 			
-					//function to close intro window div
-					d3.select("#close")
-						.on("click", function(){d3.select("#welcome").remove();});
-
-					var fileInput = document.getElementById('csv-file');
-					
-					fileInput.addEventListener('change', function(e) {
-
-						unloadPageContent();
-						
-						var file = fileInput.files[0];
-						var reader = new FileReader();
-						
-						var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.csv|.txt)$/;
-							
-
-					if (regex.test(file.name.toLowerCase())) {
-						
-						// Update project name
-						var inputFileName = file.name.toUpperCase().replace(".CSV","");
-
-						d3.select("p.navbar-brand").text(inputFileName);
-
-						reader.onload = function(e) {
-						
-							var inputString = e.target.result; 
-
-							// I need to add some defense here
-							// separateInputOutputs(e);
-							
-							var data = d3.csv.parse(inputString);
-
-							//originalDataLength = data.length;
-
-							if (data!=null) loadDataToDesignExplorer(data);
-						}
-
-
-					}else{
-							alert("Please upload a valid CSV file!");
-						}
-
-						reader.readAsText(file);
-					});
-
-
+				//function to close intro window div
+				d3.select("#close")
+					.on("click", function(){d3.select("#welcome").remove();});
+				
+				
 				// load default data
 				//parse the csv data from the design_explorer_data folder
 				d3.csv("http://tt-acm.github.io/DesignExplorer/design_explorer_data/default_onload.csv", loadDataToDesignExplorer);
@@ -1756,6 +1698,54 @@ function changeLabelSize(size){
 				//loadDataToDesignExplorer(defaultData);
 				
 			}
+			
+			var fileInput = document.getElementById('csv-file');
+			
+			fileInput.addEventListener('change', function(e) {
+			
+				document.getElementById("googleSheetLinkID").value= "";
+				document.getElementById("googleImgFolderLinkID").value= "";
+
+				unloadPageContent();
+				
+				
+				var file = fileInput.files[0];
+				var reader = new FileReader();
+				
+				var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.csv|.txt)$/;
+					
+
+				if (regex.test(file.name.toLowerCase())) {
+					
+					// Update project name
+					var inputFileName = file.name.toUpperCase().replace(".CSV","");
+
+					d3.select("p.navbar-brand").text(inputFileName);
+
+					reader.onload = function(e) {
+					
+						var inputString = e.target.result; 
+
+						// I need to add some defense here
+						// separateInputOutputs(e);
+						
+						var data = d3.csv.parse(inputString);
+
+						//originalDataLength = data.length;
+
+						if (data!=null) loadDataToDesignExplorer(data);
+					}
+
+
+				}else{
+						alert("Please upload a valid CSV file!");
+					}
+
+				reader.readAsText(file);
+			});	
+			
+			
+			
         }; // end of window.onload
     </script>
 
@@ -1991,7 +1981,6 @@ function changeLabelSize(size){
         function initiate3DViewer(){
         
             var viewerId = "viewer3d";
-			//var jsonFileAddress = function(d){return "http://www.googledrive.com/host/"+ userInputs + "/"+graph.highlighted()[0].threeD};
             var jsonFileAddress = graph.highlighted()[0].threeD;
             
             //load JSON file
