@@ -1,0 +1,40 @@
+svg { font-size: 14px; }
+
+.axis { shape-rendering: crispEdges; }
+.axis line { stroke: #ddd; stroke-width: 1px; }
+.axis path { display: none; }
+.axis text { font-size: 0.8em; }
+
+rect.extent { fill: #000; fill-opacity: .125; stroke: #fff; }
+rect.frame { fill: #fff; fill-opacity: .7; stroke: #aaa; }
+
+circle { fill: #ccc; fill-opacity: .5; }
+
+.legend circle { fill-opacity: 1; }
+.legend text { font-size: 18px; font-style: oblique; }
+
+.cell text { pointer-events: none; }
+
+.color-0  { fill: #800; }
+.color-1  { fill: #080; }
+.color-2  { fill: #008; }
+.color-3  { fill: #440; }
+.color-4  { fill: #044; }
+.color-5  { fill: #404; }
+.color-6  { fill: #400; }
+.color-7  { fill: #040; }
+.color-8  { fill: #004; }
+.color-9  { fill: #cc0; }
+.color-10 { fill: #0cc; }
+.color-11 { fill: #c0c; }
+.color-12 { fill: #880; }
+.color-13 { fill: #088; }
+.color-14 { fill: #808; }
+.color-15 { fill: #c00; }
+.color-16 { fill: #0c0; }
+.color-17 { fill: #00c; }
+
+.scatter-matrix-filter-control ul { list-style: none; padding-left: 10px; }
+.scatter-matrix-variable-control ul { list-style: none; padding-left: 10px; }
+.scatter-matrix-drill-control ul { list-style: none; padding-left: 10px; }
+

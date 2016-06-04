@@ -1,0 +1,14 @@
+body {
+  margin: auto;
+  width: 1200px;
+  font-weight: 300; font-family: "Helvetica Neue";
+  overflow: auto;
+}
+
+h2 { font-weight: inherit; margin: 0; }
+pre { background-color: #eee; border-radius: 10px; border: 1px solid #ddd; width: 600px; padding: 10px; }
+
+.scatter-matrix-control { float: left; margin-right: 20px; }
+.scatter-matrix-variable-control ul { list-style: none; padding-left: 10px; }
+.scatter-matrix-svg { float: left; margin-top: 15px; width: 1000px; }
+
