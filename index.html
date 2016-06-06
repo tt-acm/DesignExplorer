@@ -856,11 +856,15 @@ function changeLabelSize(size){
 		var isRightChartFullScreenToggled = false;
 		var windowWidth = window.innerWidth,
 			windowHeight = window.innerHeight;
+			
+		
+		
+		
 
         // side bar for sliders
         $("#menu-toggle").click(function(e) {
             e.preventDefault();
-
+			console.log(oldpcHeight+"-"+oldpcWidth);
             //$("#wrapper").toggleClass("toggled");
             isToggled = !isToggled;
             d3.select("#wrapper")
@@ -1783,6 +1787,64 @@ function changeLabelSize(size){
             // remove Rating for on page load
             var activeDimensions = dimensions.filter(function(d){return d.name!="Rating";}).map(function(d){return d.name;});
             graph.dimensions(activeDimensions);
+			
+			
+			
+			
+			var oldpcHeight = d3.select("#graph").style("height").replace("px", "");
+			var oldpcWidth = d3.select("#graph").style("width").replace("px", "");
+			var newpcHeight = (windowHeight-109)*0.66;
+			var newpcWidth = windowWidth-30;
+			
+			d3.select("#pcFullScreen-toggle")
+			.on("click", function() {
+
+	
+				isLeftChartFullScreenToggled = !isLeftChartFullScreenToggled;
+				
+
+				d3.select(".col-lg-3") //hide right side
+					.transition().duration(1000)
+					.style("display", function(){
+						if(isLeftChartFullScreenToggled){
+							return "none";
+						}else{
+							return "block";
+						}
+					});
+				
+				d3.select(".col-lg-9") 
+					.transition().duration(1000)
+					.style("height", function(){
+						if(isLeftChartFullScreenToggled){
+							return newpcHeight+30+"px";
+						}else{
+							return "auto";
+						}
+					})
+					.style("width", function(){
+						if(isLeftChartFullScreenToggled){
+							return newpcWidth+"px";
+						}else{
+							return oldpcWidth + "px";
+						}
+					});
+				
+				
+				
+				// change the chart size;
+				if(isLeftChartFullScreenToggled){
+							graph.width(newpcWidth).height(newpcHeight);
+							//if(graph.brushed().length!=0) {graph.highlight(graph.brushed());}
+						}else{
+							graph.width(oldpcWidth).height(oldpcHeight);
+							//if(graph.brushed().length!=0){ graph.highlight(graph.brushed());}
+						}
+					
+				
+				
+			});
+			
 
             }
 
