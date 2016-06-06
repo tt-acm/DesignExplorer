@@ -2,15 +2,17 @@
 // http://mbostock.github.io/d3/talk/20111116/iris-splom.html
 //
 
-ScatterMatrix = function(url, data, dom_id, el) {
+ScatterMatrix = function(url, data, dom_id) {
   this.__url = url;
-  if (data === undefined || data === null) { this.__data = undefined; }
-  else { this.__data = d3.csv.parse(data); }
+  
+  if (data === undefined || data === null) { this.__data = undefined; 
+  }else { this.__data = data;}
+
   this.__cell_size = 80;
-  if (dom_id === undefined) { this.__dom_id = 'body'; }
-  else { this.__dom_id = "#"+dom_id; }
-  if (el)
-    this.__dom_id = el;
+  
+  if (dom_id === undefined) { this.__dom_id = 'body'; 
+  }else {this.__dom_id = dom_id;}
+    
 };
 
 ScatterMatrix.prototype.cellSize = function(n) {
@@ -23,6 +25,7 @@ ScatterMatrix.prototype.onData = function(cb) {
   var self = this;
   d3.csv(self.__url, function(data) {
     self.__data = data;
+	
     cb();
   });
 };
@@ -36,14 +39,17 @@ ScatterMatrix.prototype._str_to_numeric_key = function(k) {
 
 ScatterMatrix.prototype.render = function () {
   var self = this;
-
+  
   var container = d3.select(this.__dom_id).append('div')
                     .attr('class', 'scatter-matrix-container');
   var control = container.append('div')
-                         .attr('class', 'scatter-matrix-control');
+                         .attr('class', 'scatter-matrix-control toggled')
+						 .style('background-color', 'rgba(255, 255, 255, 0.95)');
   var svg = container.append('div')
                      .attr('class', 'scatter-matrix-svg')
                      .html('<em>Loading data...</em>');
+
+					 
 
   this.onData(function() {
     var data = self.__data;
@@ -104,14 +110,11 @@ ScatterMatrix.prototype.render = function () {
         d[self._numeric_to_str_key(k)] = index;
       }
     });
-	console.log(string_variables);
+
 
 //console.log(string_variables);//------------------------------------------------------------------
 	
-    for (var j in string_variables) {
-      var k = string_variables[j];
-      self.__numeric_variables.push(self._numeric_to_str_key(k));
-    }
+   
 
     // Add controls on the left
 
@@ -122,7 +125,8 @@ ScatterMatrix.prototype.render = function () {
     var drill_control = control.append('div').attr('class', 'scatter-matrix-drill-control');
 
     // shared control states
-    var to_include = self.__numeric_variables.slice(-3, -1);
+    var to_include = self.__numeric_variables.slice(-3,-1);
+	
     var color_variable = undefined;
     var selected_colors = undefined;
     var drill_variables = [];
@@ -169,38 +173,57 @@ ScatterMatrix.prototype.render = function () {
                    .html(function(d) { return d; });
       }
     }
-
-    size_a = size_control.append('p').text('Change plot size: ');
+    // -----------------------------------Here starts the control menu list-------------------------------------------------------//
+    size_a = size_control.append('div').attr('class','btn-group col-xs-12').style('margin-bottom','20px');
+	var orgSize = self.__cell_size;
     size_a.append('a')
+		  .attr('class','btn btn-default btn-xs')
           .attr('href', 'javascript:void(0);')
           .html('-')
           .on('click', function() {
-            self.__cell_size *= 0.75;
+            self.__cell_size -= 50;
             self.__draw(self.__cell_size, svg, color_variable, selected_colors, to_include, drill_variables);
           });
-    size_a.append('span').html('&nbsp;');
+		  
+	size_a.append('a')
+		  .attr('class','btn btn-default btn-xs')
+          .attr('href', 'javascript:void(0);')
+          .html('Change plot size')
+          .on('click', function() {
+            self.__cell_size = orgSize;
+            self.__draw(self.__cell_size, svg, color_variable, selected_colors, to_include, drill_variables);
+          });
+    
     size_a.append('a')
+		  .attr('class','btn btn-default btn-xs')
           .attr('href', 'javascript:void(0);')
           .html('+')
           .on('click', function() {
-            self.__cell_size *= 1.25;
+            self.__cell_size += 50;
             self.__draw(self.__cell_size, svg, color_variable, selected_colors, to_include, drill_variables);
           });
+	
+	
+	//set to full screen mode;-------------------------------------------------------------------------------------------------
+	var isRightChartFullScreenToggled = false;
+	var windowHeight = window.innerHeight;
+	var originalCellSize =self.__cell_size;
+	$("#scatter-fullscreen-toggle").click(function(e) {
+		isRightChartFullScreenToggled = !isRightChartFullScreenToggled;
+		if(isRightChartFullScreenToggled){
+			self.__cell_size = (windowHeight-250)/2;
+			d3.selectAll(".cell circle").attr("r", "3");
+		}else{
+			self.__cell_size = originalCellSize;
+			d3.selectAll(".cell circle").attr("r", "1");
+		}
+		
+        self.__draw(self.__cell_size, svg, color_variable, selected_colors, to_include, drill_variables);
+		updateScatterChart();
+		highlightScatterDot();
+	});
 
-    color_control.append('p').text('Select a variable to color:');
-    color_control
-      .append('ul')
-      .selectAll('li')
-      .data([undefined].concat(string_variables))
-      .enter().append('li')
-        .append('a')
-          .attr('href', 'javascript:void(0);')
-          .text(function(d) { return d ? d : 'None'; })
-          .on('click', function(d, i) {
-            color_variable = d;
-            set_filter(d);
-            self.__draw(self.__cell_size, svg, color_variable, selected_colors, to_include, drill_variables);
-          });
+   
 
     var variable_li =
       variable_control
@@ -234,7 +257,7 @@ ScatterMatrix.prototype.render = function () {
         .append('p').text('Drill and Expand: ')
         .append('ul')
         .selectAll('li')
-        .data(original_numeric_variables.concat(string_variables))
+        .data(original_numeric_variables)
         .enter().append('li');
 
     drill_li.append('input')
@@ -256,8 +279,7 @@ ScatterMatrix.prototype.render = function () {
   });
 };
 
-ScatterMatrix.prototype.__draw =
-  function(cell_size, container_el, color_variable, selected_colors, to_include, drill_variables) {
+ScatterMatrix.prototype.__draw = function(cell_size, container_el, color_variable, selected_colors, to_include, drill_variables) {
   var self = this;
   this.onData(function() {
     var data = self.__data;
@@ -296,8 +318,12 @@ ScatterMatrix.prototype.__draw =
     }
 
     // Size parameters
-    var size = cell_size, padding = 10,
-        axis_width = 20, axis_height = 15, legend_width = 200, label_height = 15;
+    var size = cell_size, 
+		padding = 10,
+        axis_width = 20, 
+		axis_height = 15, 
+		legend_width = 0, 
+		label_height = 15;
 
     // Get x and y scales for each numeric variable
     var x = {}, y = {};
@@ -473,6 +499,19 @@ ScatterMatrix.prototype.__draw =
           s = ''+s+': '+d.y;
           return shorten(s);
         });
+		
+		
+	//unique id for each Circle 
+	function getCircleID(d) {
+	  var id;
+	  var keys = d3.keys(data[0]);
+
+	  keys.forEach(function(key) {
+		id = "scatter_"+cleanString(d[key].toString());
+	  })
+
+	  return id;
+	}
 
     function plot(p) {
       // console.log(p);
@@ -525,11 +564,20 @@ ScatterMatrix.prototype.__draw =
       // Scatter plot dots
       cell.selectAll("circle")
           .data(data_to_draw)
-        .enter().append("svg:circle")
+          .enter().append("svg:circle")
+		  .attr("id", function(d) { return getCircleID(d); })
           .attr("class", function(d) { return color_class(d); })
           .attr("cx", function(d) { return x[p.x](d[p.x]); })
           .attr("cy", function(d) { return y[p.y](d[p.y]); })
-          .attr("r", 3);
+          .attr("r", function(d){
+			  
+				if(isRightChartFullScreenToggled){
+					return 2;
+				}else{
+					return 1;
+				}
+			  
+		  });
 
       // Add titles for x variables and drill variable values
       if (p.j == y_variables.length-1) {
@@ -580,7 +628,7 @@ ScatterMatrix.prototype.__draw =
 
     // If brush is empty, select all circles
     function brushend() {
-      if (brush.empty()) svg.selectAll(".cell circle").attr("class", function(d) {
+      if (brush.empty()) svg.selectAll(".scatter-matrix-svg .cell circle").attr("class", function(d) {
         return color_class(d);
       });
     }
@@ -593,3 +641,5 @@ ScatterMatrix.prototype.__draw =
   }); 
 
 };
+
+

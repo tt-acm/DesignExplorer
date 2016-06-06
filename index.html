@@ -61,6 +61,11 @@
 
     <!-- Radar Chart CSS -->
     <link rel="stylesheet" type="text/css" href="./radar_source_files/radar-chart.css"/>
+	
+	<!-- Scatter-matrix -->
+	<script src="./scatter_matrix_source_files/scatter-matrix.js"></script>
+	<!-- Scatter-matrix CSS -->
+	<link type="text/css" rel="stylesheet" href="./scatter_matrix_source_files/scatter-matrix.css">
     
     <!-- Bootstrap Core CSS -->
     <link href="bootstrap_side_bar/css/bootstrap.min.css" rel="stylesheet">
@@ -222,7 +227,7 @@
        }
 
        .Spectacles_Footer{
-        visibility: hidden;
+			visibility: hidden;
        }
 
        .sampleImage {
@@ -253,6 +258,18 @@
 			width: 10em;
 			border-radius: 10em;
 	   }
+	   
+	   .col-lg-3 {
+			-webkit-transition: all 1s ease;
+			-moz-transition: all 1s ease;
+			-o-transition: all 1s ease;
+			transition: all 1s ease;
+		}
+		
+		div#thumbnails-side_container {
+			margin-top: 30px;
+		}
+
 
     </style>
 
@@ -318,6 +335,7 @@ function changeLabelSize(size){
 	
 }
 </script>
+
 <body>
 
     <!-- Navbar -->
@@ -415,10 +433,13 @@ function changeLabelSize(size){
                                         </a>
                                     </div>
 									<!-- Change label size -->
-									<div class="btn-group col-xs-12" style=" width: auto;">
-                                        <button id="LL" class="btn btn-default btn-xs" onclick = changeLabelSize("largeLabel")>L</button>
-                                        <button id="MM" class="btn btn-default btn-xs" onclick = changeLabelSize("mediumLabel")>M</button>
-                                        <button id="SS" class="btn btn-default btn-xs" onclick = changeLabelSize("smallLabel")>S</button>
+									<div class="btn-group col-xs-12" style="width: auto;float: right;right: 60px;">
+                                        <button id="LL" class="btn btn-default btn-xs" onclick = changeLabelSize("largeLabel") title="Large Label">L</button>
+                                        <button id="MM" class="btn btn-default btn-xs" onclick = changeLabelSize("mediumLabel") title="Medium Label">M</button>
+                                        <button id="SS" class="btn btn-default btn-xs" onclick = changeLabelSize("smallLabel") title="Small Label">S</button>
+										<button id="pcFullScreen-toggle" class="btn btn-default btn-xs"  title="Full Screen">
+											<span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
+										</button>
                                     </div>
                                 </div>
                                 <!-- parallel coordinates -->
@@ -465,24 +486,35 @@ function changeLabelSize(size){
                                     </div>
                                 </div>
                             </div> <!-- end of left side charts-->
-                            
-                            <div class="col-lg-3">
+							
+                            <!-- start of right side charts-->
+                            <div class="col-lg-3" style="padding-left: 0;">
                                 
                                 <div class="row-fluid">
-                                    <div class="btn-group col-xs-12">
-                                        <a href="http://core.thorntontomasetti.com/" class="btn btn-default btn-xs" target="_blank">
-                                            &copy; Copyright 2015 CORE studio | Thornton Tomasetti
+                                    <div id="rightTopButtonGroup" class="btn-group col-xs-12">
+										<button type="button" class="btn btn-default btn-xs" id="scatter-fullscreen-toggle" title="Full Screen">
+                                            <span class="glyphicon glyphicon-triangle-left" aria-hidden="true"></span>
+                                        </button>
+                                        <a id = "copyRightButton" href="http://core.thorntontomasetti.com/" class="btn btn-default btn-xs" target="_blank" style="width: 70%;">
+                                            &copy; Copyright 2015 Thornton Tomasetti
                                         </a>
                                         <button type="button" class="btn btn-default btn-xs" id="rcgraph" data-toggle="collapse" data-target="#radarChart">
                                             <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+                                        </button>
+										<button type="button" class="btn btn-default btn-xs" id="scatter-menu-toggle" title="Show sliders">
+                                            <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
                                         </button>
                                     </div>
                                 </div>
                                 
                                 <div class="row">
-                                    <div id="radarChart" class="col-lg-12 collaps in center-block" style="font-size:14px; font-weight:bold">
-                                        <!-- <h5>Radar Chart Place Holder</h5> -->
-                                    </div>
+								
+                                <div id="radarChart" class="col-lg-12 collaps in center-block" style="font-size:14px; font-weight:bold">
+                                      <!-- // <h5>Radar Chart Place Holder</h5> -->
+                                    </div>  
+									<!--<div id="scatterChart" class="col-lg-12 collaps in center-block">
+										 place holder for the scatterChart 
+									</div>-->
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-12" id="thumbnails-side_container" style="height:0px">
@@ -503,7 +535,7 @@ function changeLabelSize(size){
                     </div>
                 </div>
             </div>
-
+			<!-- /#Welcome content -->
             <div class="row-fluid col-lg-12 row-centered vertical-center fullscreen" id="welcome">
                 <div class="col-sm-12 col-centered" id="welcomeContainer" style="opacity: 1" >
                     <button id="close" class="btn btn-default btn-sm pull-right">
@@ -609,11 +641,221 @@ function changeLabelSize(size){
             });
 
     </script>
-    
+	
+        <!-- right side chart -->
+    <script type="text/javascript">
+
+        // update radar chart
+        function updateRadarChart(){
+            //format data for radar chart
+            var outputKeys = d3.keys(outputData[0]);
+            if (graph.brushed().length > 0) {
+                var selectedData = graph.brushed();
+            } else {
+               var selectedData = graph.data();
+			   
+            }
+            
+            //var selectedData = graph.brushed();
+            selectedDataFormatted = [];
+            radarChartColors = [];
+
+            selectedData.forEach(function(d) {
+                selectedDataFormatted.push(formatData(d));
+                //debugger;
+				
+
+                radarChartColors.push(color(d[pcIsColoredBy]));
+
+            })
+			
+
+            //get height, width for radar chart
+            //we want the graph to be centered above the thumbnails
+            //65px is to fit text
+            var divWidth = d3.select("#thumbnails-side").style("width").replace("px", "");
+            var pcHeight = d3.select("#graph").style("height").replace("px", "");
+            var rcDimension = Math.min(pcHeight, divWidth) - 65;
+
+            radarGrey = "rgb(160,160,160)";
+
+            //configure radar chart
+            cfg = ({
+                w: rcDimension,
+                h: rcDimension,
+                color: function(){return radarGrey;},
+                radius: 4,
+                maxValue: 100,
+                extraWidthX: divWidth - rcDimension, 
+                extraWidthY: 65,
+                translateX: (divWidth - rcDimension) / 2, 
+                translateY: 65 / 2,
+                levels: 5,
+            });
+
+            RadarChart.draw("#radarChart", selectedDataFormatted, cfg);
+
+            //move lines to back
+            d3.selectAll(".area").moveToBack();
+
+            //did not work using CSS
+            d3.selectAll(".rclegend")
+                .style("fill", "steelblue")
+                .style("font-size", 9);
+        }
+
+        //resize radar chart
+        function resizeRadarChart() {  // if it is still needed?.......
+            
+            return;
+            
+            var divWidth = d3.select("#thumbnails-side").style("width").replace("px", "");
+            var pcHeight = d3.select("#graph").style("height").replace("px", "");
+            if (pcHeight > 0) {
+                var rcDimension = Math.min(pcHeight, divWidth) - 65;
+            } else {
+                var rcDimension = divWidth - 65;
+            }
+            
+            cfg.w = rcDimension;
+            cfg.h = rcDimension;
+            cfg.extraWidthX = divWidth - rcDimension;
+            cfg.translateX = (divWidth - rcDimension) / 2;
+            cfg.transitionDuration = 0;
+
+            RadarChart.draw("#radarChart", selectedDataFormatted, cfg);
+
+            //move lines to back
+            d3.selectAll(".area").moveToBack();
+
+            //did not work using CSS
+            d3.selectAll(".rclegend")
+                .style("fill", "steelblue")
+                .style("font-size", 9);
+
+            if (graph.brushed().length > 0) {
+               rc.updateData(graph.brushed()); 
+			   
+           }
+            
+
+            if (graph.highlighted().length > 0) {
+                rc.highlight(graph.highlighted());
+            }
+
+        }
+
+        // clean radar chart
+        function cleanRadarChart() {
+            d3.selectAll(".radar-chart").remove();
+        }
+		
+		
+		// add scatter chart
+		
+		
+		function addScatterChart(){
+			var pcHeight = d3.select("#graph").style("height").replace("px", "");
+			var rightChartWidth = d3.select("#radarChart").style("width").replace("px", "");
+			
+			if (graph.brushed().length > 0) {
+                var selectedData = graph.brushed();
+            } else {
+				var selectedData = graph.data();
+			   
+            }
+			var sm = new ScatterMatrix("",selectedData,'#radarChart' );
+			sm.cellSize((pcHeight-60)/2);
+			sm.render();
+			
+			// adjust the chart style
+			//var chartWidth = d3.select(".scatter-matrix-svg svg").style("width").replace("px", "");
+			d3.select(".scatter-matrix-svg")
+                .style("width", pcHeight-10 +"px");
+				
+			d3.select(".scatter-matrix-control")
+                .style("height", pcHeight-30 +"px");
+				
+			//return sm;
+                
+		}
+		
+		//unique id for each Circle 
+		function getCircleID(d) {
+		  var id;
+		  var keys = d3.keys(graph.data()[0]);
+
+		  keys.forEach(function(key) {
+			id = "scatter_"+cleanString(d[key].toString());
+		  })
+
+		  return id;
+		}
+		
+		function updateScatterChart(){
+			var data;
+			if (graph.brushed().length > 0) {
+				data =graph.brushed();
+			}else{
+				data =graph.data();
+			}
+			d3.selectAll(".cell circle").attr("visibility", "hidden");
+
+			data.forEach(function(d) {
+				//console.log(getCircleID(d));
+				d3.selectAll("#" + getCircleID(d)).attr("visibility", "shown");
+			})
+
+		}
+		
+		function highlightScatterDot(){
+			var data =graph.highlighted();
+			if (data.length > 0) {
+			
+				d3.selectAll(".cell circle")
+					.style("r", function(d){
+						  
+						if(isRightChartFullScreenToggled){
+							return 2;
+						}else{
+							return 1;
+						}
+						  
+					})
+					.style("fill-opacity", "0.1");
+
+				data.forEach(function(d) {
+					d3.selectAll("#" + getCircleID(d))
+						.style("r", "3")
+						.style("fill-opacity", "1");
+				})
+			
+			}
+			
+
+		}
+		
+		function unlighlightScatter(){
+			d3.selectAll(".cell circle")
+					.style("r", function(d){
+							return 1;
+						  
+					})
+					.style("fill-opacity", "0.4");
+
+		}
+
+    </script>
+
     <!-- Dynamic Divs script -->
     <script>
         var isAnyItemSelected = false;
         var isToggled = true;
+		var isScatterToggled = true;
+		var isLeftChartFullScreenToggled = false;
+		var isRightChartFullScreenToggled = false;
+		var windowWidth = window.innerWidth,
+			windowHeight = window.innerHeight;
 
         // side bar for sliders
         $("#menu-toggle").click(function(e) {
@@ -624,8 +866,90 @@ function changeLabelSize(size){
             d3.select("#wrapper")
                 .classed("toggled", isToggled)
                 .transition().duration(500) //length of toggle animation
-                .each("end", resizeRadarChart())
+                //.each("end", resizeRadarChart())
         });
+		
+		
+		$("#scatter-menu-toggle").click(function(e) {
+		
+            isScatterToggled = !isScatterToggled;
+            d3.select(".scatter-matrix-control")
+                .classed("toggled", isScatterToggled);
+        });
+		
+		//--------------------------------------------------set left side chart full screen -----------------------------------//
+		
+		
+		//--------------------------------------------------set right side chart full screen -----------------------------------//
+		$("#scatter-fullscreen-toggle").click(function(e) {
+		
+			var divWidth = d3.select(".col-lg-3").style("width").replace("px", "");
+		
+            isRightChartFullScreenToggled = !isRightChartFullScreenToggled;
+            d3.select(".col-lg-3")
+				.transition().duration(500)
+				.style("float", "right")
+				.style("height", function(){
+					if(isRightChartFullScreenToggled){
+						return windowHeight-50+"px";
+					}else{
+						return "auto";
+					}
+				})
+				.style("right", function(){
+					if(isRightChartFullScreenToggled){
+						return windowWidth-divWidth-15+"px";
+					}else{
+						return "0";
+					}
+				});
+				
+			d3.selectAll(".col-lg-3 .row, #rightTopButtonGroup")
+				.transition().delay(100)
+				.transition().duration(1000)
+				.style("width", function(){
+					if(isRightChartFullScreenToggled){
+						return windowWidth-50+"px";
+					}else{
+						return "auto";
+					}
+				});
+
+			d3.select(".col-lg-9") // hide left side
+				.transition().delay(500)
+				.transition().duration(1000)
+				.style("display", function(){
+					if(isRightChartFullScreenToggled){
+						return "none";
+					}else{
+						return "block";
+					}
+				});
+				
+			
+			d3.select(".scatter-matrix-svg")
+                .style("width", function(){
+					if(isRightChartFullScreenToggled){
+						return windowHeight-200+"px";
+					}else{
+						return d3.select("#graph").style("height").replace("px", "")-10+"px";
+					}
+				});
+				
+			// reset the size of right side top button
+			d3.select("#copyRightButton")
+				.transition().delay(100)
+				.transition().duration(1000)
+				.style("width", function(){
+					if(isRightChartFullScreenToggled){
+						return windowWidth-180+"px";
+					}else{
+						return divWidth-180+"px";
+					}
+				});
+
+        });
+
 
         
         // update layout on select
@@ -692,8 +1016,10 @@ function changeLabelSize(size){
             // enable sliders
             enableAllSliders();
 
-            //highlight the radar chart
-            rc.highlight(selectedImage.data());
+            //highlight the radar chart  //-----here needs a switch for different charts-------
+            //rc.highlight(selectedImage.data());      
+			highlightScatterDot();
+			
 
             var radarHeight = d3.select("#radarChart")
                 .style("height").replace("px", "");
@@ -737,8 +1063,9 @@ function changeLabelSize(size){
             // enable sliders
             disableAllSliders();
 
-            // unhighlight the radar chart
-            rc.unhighlight();
+            // unhighlight the radar chart        //-----here needs a switch for different charts-------//
+            //rc.unhighlight();       
+			unlighlightScatter();
 
             //show radar chart
             $("#radarChart").collapse("show");
@@ -885,113 +1212,6 @@ function changeLabelSize(size){
 
 
     </script>
-
-    <!-- radar chart -->
-    <script type="text/javascript">
-
-        // update radar chart
-        function updateRadarChart(){
-            //format data for radar chart
-            var outputKeys = d3.keys(outputData[0]);
-            if (graph.brushed().length > 0) {
-                var selectedData = graph.brushed();
-            } else {
-               var selectedData = graph.data();
-            }
-            
-            //var selectedData = graph.brushed();
-            selectedDataFormatted = [];
-            radarChartColors = [];
-
-            selectedData.forEach(function(d) {
-                selectedDataFormatted.push(formatData(d));
-                //debugger;
-
-                radarChartColors.push(color(d[pcIsColoredBy]));
-
-            })
-
-            //get height, width for radar chart
-            //we want the graph to be centered above the thumbnails
-            //65px is to fit text
-            var divWidth = d3.select("#thumbnails-side").style("width").replace("px", "");
-            var pcHeight = d3.select("#graph").style("height").replace("px", "");
-            var rcDimension = Math.min(pcHeight, divWidth) - 65;
-
-            radarGrey = "rgb(160,160,160)";
-
-            //configure radar chart
-            cfg = ({
-                w: rcDimension,
-                h: rcDimension,
-                color: function(){return radarGrey;},
-                radius: 4,
-                maxValue: 100,
-                extraWidthX: divWidth - rcDimension, 
-                extraWidthY: 65,
-                translateX: (divWidth - rcDimension) / 2, 
-                translateY: 65 / 2,
-                levels: 5,
-            });
-
-            RadarChart.draw("#radarChart", selectedDataFormatted, cfg);
-
-            //move lines to back
-            d3.selectAll(".area").moveToBack();
-
-            //did not work using CSS
-            d3.selectAll(".rclegend")
-                .style("fill", "steelblue")
-                .style("font-size", 9);
-        }
-
-        //resize radar chart
-        function resizeRadarChart() {
-            
-            return;
-            
-            var divWidth = d3.select("#thumbnails-side").style("width").replace("px", "");
-            var pcHeight = d3.select("#graph").style("height").replace("px", "");
-            if (pcHeight > 0) {
-                var rcDimension = Math.min(pcHeight, divWidth) - 65;
-            } else {
-                var rcDimension = divWidth - 65;
-            }
-            
-            cfg.w = rcDimension;
-            cfg.h = rcDimension;
-            cfg.extraWidthX = divWidth - rcDimension;
-            cfg.translateX = (divWidth - rcDimension) / 2;
-            cfg.transitionDuration = 0;
-
-            RadarChart.draw("#radarChart", selectedDataFormatted, cfg);
-
-            //move lines to back
-            d3.selectAll(".area").moveToBack();
-
-            //did not work using CSS
-            d3.selectAll(".rclegend")
-                .style("fill", "steelblue")
-                .style("font-size", 9);
-
-            if (graph.brushed().length > 0) {
-               rc.updateData(graph.brushed()); 
-           }
-            
-
-            if (graph.highlighted().length > 0) {
-                rc.highlight(graph.highlighted());
-            }
-
-        }
-
-        // clean radar chart
-        function cleanRadarChart() {
-            d3.selectAll(".radar-chart").remove();
-        }
-
-    </script>
-
 
     <!-- process input data -->
     <script type="text/javascript">
@@ -1458,8 +1678,8 @@ function changeLabelSize(size){
 
             // brushing events for parallel coordinates graph
             graph.on("brush", function(d) {
-                rc.updateData(graph.brushed());
-                
+                //rc.updateData(graph.brushed());   //-----here needs a switch for different charts-------
+                updateScatterChart();
                 updateImageGrid(d, false);
             });
 
@@ -1513,7 +1733,8 @@ function changeLabelSize(size){
 
             function updateGraph(newData){
                 graph.data(newData).render().interactive().reorderable().autoscale();
-                updateRadarChart();
+                //updateRadarChart();                   //-----here needs a switch for different charts-------
+				updateScatterChart();
                 updateLayoutOnDeselect();                        
                 updateImageGrid(newData, false);
                 updateSlidersTickValues();
@@ -1584,8 +1805,11 @@ function changeLabelSize(size){
             // draw parallel coordinates graph
             drawParallelCoordinates();
 
-            //draw radar chart
-            updateRadarChart();
+            //draw radar chart                   
+            //updateRadarChart();                //-----here needs a switch for different charts-------
+			
+			//draw scatter chart
+			addScatterChart();
 
             // draw legend in side bar
             drawLegend();
@@ -1604,16 +1828,14 @@ function changeLabelSize(size){
             }
 		
 		//load GoogleSheet Json data_ Mingbo Peng Modified-------------------------------------------------------------------- 
-		function cleanAndLoadForDE(data) 
-		{
+		function cleanAndLoadForDE(data) {
 			var data = mapEntries(data);
 			loadDataToDesignExplorer(data);
 			//onsole.log(data);
 		}
 		
 		//reMap Json from GoogleSheet_ Mingbo Peng Modified-------------------------------------------------------------------- 
-		function mapEntries(json, realrowlength, skip)
-		{
+		function mapEntries(json, realrowlength, skip){
 		  if (!skip) skip = 1;
 		  var dataframe = new Array();
 		  
@@ -1655,14 +1877,13 @@ function changeLabelSize(size){
 		}
 		
 		//add heaters Json _ Mingbo Peng Modified------------------------------------------------------------------------------ 
-		function loopHeaders(headers,data)
-		{
-		var obj = {};
-		for (var i =0 ; i< headers.length; i++){
-		
-					obj[headers[i]]= data[i];
-			  }
-		return obj;
+		function loopHeaders(headers,data){
+			var obj = {};
+			for (var i =0 ; i< headers.length; i++){
+			
+						obj[headers[i]]= data[i];
+				  }
+			return obj;
 		}
 		
 		
@@ -1695,14 +1916,15 @@ function changeLabelSize(size){
 				//parse the csv data from the design_explorer_data folder
 				d3.csv("http://tt-acm.github.io/DesignExplorer/design_explorer_data/default_onload.csv", loadDataToDesignExplorer);
 				//d3.json("https://spreadsheets.google.com/feeds/cells/1vNEiXJoP1xJdGGuByz-6UaV6NURkemltgDgT66TkPGk/1/public/values?alt=json", cleanAndLoadForDE);
-				//loadDataToDesignExplorer(defaultData);
+				
 				
 			}
 			
 			var fileInput = document.getElementById('csv-file');
 			
 			fileInput.addEventListener('change', function(e) {
-			
+				
+				//clean whatever was added via Google 
 				document.getElementById("googleSheetLinkID").value= "";
 				document.getElementById("googleImgFolderLinkID").value= "";
 
@@ -1904,12 +2126,13 @@ function changeLabelSize(size){
             if (ids.indexOf(id)!=-1){
 
                 var selectedData = allDataCollector[id].cleanedParams;
+				console.log(selectedData);
                 
                 // update chart
                 graph.highlight([selectedData]);
 
                 //update radar chart
-                rc.highlight([selectedData]);
+                //rc.highlight([selectedData]);       //-----here needs a switch for different charts-------
 
                 // push the image to zoomed area
                 d3.selectAll(".zoomed")
@@ -2136,7 +2359,7 @@ function changeLabelSize(size){
             }
     </script>
 
-
+    <!-- saveToCSV -->
     <script type="text/javascript">
 
         function saveToCSV(){
