@@ -2,43 +2,27 @@ d3.parcoords = function(config) {
   var __ = {
     data: [],
     highlighted: [],
-    dimensions: {},
+    dimensions: [],
+    dimensionTitles: {},
     dimensionTitleRotation: 0,
+    types: {},
     brushed: false,
-    brushedColor: null,
-    alphaOnBrushed: 0.0,
     mode: "default",
     rate: 20,
     width: 600,
     height: 300,
     margin: { top: 30, right: 0, bottom: 12, left: 0 },
-    nullValueSeparator: "undefined", // set to "top" or "bottom"
-    nullValueSeparatorPadding: { top: 8, right: 0, bottom: 8, left: 0 },
     color: "#069",
     composite: "source-over",
     alpha: 0.7,
     bundlingStrength: 0.5,
     bundleDimension: null,
-    smoothness: 0.0,
+    smoothness: 0.25,
     showControlPoints: false,
-    hideAxis : [],
-    flipAxes: [],
-    animationTime: 1100
+    hideAxis : []
   };
 
   extend(__, config);
-  if (config && config.dimensionTitles) {
-    console.warn("dimensionTitles passed in config is deprecated. Add title to dimension object.");
-    d3.entries(config.dimensionTitles).forEach(function(d) {
-      if (__.dimensions[d.key]) {
-        __.dimensions[d.key].title = __.dimensions[d.key].title ? __.dimensions[d.key].title : d.value;
-      } else {
-        __.dimensions[d.key] = {
-          title: d.value
-        };
-      }
-    });
-  }
 var pc = function(selection) {
   selection = pc.selection = d3.select(selection);
 
@@ -46,7 +30,7 @@ var pc = function(selection) {
   __.height = selection[0][0].clientHeight;
 
   // canvas data layers
-  ["marks", "foreground", "brushed", "highlight"].forEach(function(layer) {
+  ["shadows", "marks", "foreground", "highlight"].forEach(function(layer) {
     canvas[layer] = selection
       .append("canvas")
       .attr("class", layer)[0][0];
@@ -63,7 +47,7 @@ var pc = function(selection) {
 
   return pc;
 };
-var events = d3.dispatch.apply(this,["render", "resize", "highlight", "brush", "brushend", "brushstart", "axesreorder"].concat(d3.keys(__))),
+var events = d3.dispatch.apply(this,["render", "resize", "highlight", "brush", "brushend", "axesreorder"].concat(d3.keys(__))),
     w = function() { return __.width - __.margin.right - __.margin.left; },
     h = function() { return __.height - __.margin.top - __.margin.bottom; },
     flags = {
@@ -259,7 +243,6 @@ pc.commonScale = function(global, type) {
 		return __.types[p] == t;
 	});
 
-
 	if (global) {
 		var extent = d3.extent(scales.map(function(p,i) {
 				return yscale[p].domain();
@@ -267,12 +250,9 @@ pc.commonScale = function(global, type) {
 				return a.concat(b);
 			}));
 
-
-
 		scales.forEach(function(d) {
 			yscale[d].domain(extent);
 		});
-
 
 	} else {
 		scales.forEach(function(k) {
@@ -291,14 +271,6 @@ pc.commonScale = function(global, type) {
   pc.dimensions(d3.keys(pc.types()));
   return this;
 };
-
-
-
-
-
-
-
-
 
 // a better "typeof" from this post: http://stackoverflow.com/questions/7390426/better-way-to-get-type-of-a-javascript-variable
 pc.toType = function(v) {
@@ -418,7 +390,7 @@ function compute_centroids(row) {
 				cy = centroid + (1 - __.bundlingStrength) * (cy - centroid);
 			}
 		centroids.push([cx, cy]);
-			//centroids.push($V([cx, cy]));			
+			//centroids.push($V([cx, cy]));
 		}
 	}
 
@@ -523,7 +495,6 @@ function single_path(d, ctx) {
 	});
 }
 
-
 function path_foreground(d, i) {
 	return color_path(d, i, ctx.foreground);
 };
@@ -599,7 +570,6 @@ pc.removeAxes = function() {
 
 pc.updateAxes = function() {
   var g_data = pc.svg.selectAll(".dimension").data(__.dimensions);
-
 
   // Enter
   g_data.enter().append("svg:g")
@@ -1028,16 +998,6 @@ pc.brushMode = function(mode) {
             maxY: h()
           };
 
-
-
-
-
-
-
-
-
-
-
       strums[dims.i] = strum;
       strums.active = dims.i;
 
@@ -1265,37 +1225,23 @@ pc.g = function() { return g; };
 // rescale for height, width and margins
 // TODO currently assumes chart is brushable, and destroys old brushes
 pc.resize = function() {
-  // reference the current brushMode
-  var currentBrushMode = pc.brushMode();
-  
-  // reinstalling brushes when resizing currently works for "1D-axes" and "1D-axes-multi"
-  if (currentBrushMode === "1D-axes" || currentBrushMode === "1D-axes-multi") {
-    //store the current brush state
-    var brushModeState = pc.brushExtents();
-  }
   // selection size
   pc.selection.select("svg")
     .attr("width", __.width)
     .attr("height", __.height)
   pc.svg.attr("transform", "translate(" + __.margin.left + "," + __.margin.top + ")");
 
+  // FIXME: the current brush state should pass through
+  if (flags.brushable) pc.brushReset();
+
   // scales
   pc.autoscale();
 
   // axes, destroys old brushes.
   if (g) pc.createAxes();
-
+  if (flags.shadows) paths(__.data, ctx.shadows);
   if (flags.brushable) pc.brushable();
   if (flags.reorderable) pc.reorderable();
-  
-  // reinstalling brushes when resizing currently works for "1D-axes" and "1D-axes-multi"
-  // createAxes() destroyed the brush elements, reinstall them and restore the brush state
-  if (currentBrushMode === "1D-axes" || currentBrushMode === "1D-axes-multi") {
-    // install() recreates the brush elements and their events, assigns empty brush extents
-    brushmodeObject.install();
-    // set the empty brush extents to the saved brush state
-    pc.brushExtents(brushModeState);
-  }
 
   events.resize.call(this, {width: __.width, height: __.height, margin: __.margin});
   return this;

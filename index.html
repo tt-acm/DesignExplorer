@@ -51,7 +51,7 @@
     <link rel="stylesheet" href="./rangeslider_files/css/ion.rangeSlider.skinNice.css"/>
 
     <!-- Parallel Coordinates -->
-    <script type="text/javascript" src = "http://mostapharoudsari.github.io/Honeybee/pc_source_files/d3/d3.parcoords.js"></script>
+    <script type="text/javascript" src = "./testFile/d3.parcoords.js"></script>
     
     <!-- D3 Parallel Coordinates CSS -->
     <link rel="stylesheet" type="text/css" href="./pc_source_files/css/d3.parcoords.css">
@@ -864,7 +864,7 @@ function changeLabelSize(size){
         // side bar for sliders
         $("#menu-toggle").click(function(e) {
             e.preventDefault();
-			console.log(oldpcHeight+"-"+oldpcWidth);
+			
             //$("#wrapper").toggleClass("toggled");
             isToggled = !isToggled;
             d3.select("#wrapper")
@@ -1230,6 +1230,7 @@ function changeLabelSize(size){
             allDataCollector = {},
             slidersMapping = {}, // I collect the data for all the input sliders here so I can use it to remap the sliders later
             ids = [], // Here I collect all data based on a unique ID from inputs
+			cleanedParams4pc = {},
 			googleFolderLink;
 
 
@@ -1248,15 +1249,19 @@ function changeLabelSize(size){
                     
                         inputParams[key.replace("in:", "").trim()] = row[key];
                         cleanedParams[key.replace("in:", "").trim()] = row[key];
+						cleanedParams4pc[key.replace("in:", "").trim()] = {};
+						
                     
                     }else if(key.trim().startsWith("out:")){
                     
                         outputParams[key.replace("out:", "").trim()] = row[key];
                         cleanedParams[key.replace("out:", "").trim()] = row[key]; 
+						cleanedParams4pc[key.replace("out:", "").trim()] = {};
+						
                     
                     }else{
-						
                         cleanedParams[key.trim()] = row[key]; // I need to add case for image and 3D here later
+						if(key.trim() != "img" && key.trim() != "threeD"){cleanedParams4pc[key.trim()] = {}};
                     }
                 });
 
@@ -1276,7 +1281,8 @@ function changeLabelSize(size){
         
         // add rating of 0 to all the options if not already there
         if (keys.indexOf("Rating")==-1) {
-
+		
+			cleanedParams4pc["Rating"] = {};
             cleanedData.forEach(function(d){
                 d.Rating = 0;
             });
@@ -1377,19 +1383,23 @@ function changeLabelSize(size){
             // draw parallel coordiantes chart
             // click event should highlight the image in thumbnails and show it in zoomed
             // brush should filter thumbnails
-            // get parallel coordinates         
+            // get parallel coordinates  
+			
             graph = d3.parcoords()('#graph')
                 .data(cleanedData)
-                    .margin({ top: 50, left: 20, bottom: 10, right: 20 })
-                    .alpha(0.2)
-                    .mode("queue")
-                    .rate(20)
-                    .render()
-                    .brushMode("1D-axes")  // enable brushing
-                    .interactive()
-                    .reorderable()
-                    .scale("Rating", [0,5]).updateAxes(); // set initial domain for rating
-            
+				.margin({ top: 50, left: 20, bottom: 10, right: 20 })
+				.alpha(0.2)
+				.mode("queue")
+				.rate(20)
+				.dimensions(cleanedParams4pc)
+				.render()
+				.brushMode("1D-axes")  // enable brushing
+				.interactive()
+				.reorderable()
+				.scale("Rating", [0,5]).updateAxes(); // set initial domain for rating
+					
+            //graph.toTypeCoerceNumbers();
+			
             // modify labels
             var inputLabelColor = "black",
                 outputLabelColor = "steelblue",
@@ -1424,7 +1434,8 @@ function changeLabelSize(size){
 
             // set color change
             // set the initial coloring based on the 3rd column
-            pcIsColoredBy = graph.dimensions()[0]; 
+            pcIsColoredBy = d3.keys(graph.dimensions())[0]; 
+			
             update_colors(pcIsColoredBy);
 
             // click label to activate coloring
@@ -1444,7 +1455,7 @@ function changeLabelSize(size){
 
         // update color and font weight of chart based on axis selection
         function update_colors(dimension) { 
-
+	
             pcIsColoredBy = dimension; 
 
             // change the fonts to bold
@@ -1482,11 +1493,12 @@ function changeLabelSize(size){
             var legendHeight = d3.select("#sidebar-wrapper").style("height").replace("px", "")/3;
             
             // legend boxes are diminsions of the graph
-            dimensions = graph.dimensions().map(function(d){return {name: d, enabled:true};});
+			//console.log(Object.keys(graph.dimensions()));
+            dimensions = d3.keys(graph.dimensions()).map(function(d){return {name: d, enabled:true};});
 
             // find size of the square based on the height
             //var legendSquareSize = 16;
-            var legendSquareSize = Math.max(legendHeight/(graph.dimensions().length + 4), 12);
+            var legendSquareSize = Math.max(legendHeight/(d3.keys(graph.dimensions()).length + 4), 12);
 
             // create one group for each rect and text
             var legend = d3.select("#legend").append("svg")
@@ -1520,7 +1532,7 @@ function changeLabelSize(size){
         
         function addSortDropdowns(){
             
-            sortBy = graph.dimensions()[0]; // will be used to sort thumbnail images
+            sortBy = d3.keys(graph.dimensions())[0]; // will be used to sort thumbnail images
             ascending = true;
             
             var select = d3.selectAll("#sorting")
@@ -1530,7 +1542,7 @@ function changeLabelSize(size){
 
             // add options based on input and outputs
             select.selectAll("option")
-              .data(graph.dimensions())
+              .data(d3.keys(graph.dimensions()))
               .enter()
                 .append("option")
                 .attr("value", function (d) { return d; })
@@ -1579,7 +1591,7 @@ function changeLabelSize(size){
             // get title for each image    
             var title = [];
             
-            graph.dimensions().forEach(function(key){
+            d3.keys(graph.dimensions()).forEach(function(key){
                 var info =  key + ":" + data[key];
                 title.push(info);
             });
@@ -1710,7 +1722,11 @@ function changeLabelSize(size){
                         alert("You need to select some data to be kept!")
                     }else{
                         // update graph with new data
-                        updateGraph(newData);
+                        //updateGraph(newData);
+						graph.data(newData).dimensions(cleanedParams4pc).render().updateAxes();
+						
+						
+						
                     }
                 });
 
@@ -1732,11 +1748,12 @@ function changeLabelSize(size){
             d3.select("#reset")
                 .on("click", function() {           
                     updateGraph(cleanedData);
+					
                 });
 
 
             function updateGraph(newData){
-                graph.data(newData).render().interactive().reorderable().autoscale();
+                graph.data(newData).brushReset().render().interactive().reorderable().autoscale();
                 //updateRadarChart();                   //-----here needs a switch for different charts-------
 				updateScatterChart();
                 updateLayoutOnDeselect();                        
@@ -1790,7 +1807,7 @@ function changeLabelSize(size){
 			
 			
 			
-			
+			// set left chart full screen
 			var oldpcHeight = d3.select("#graph").style("height").replace("px", "");
 			var oldpcWidth = d3.select("#graph").style("width").replace("px", "");
 			var newpcHeight = (windowHeight-109)*0.66;
@@ -1801,15 +1818,14 @@ function changeLabelSize(size){
 
 	
 				isLeftChartFullScreenToggled = !isLeftChartFullScreenToggled;
-				
 
 				d3.select(".col-lg-3") //hide right side
-					.transition().duration(1000)
-					.style("display", function(){
+					//.transition().duration(1000)
+					.style("visibility", function(){
 						if(isLeftChartFullScreenToggled){
-							return "none";
+							return "collapse";
 						}else{
-							return "block";
+							return "visible";
 						}
 					});
 				
@@ -1834,7 +1850,8 @@ function changeLabelSize(size){
 				
 				// change the chart size;
 				if(isLeftChartFullScreenToggled){
-							graph.width(newpcWidth).height(newpcHeight);
+							graph.height(newpcHeight);
+							console.log(newpcHeight);
 							//if(graph.brushed().length!=0) {graph.highlight(graph.brushed());}
 						}else{
 							graph.width(oldpcWidth).height(oldpcHeight);
@@ -2383,7 +2400,7 @@ function changeLabelSize(size){
                     });
 
                 // add Rating to dimensions
-                graph.dimensions(graph.dimensions().concat("Rating"));
+                graph.dimensions(d3.keys(graph.dimensions()).concat("Rating"));//need changed in some way????
 
                 firstRating = false;
             }
