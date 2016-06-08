@@ -252,12 +252,11 @@ pc.autoscale = function() {
   };
 
   d3.keys(__.dimensions).forEach(function(k) {
-    //if (!__.dimensions[k].yscale){
+    if (!__.dimensions[k].yscale){
       __.dimensions[k].yscale = defaultScales[__.dimensions[k].type](k);
-      //console.log(k);
-    //}
+    }
   });
- 
+
   // xscale
   xscale.rangePoints([0, w()], 1);
 
@@ -363,7 +362,7 @@ pc.applyDimensionDefaults = function(dims) {
     newDims[k].outerTickSize= newDims[k].outerTickSize != null ? newDims[k].outerTickSize : 0;
     newDims[k].tickPadding= newDims[k].tickPadding != null ? newDims[k].tickPadding : 3;
     newDims[k].type= newDims[k].type ? newDims[k].type : types[k];
-    //newDims[k].yscale.domain //domain is setted by autoscale
+
     newDims[k].index = newDims[k].index != null ? newDims[k].index : currIndex;
     currIndex++;
   });
@@ -688,9 +687,6 @@ d3.rebind(pc, axis, "ticks", "orient", "tickValues", "tickSubdivide", "tickSize"
 
 function flipAxisAndUpdatePCP(dimension) {
   var g = pc.svg.selectAll(".dimension");
-  if (pc.brushMode() === "1D-axes" || pc.brushMode() === "1D-axes-multi") {
-    var state = pc.brushExtents();
-  }
 
   pc.flip(dimension);
 
@@ -698,9 +694,6 @@ function flipAxisAndUpdatePCP(dimension) {
     .transition()
       .duration(__.animationTime)
       .call(axis.scale(__.dimensions[dimension].yscale));
-  if (pc.brushMode() === "1D-axes" || pc.brushMode() === "1D-axes-multi") {
-    pc.brushExtents(state);
-  }
 
   pc.render();
 }
@@ -1059,9 +1052,6 @@ pc.brushMode = function(mode) {
     brush.modes[brush.mode].uninstall(pc);
     // Finally, we can install the requested one.
     brush.mode = mode;
-
-    // Reference brushmode object for later use at resize() function
-    brushmodeObject = brush.modes[brush.mode];
     brush.modes[brush.mode].install();
     if (mode === "None") {
       delete pc.brushPredicate;
@@ -1098,7 +1088,7 @@ pc.brushMode = function(mode) {
 		// test if within range
 		var within = {
 			"date": function(d,p,dimension) {
-	          if (typeof __.dimensions[p].yscale.rangePoints === "function") { // if it is ordinal
+	if (typeof __.dimensions[p].yscale.rangePoints === "function") { // if it is ordinal
           return extents[dimension][0] <= __.dimensions[p].yscale(d[p]) && __.dimensions[p].yscale(d[p]) <= extents[dimension][1]
         } else {
           return extents[dimension][0] <= d[p] && d[p] <= extents[dimension][1]
@@ -1303,7 +1293,7 @@ pc.brushMode = function(mode) {
       .attr("stroke-width", 2);
 
     drag
-      .on("drag", function(d, i) {
+      .on("drag", function(d, i) { 
         var ev = d3.event;
         i = i + 1;
         strum["p" + i][0] = Math.min(Math.max(strum.minX + 1, ev.x), strum.maxX);
@@ -2290,38 +2280,22 @@ pc.g = function() { return g; };
 // rescale for height, width and margins
 // TODO currently assumes chart is brushable, and destroys old brushes
 pc.resize = function() {
-  // reference the current brushMode
-  var currentBrushMode = pc.brushMode();
-
-  // reinstalling brushes when resizing currently works for "1D-axes" and "1D-axes-multi"
-  if (currentBrushMode === "1D-axes" || currentBrushMode === "1D-axes-multi") {
-    //store the current brush state
-    var brushModeState = pc.brushExtents();
-  }
-
   // selection size
   pc.selection.select("svg")
     .attr("width", __.width)
     .attr("height", __.height)
   pc.svg.attr("transform", "translate(" + __.margin.left + "," + __.margin.top + ")");
 
+  // FIXME: the current brush state should pass through
+  if (flags.brushable) pc.brushReset();
 
   // scales
   pc.autoscale();
-  pc.render();
+
   // axes, destroys old brushes.
   if (g) pc.createAxes();
   if (flags.brushable) pc.brushable();
   if (flags.reorderable) pc.reorderable();
-
-  // reinstalling brushes when resizing currently works for "1D-axes" and "1D-axes-multi"
-  // createAxes() destroyed the brush elements, reinstall them and restore the brush state
-  if (currentBrushMode === "1D-axes" || currentBrushMode === "1D-axes-multi") {
-    // install() recreates the brush elements and their events, assigns empty brush extents
-    brushmodeObject.install();
-    // set the empty brush extents to the saved brush state
-    pc.brushExtents(brushModeState);
-  }
 
   events.resize.call(this, {width: __.width, height: __.height, margin: __.margin});
   return this;

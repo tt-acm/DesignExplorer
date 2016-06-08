@@ -34,7 +34,7 @@
     <meta name="author" content="">
 
     <title>Design Explorer 2</title>
-    
+
     <link rel="shortcut icon" href="favicon.ico">
     <link rel="icon" type="image/png" href="favicon.png">
 
@@ -51,8 +51,8 @@
     <link rel="stylesheet" href="./rangeslider_files/css/ion.rangeSlider.skinNice.css"/>
 
     <!-- Parallel Coordinates -->
-    <script type="text/javascript" src = "http://mostapharoudsari.github.io/Honeybee/pc_source_files/d3/d3.parcoords.js"></script>
-    
+    <script type="text/javascript" src = "./pc_source_files/d3/d3.parcoords.js"></script>
+
     <!-- D3 Parallel Coordinates CSS -->
     <link rel="stylesheet" type="text/css" href="./pc_source_files/css/d3.parcoords.css">
 
@@ -61,12 +61,12 @@
 
     <!-- Radar Chart CSS -->
     <link rel="stylesheet" type="text/css" href="./radar_source_files/radar-chart.css"/>
-	
+
 	<!-- Scatter-matrix -->
 	<script src="./scatter_matrix_source_files/scatter-matrix.js"></script>
 	<!-- Scatter-matrix CSS -->
 	<link type="text/css" rel="stylesheet" href="./scatter_matrix_source_files/scatter-matrix.css">
-    
+
     <!-- Bootstrap Core CSS -->
     <link href="bootstrap_side_bar/css/bootstrap.min.css" rel="stylesheet">
 
@@ -112,16 +112,16 @@
            font-family: sans-serif;
            font-size: 12px;
         }
-        
+
         div {
             background-color: white;
         }
-        
+
 
         input {
-           display: inline-block;
-           font-family: sans-serif;
-           font-size: 12px;
+            display: inline-block;
+            font-family: sans-serif;
+            font-size: 12px;
         }
 
         output {
@@ -135,7 +135,7 @@
         .row-centered {
             text-align:center;
         }
-        
+
         .col-centered {
             display:inline-block;
             float:none;
@@ -196,7 +196,7 @@
             height: 100%;
             width: auto;
             display:block; /* to center the imge - hopefully! */
-            margin-left:auto; 
+            margin-left:auto;
             margin-right:auto;
             }
 
@@ -206,70 +206,69 @@
             height: 100%;
         }
 
-        
+
         #thumbnails-btm_container,
         #zoomedArea {
             overflow: hidden;
         }
 
-        
+
         #legend{
             overflow-y: auto;
-            overflow-x: hidden;  
+            overflow-x: hidden;
         }
 
         rect.disabled {
             fill: transparent !important;
         }
 
-       .navbar-default {
+        .navbar-default {
             height: 50px; /* overwrite default navbar size */
-       }
+        }
 
-       .Spectacles_Footer{
-			visibility: hidden;
-       }
+        .Spectacles_Footer{
+			      visibility: hidden;
+        }
 
-       .sampleImage {
+        .sampleImage {
             width:100%;
             cursor: pointer;
-       }
+        }
 
-       .sampleImage:hover img{
-			border-color: black;
-			border-width: .2em solid;
-       }
-	   
-	   input#csv-file {
-			opacity: 0;
-			top: 0;
-			right: 0;
-			margin: 0;
-			padding: 0;
-			filter: alpha(opacity=0);
-			position: absolute;
-		}
+        .sampleImage:hover img{
+      			border-color: black;
+      			border-width: .2em solid;
+        }
 
-	   .file-upload{
-	        position: relative;
-			overflow: hidden;
-			height: 2.2em;
-			border-width: 0px;
-			width: 10em;
-			border-radius: 10em;
-	   }
-	   
-	   .col-lg-3 {
-			-webkit-transition: all 1s ease;
-			-moz-transition: all 1s ease;
-			-o-transition: all 1s ease;
-			transition: all 1s ease;
-		}
-		
-		div#thumbnails-side_container {
-			margin-top: 30px;
-		}
+	      input#csv-file {
+      			opacity: 0;
+      			top: 0;
+      			right: 0;
+      			margin: 0;
+      			padding: 0;
+      			filter: alpha(opacity=0);
+      			position: absolute;
+		    }
 
+	    .file-upload{
+  	        position: relative;
+      			overflow: hidden;
+      			height: 2.2em;
+      			border-width: 0px;
+      			width: 10em;
+      			border-radius: 10em;
+	    }
+
+	    .col-lg-3 {
+      			-webkit-transition: all 1s ease;
+      			-moz-transition: all 1s ease;
+      			-o-transition: all 1s ease;
+      			transition: all 1s ease;
+		  }
+
+  		div#thumbnails-side_container {
+  			    margin-top: 30px;
+  		}
 
     </style>
 
@@ -282,28 +281,28 @@ function MP_getGoogleIDandLoad() {
 	document.getElementById('csv-file').value = "";
     var googleSheetLink= document.getElementById("googleSheetLink").value.split("/");
     var googleImgFolderLink= document.getElementById("googleImgFolderLink").value.split("/");
-	
-	
+
+
 	var googleSheetLinkID = googleSheetLink[5];
 	var googleImgFolderLinkID = googleImgFolderLink[googleImgFolderLink.length-1];
 	if(googleSheetLinkID.length>0 && googleImgFolderLinkID.length>0){
-		
+
 		document.getElementById("googleSheetLinkID").value= googleSheetLinkID;
 		document.getElementById("googleImgFolderLinkID").value= googleImgFolderLinkID;
 
 		//var userlink = "http://mebd.azurewebsites.net/DesignExplorer/index.html?GSHEET=" + googleSheetLinkID + "&GFOLDER="+googleImgFolderLinkID;
-		
-		
+
+
 		var filePath = "https://spreadsheets.google.com/feeds/cells/"+googleSheetLinkID+"/1/public/values?alt=json";
-		// remove the current selection 
+		// remove the current selection
 		unloadPageContent();
 		// load the new GoogleSheet
 		d3.json(filePath, cleanAndLoadForDE);
 		getStillLink();
 	}else {alert("You have to put Google Drive Folder information first!");}
 	//alert(googleImgFolderLinkID);
-	
-    
+
+
 	}
 
 function getUrlVars() {
@@ -332,7 +331,7 @@ function changeLabelSize(size){
 		d3.selectAll(".label")
 		.style("font-size", "75%");
 	}
-	
+
 }
 </script>
 
@@ -352,7 +351,7 @@ function changeLabelSize(size){
 
             <div class="navbar-header" title="Design Explorer">
                 <img style="max-width:350px; padding-top: 10px;" src="./img/DesignExplorerLogo2.png">
-            </div>           
+            </div>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -360,7 +359,7 @@ function changeLabelSize(size){
             <ul class="nav navbar-nav">
                 <li>
                     <!--button to load csv uncommented-->
-                    
+
 					<p class="navbar-text">
                         <input type="text" id="googleSheetLink" class="btn btn-default btn-sm" name="sheet" style="border-radius: 20px 0 0 20px; width: 15em; height: 2.2em;" placeholder = "Google Spreadsheets Link"/>
 					</p>
@@ -374,7 +373,7 @@ function changeLabelSize(size){
                     </p>
 					<p style="float:left; margin: 20px 0 0 15px;"> OR </p>
 					<p class="navbar-text">
-						<button class="file-upload">  
+						<button class="file-upload">
 							<input type="file" id="csv-file" class="btn btn-default btn-sm-upload" name="files" /> Upload CSV
 						</button>
                     </p>
@@ -413,7 +412,7 @@ function changeLabelSize(size){
                     <div class="col-lg-12">
                         <div class="row">
                             <div class="col-lg-9">
-                                
+
                                 <div class="row">
                                     <div class="btn-group col-xs-12" style=" width: auto;">
                                         <button type="button" class="btn btn-default btn-xs" id="menu-toggle" title="Show sliders">
@@ -448,17 +447,17 @@ function changeLabelSize(size){
                                         <!-- <h1>Parallel coordinates graph</h1> -->
                                     </div>
                                 </div>
-                                
+
                                 <!-- Zoomed div for zoomed in areas -->
                                 <div class="row-fluid">
                                     <div class="zoomed" id="zoomedArea" style="height:0px">
 
                                         <div class="pull-right" id="vis">
                                             <form>
-                                                   
+
                                                 <label><input type="radio" id="toggleView" name="visMode" value="2D" checked> 2D</label> <!-- show 2D image on load-->
                                                 <label><input type="radio" id="toggleView" name="visMode" value="3D"> 3D</label>
-                                                
+
                                                 <button type="button" class="btn btn-default btn-xs" id="toggleComments" style="margin-right:10px; margin-left:5px; margin-top: 2px;" title="Add Comments">
                                                     <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                                                 </button>
@@ -486,10 +485,10 @@ function changeLabelSize(size){
                                     </div>
                                 </div>
                             </div> <!-- end of left side charts-->
-							
+
                             <!-- start of right side charts-->
                             <div class="col-lg-3" style="padding-left: 0;">
-                                
+
                                 <div class="row-fluid">
                                     <div id="rightTopButtonGroup" class="btn-group col-xs-12">
 										<button type="button" class="btn btn-default btn-xs" id="scatter-fullscreen-toggle" title="Full Screen">
@@ -506,14 +505,14 @@ function changeLabelSize(size){
                                         </button>
                                     </div>
                                 </div>
-                                
+
                                 <div class="row">
-								
+
                                 <div id="radarChart" class="col-lg-12 collaps in center-block" style="font-size:14px; font-weight:bold">
                                       <!-- // <h5>Radar Chart Place Holder</h5> -->
-                                    </div>  
+                                    </div>
 									<!--<div id="scatterChart" class="col-lg-12 collaps in center-block">
-										 place holder for the scatterChart 
+										 place holder for the scatterChart
 									</div>-->
                                 </div>
                                 <div class="row">
@@ -531,7 +530,7 @@ function changeLabelSize(size){
                         <div class="col-lg-12" id="thumbnails-btm_container">
                             <div id="sorting" class="col-lg-12" style="float:right; margin-top: 2px;"></div>
                             <div class="col-lg-12" id="thumbnails-btm"></div>
-                        </div>            
+                        </div>
                     </div>
                 </div>
             </div>
@@ -547,7 +546,7 @@ function changeLabelSize(size){
                             Design Explorer is an open source web interface for exploring multi-dimensional design spaces!
                         </h4>
                         <br>
-						
+
                         <h3 class="text-center">Try one of sample design sets</h3>
 						<h5 class="text-center"><a href="http://www.mpendesign.com/category/tutorial/" target="_blank" >Tutorial</a></h5>
                         <br>
@@ -573,7 +572,7 @@ function changeLabelSize(size){
                                 <a href="http://core.thorntontomasetti.com/about/contact" target="_blank">Contact</a> |
                             </h5>
 							<h5 class="text-center">
-                                Updated by 
+                                Updated by
                                 <a href="http://www.mpendesign.com" target="_blank">Mingbo Peng</a> |
                                 <a href="http://www.mebd-penndesign.info/" target="_blank">MEBD</a> |
                                 <a href="https://www.design.upenn.edu/" target="_blank">PennDesign</a> |
@@ -605,7 +604,7 @@ function changeLabelSize(size){
                 inputParameters[keyValue[0].toLowerCase()] = keyValue[1].toLowerCase();
             })
         }
-        
+
         // read optional url parameters
         parseUri();
 
@@ -617,7 +616,7 @@ function changeLabelSize(size){
 
 
     <script type="text/javascript">
-        
+
         sampleFiles = {
                  1:"design_explorer_data/LittleRedBox.csv",
                 2: "design_explorer_data/default_onload.csv",
@@ -631,7 +630,7 @@ function changeLabelSize(size){
 
                 var filePath = sampleFiles[id];
 
-                // remove the current selection 
+                // remove the current selection
                 unloadPageContent();
 
                 d3.select("div#welcome").remove();
@@ -641,7 +640,7 @@ function changeLabelSize(size){
             });
 
     </script>
-	
+
         <!-- right side chart -->
     <script type="text/javascript">
 
@@ -653,9 +652,9 @@ function changeLabelSize(size){
                 var selectedData = graph.brushed();
             } else {
                var selectedData = graph.data();
-			   
+
             }
-            
+
             //var selectedData = graph.brushed();
             selectedDataFormatted = [];
             radarChartColors = [];
@@ -663,12 +662,12 @@ function changeLabelSize(size){
             selectedData.forEach(function(d) {
                 selectedDataFormatted.push(formatData(d));
                 //debugger;
-				
+
 
                 radarChartColors.push(color(d[pcIsColoredBy]));
 
             })
-			
+
 
             //get height, width for radar chart
             //we want the graph to be centered above the thumbnails
@@ -686,9 +685,9 @@ function changeLabelSize(size){
                 color: function(){return radarGrey;},
                 radius: 4,
                 maxValue: 100,
-                extraWidthX: divWidth - rcDimension, 
+                extraWidthX: divWidth - rcDimension,
                 extraWidthY: 65,
-                translateX: (divWidth - rcDimension) / 2, 
+                translateX: (divWidth - rcDimension) / 2,
                 translateY: 65 / 2,
                 levels: 5,
             });
@@ -706,9 +705,9 @@ function changeLabelSize(size){
 
         //resize radar chart
         function resizeRadarChart() {  // if it is still needed?.......
-            
+
             return;
-            
+
             var divWidth = d3.select("#thumbnails-side").style("width").replace("px", "");
             var pcHeight = d3.select("#graph").style("height").replace("px", "");
             if (pcHeight > 0) {
@@ -716,7 +715,7 @@ function changeLabelSize(size){
             } else {
                 var rcDimension = divWidth - 65;
             }
-            
+
             cfg.w = rcDimension;
             cfg.h = rcDimension;
             cfg.extraWidthX = divWidth - rcDimension;
@@ -734,10 +733,10 @@ function changeLabelSize(size){
                 .style("font-size", 9);
 
             if (graph.brushed().length > 0) {
-               rc.updateData(graph.brushed()); 
-			   
+               rc.updateData(graph.brushed());
+
            }
-            
+
 
             if (graph.highlighted().length > 0) {
                 rc.highlight(graph.highlighted());
@@ -749,101 +748,99 @@ function changeLabelSize(size){
         function cleanRadarChart() {
             d3.selectAll(".radar-chart").remove();
         }
-		
-		
-		// add scatter chart
-		
-		
-		function addScatterChart(){
-			var pcHeight = d3.select("#graph").style("height").replace("px", "");
-			var rightChartWidth = d3.select("#radarChart").style("width").replace("px", "");
-			
-			if (graph.brushed().length > 0) {
-                var selectedData = graph.brushed();
-            } else {
-				var selectedData = graph.data();
-			   
-            }
-			var sm = new ScatterMatrix("",selectedData,'#radarChart' );
-			sm.cellSize((pcHeight-60)/2);
-			sm.render();
-			
-			// adjust the chart style
-			//var chartWidth = d3.select(".scatter-matrix-svg svg").style("width").replace("px", "");
-			d3.select(".scatter-matrix-svg")
-                .style("width", pcHeight-10 +"px");
-				
-			d3.select(".scatter-matrix-control")
-                .style("height", pcHeight-30 +"px");
-				
-			//return sm;
-                
-		}
-		
-		//unique id for each Circle 
-		function getCircleID(d) {
-		  var id;
-		  var keys = d3.keys(graph.data()[0]);
 
-		  keys.forEach(function(key) {
-			id = "scatter_"+cleanString(d[key].toString());
-		  })
 
-		  return id;
-		}
-		
-		function updateScatterChart(){
-			var data;
-			if (graph.brushed().length > 0) {
-				data =graph.brushed();
-			}else{
-				data =graph.data();
-			}
-			d3.selectAll(".cell circle").attr("visibility", "hidden");
+    		// add scatter chart
+    		function addScatterChart(){
+    			var pcHeight = d3.select("#graph").style("height").replace("px", "");
+    			var rightChartWidth = d3.select("#radarChart").style("width").replace("px", "");
 
-			data.forEach(function(d) {
-				//console.log(getCircleID(d));
-				d3.selectAll("#" + getCircleID(d)).attr("visibility", "shown");
-			})
+    			if (graph.brushed().length > 0) {
+                    var selectedData = graph.brushed();
+                } else {
+    				var selectedData = graph.data();
 
-		}
-		
-		function highlightScatterDot(){
-			var data =graph.highlighted();
-			if (data.length > 0) {
-			
-				d3.selectAll(".cell circle")
-					.style("r", function(d){
-						  
-						if(isRightChartFullScreenToggled){
-							return 2;
-						}else{
-							return 1;
-						}
-						  
-					})
-					.style("fill-opacity", "0.1");
+                }
+    			var sm = new ScatterMatrix("",selectedData,'#radarChart' );
+    			sm.cellSize((pcHeight-60)/2);
+    			sm.render();
 
-				data.forEach(function(d) {
-					d3.selectAll("#" + getCircleID(d))
-						.style("r", "3")
-						.style("fill-opacity", "1");
-				})
-			
-			}
-			
+    			// adjust the chart style
+    			//var chartWidth = d3.select(".scatter-matrix-svg svg").style("width").replace("px", "");
+    			d3.select(".scatter-matrix-svg")
+                    .style("width", pcHeight-10 +"px");
 
-		}
-		
-		function unlighlightScatter(){
-			d3.selectAll(".cell circle")
-					.style("r", function(d){
-							return 1;
-						  
-					})
-					.style("fill-opacity", "0.4");
+    			d3.select(".scatter-matrix-control")
+                    .style("height", pcHeight-30 +"px");
 
-		}
+    			//return sm;
+
+    		}
+
+    		//unique id for each Circle
+    		function getCircleID(d) {
+    		  var id;
+    		  var keys = d3.keys(graph.data()[0]);
+
+    		  keys.forEach(function(key) {
+    			id = "scatter_"+cleanString(d[key].toString());
+    		  })
+
+    		  return id;
+    		}
+
+    		function updateScatterChart(){
+    			var data;
+    			if (graph.brushed().length > 0) {
+    				data =graph.brushed();
+    			}else{
+    				data =graph.data();
+    			}
+    			d3.selectAll(".cell circle").attr("visibility", "hidden");
+
+    			data.forEach(function(d) {
+    				//console.log(getCircleID(d));
+    				d3.selectAll("#" + getCircleID(d)).attr("visibility", "shown");
+    			})
+
+    		}
+
+    		function highlightScatterDot(){
+    			var data =graph.highlighted();
+    			if (data.length > 0) {
+
+    				d3.selectAll(".cell circle")
+    					.style("r", function(d){
+
+    						if(isRightChartFullScreenToggled){
+    							return 2;
+    						}else{
+    							return 1;
+    						}
+
+    					})
+    					.style("fill-opacity", "0.1");
+
+    				data.forEach(function(d) {
+    					d3.selectAll("#" + getCircleID(d))
+    						.style("r", "3")
+    						.style("fill-opacity", "1");
+    				})
+
+    			}
+
+
+    		}
+
+    		function unlighlightScatter(){
+    			d3.selectAll(".cell circle")
+    					.style("r", function(d){
+    							return 1;
+
+    					})
+    					.style("fill-opacity", "0.4");
+
+    		}
 
     </script>
 
@@ -851,11 +848,15 @@ function changeLabelSize(size){
     <script>
         var isAnyItemSelected = false;
         var isToggled = true;
-		var isScatterToggled = true;
-		var isLeftChartFullScreenToggled = false;
-		var isRightChartFullScreenToggled = false;
-		var windowWidth = window.innerWidth,
-			windowHeight = window.innerHeight;
+    		var isScatterToggled = true;
+    		var isLeftChartFullScreenToggled = false;
+    		var isRightChartFullScreenToggled = false;
+    		var windowWidth = window.innerWidth,
+    			windowHeight = window.innerHeight;
+
+
+
+
 
         // side bar for sliders
         $("#menu-toggle").click(function(e) {
@@ -868,316 +869,254 @@ function changeLabelSize(size){
                 .transition().duration(500) //length of toggle animation
                 //.each("end", resizeRadarChart())
         });
-		
-		
-		$("#scatter-menu-toggle").click(function(e) {
-		
+
+
+		    $("#scatter-menu-toggle").click(function(e) {
+
             isScatterToggled = !isScatterToggled;
             d3.select(".scatter-matrix-control")
                 .classed("toggled", isScatterToggled);
         });
-		
-		//--------------------------------------------------set left side chart full screen -----------------------------------//
-		
-		
-		//--------------------------------------------------set right side chart full screen -----------------------------------//
-		$("#scatter-fullscreen-toggle").click(function(e) {
-		
-			var divWidth = d3.select(".col-lg-3").style("width").replace("px", "");
-		
-            isRightChartFullScreenToggled = !isRightChartFullScreenToggled;
-            d3.select(".col-lg-3")
-				.transition().duration(500)
-				.style("float", "right")
-				.style("height", function(){
-					if(isRightChartFullScreenToggled){
-						return windowHeight-50+"px";
-					}else{
-						return "auto";
-					}
-				})
-				.style("right", function(){
-					if(isRightChartFullScreenToggled){
-						return windowWidth-divWidth-15+"px";
-					}else{
-						return "0";
-					}
-				});
-				
-			d3.selectAll(".col-lg-3 .row, #rightTopButtonGroup")
-				.transition().delay(100)
-				.transition().duration(1000)
-				.style("width", function(){
-					if(isRightChartFullScreenToggled){
-						return windowWidth-50+"px";
-					}else{
-						return "auto";
-					}
-				});
 
-			d3.select(".col-lg-9") // hide left side
-				.transition().delay(500)
-				.transition().duration(1000)
-				.style("display", function(){
-					if(isRightChartFullScreenToggled){
-						return "none";
-					}else{
-						return "block";
-					}
-				});
-				
-			
-			d3.select(".scatter-matrix-svg")
-                .style("width", function(){
-					if(isRightChartFullScreenToggled){
-						return windowHeight-200+"px";
-					}else{
-						return d3.select("#graph").style("height").replace("px", "")-10+"px";
-					}
-				});
-				
-			// reset the size of right side top button
-			d3.select("#copyRightButton")
-				.transition().delay(100)
-				.transition().duration(1000)
-				.style("width", function(){
-					if(isRightChartFullScreenToggled){
-						return windowWidth-180+"px";
-					}else{
-						return divWidth-180+"px";
-					}
-				});
-
-        });
+		      //--------------------------------------------------set left side chart full screen -----------------------------------//
 
 
-        
-        // update layout on select
-        function updateLayoutOnSelect(){
-            
-            var selectedImage = d3.select(this);
+		      //--------------------------------------------------set right side chart full screen -----------------------------------//
+    		$("#scatter-fullscreen-toggle").click(function(e) {
 
-            // update rating based
-            setStarValue(selectedImage.data()[0].Rating);
-            
-            // find height of parallel coordinate
-            // to find the height for zoomed div
-            var pcHeight = d3.select("#graph")
-                .style("height").replace("px", "");
+    			var divWidth = d3.select(".col-lg-3").style("width").replace("px", "");
 
-            // show zoomed area
-            d3.selectAll(".zoomed")
-                .transition().duration(1500)
-                .style("height", (cleanHeight - pcHeight) + "px");
+                isRightChartFullScreenToggled = !isRightChartFullScreenToggled;
+                d3.select(".col-lg-3")
+    				.transition().duration(500)
+    				.style("float", "right")
+    				.style("height", function(){
+    					if(isRightChartFullScreenToggled){
+    						return windowHeight-50+"px";
+    					}else{
+    						return "auto";
+    					}
+    				})
+    				.style("right", function(){
+    					if(isRightChartFullScreenToggled){
+    						return windowWidth-divWidth-15+"px";
+    					}else{
+    						return "0";
+    					}
+    				});
 
-            // hide btm thumbnail
-            d3.select("#thumbnails-btm_container")
-                .transition().duration(1000)
-                .style("height", "0px");
+    			d3.selectAll(".col-lg-3 .row, #rightTopButtonGroup")
+    				.transition().delay(100)
+    				.transition().duration(1000)
+    				.style("width", function(){
+    					if(isRightChartFullScreenToggled){
+    						return windowWidth-50+"px";
+    					}else{
+    						return "auto";
+    					}
+    				});
 
-            // push the image to zoomed area
-			
-			
-			var imgLink;
-			var userInputs = document.getElementById("googleImgFolderLinkID").value;
-			if(userInputs.length >0){
-				//loadImgfrom inputs
-				imgLink = function(d){return "http://www.googledrive.com/host/"+ userInputs + "/"+selectedImage.datum()["img"]};
-			
-			}else{
-			
-				imgLink = selectedImage.datum()["img"];
-		
-			}
-			
-	
-            d3.selectAll(".zoomed")
-                .select("img")
-                .data(selectedImage.data())
-                .attr("src", imgLink)
-                .attr("title", getTitle);           
-
-				
-            // highlight the line graph
-            graph.highlight(selectedImage.data());
-
-            // load 3d geometry if the view is set to 3D
-            if (currentView=="3D") loadNew3DModel();
-            
-            if (!isAnyItemSelected){
-                // if there is a brushed selection
-                // update the range of the sliders
-                updateSlidersTickValues();
-            }
-
-            // update the values for slider
-            updateSlidersValue(graph.highlight()[0]);
-
-            // enable sliders
-            enableAllSliders();
-
-            //highlight the radar chart  //-----here needs a switch for different charts-------
-            //rc.highlight(selectedImage.data());      
-			highlightScatterDot();
-			
-
-            var radarHeight = d3.select("#radarChart")
-                .style("height").replace("px", "");
-
-            // let's side thumbnail show up
-            d3.select("#thumbnails-side_container")
-                .transition().duration(1500)
-                .style("height", (cleanHeight - radarHeight) + "px");
-
-            isAnyItemSelected = true;
-
-        };
+    			d3.select(".col-lg-9") // hide left side
+    				.transition().delay(500)
+    				.transition().duration(1000)
+    				.style("display", function(){
+    					if(isRightChartFullScreenToggled){
+    						return "none";
+    					}else{
+    						return "block";
+    					}
+    				});
 
 
-        // update layout on select
-        function updateLayoutOnDeselect(){
+    			d3.select(".scatter-matrix-svg")
+                    .style("width", function(){
+    					if(isRightChartFullScreenToggled){
+    						return windowHeight-200+"px";
+    					}else{
+    						return d3.select("#graph").style("height").replace("px", "")-10+"px";
+    					}
+    				});
 
-            // find height of parallel coordinate
-            // to find the height for thumbnail div
-            var pcHeight = d3.select("#graph")
-                .style("height").replace("px", "");
+    			// reset the size of right side top button
+    			d3.select("#copyRightButton")
+    				.transition().delay(100)
+    				.transition().duration(1000)
+    				.style("width", function(){
+    					if(isRightChartFullScreenToggled){
+    						return windowWidth-180+"px";
+    					}else{
+    						return divWidth-180+"px";
+    					}
+    				});
 
-            // hide zoomed area
-            d3.selectAll(".zoomed")
-                .transition().duration(1500)
-                .style("height", "0px");
+            });
 
-            // show btm thumbnail
-            d3.select("#thumbnails-btm_container")
-                .transition().duration(1000)
-                .style("height", (cleanHeight - pcHeight) + "px");
 
-            // hide side thumbnail
-            d3.select("#thumbnails-side_container")
-                .transition().duration(1500)
-                .style("height", "0px");
 
-            // unhighlight the line graph
-            graph.unhighlight();
+          // update layout on select
+          function updateLayoutOnSelect(){
 
-            // enable sliders
-            disableAllSliders();
+              var selectedImage = d3.select(this);
 
-            // unhighlight the radar chart        //-----here needs a switch for different charts-------//
-            //rc.unhighlight();       
-			unlighlightScatter();
+              // update rating based
+              setStarValue(selectedImage.data()[0].Rating);
 
-            //show radar chart
-            $("#radarChart").collapse("show");
+              // find height of parallel coordinate
+              // to find the height for zoomed div
+              var pcHeight = d3.select("#graph")
+                  .style("height").replace("px", "");
 
-            isAnyItemSelected = false;
-        };
+              // show zoomed area
+              d3.selectAll(".zoomed")
+                  .transition().duration(1500)
+                  .style("height", (cleanHeight - pcHeight) + "px");
 
-        // hide/show parallel coordinates
-        d3.select("#pcgraph").on("click", function() {
-            if (cleanedData.length==0) return; // don't let the user change the size before loading the file
+              // hide btm thumbnail
+              d3.select("#thumbnails-btm_container")
+                  .transition().duration(1000)
+                  .style("height", "0px");
 
-            var height = d3.select("#graph").style("height").replace("px", "");
-            
-            if (height!=0){
-                // collapse
-                d3.select("#graph")
-                    .attr("class", "parcoords collapse 2s")
-                    .transition().duration(200)
+              // push the image to zoomed area
+
+
+    			var imgLink;
+    			var userInputs = document.getElementById("googleImgFolderLinkID").value;
+    			if(userInputs.length >0){
+    				//loadImgfrom inputs
+    				imgLink = function(d){return "http://www.googledrive.com/host/"+ userInputs + "/"+selectedImage.datum()["img"]};
+
+    			}else{
+
+    				imgLink = selectedImage.datum()["img"];
+
+    			}
+
+
+                d3.selectAll(".zoomed")
+                    .select("img")
+                    .data(selectedImage.data())
+                    .attr("src", imgLink)
+                    .attr("title", getTitle);
+
+
+                // highlight the line graph
+                graph.highlight(selectedImage.data());
+
+                // load 3d geometry if the view is set to 3D
+                if (currentView=="3D") loadNew3DModel();
+
+                if (!isAnyItemSelected){
+                    // if there is a brushed selection
+                    // update the range of the sliders
+                    updateSlidersTickValues();
+                }
+
+                // update the values for slider
+                updateSlidersValue(graph.highlight()[0]);
+
+                // enable sliders
+                enableAllSliders();
+
+                //highlight the radar chart  //-----here needs a switch for different charts-------
+                //rc.highlight(selectedImage.data());
+    			highlightScatterDot();
+
+
+                var radarHeight = d3.select("#radarChart")
+                    .style("height").replace("px", "");
+
+                // let's side thumbnail show up
+                d3.select("#thumbnails-side_container")
+                    .transition().duration(1500)
+                    .style("height", (cleanHeight - radarHeight) + "px");
+
+                isAnyItemSelected = true;
+
+            };
+
+
+            // update layout on select
+            function updateLayoutOnDeselect(){
+
+                // find height of parallel coordinate
+                // to find the height for thumbnail div
+                var pcHeight = d3.select("#graph")
+                    .style("height").replace("px", "");
+
+                // hide zoomed area
+                d3.selectAll(".zoomed")
+                    .transition().duration(1500)
                     .style("height", "0px");
 
-                //disable buttons
-                d3.select("#reset").classed("disabled", true);
-                d3.select("#remove").classed("disabled", true);
-                d3.select("#keep").classed("disabled", true);
+                // show btm thumbnail
+                d3.select("#thumbnails-btm_container")
+                    .transition().duration(1000)
+                    .style("height", (cleanHeight - pcHeight) + "px");
 
+                // hide side thumbnail
+                d3.select("#thumbnails-side_container")
+                    .transition().duration(1500)
+                    .style("height", "0px");
 
-                if (graph.highlight().length!=0){
-                    
-                    d3.selectAll(".zoomed")
-                        .transition().duration(1)
-                        .style("height", cleanHeight + "px")
-                        .each("end", function(){
-                            // resize view
-                            if(currentView=="3D"){
-                                va3cViewer.viewerDiv.resize();
-                            }
-                        });
+                // unhighlight the line graph
+                graph.unhighlight();
 
-                    }else{
+                // enable sliders
+                disableAllSliders();
 
-                        //mirror collapse behavior with radar chart
-                        $("#radarChart").collapse("hide");
-                    
-                    d3.select("#thumbnails-btm_container")
-                        .transition().duration(1000).style("height", cleanHeight + "px");                        
-                    }
+                // unhighlight the radar chart        //-----here needs a switch for different charts-------//
+                //rc.unhighlight();
+    			      unlighlightScatter();
 
-            }else{
+                //show radar chart
+                $("#radarChart").collapse("show");
 
-                // collapse in
-                d3.select("#graph")
-                    .transition("ease out").attr("class", "parcoords collapse in")
-                    .transition().duration(350)
-                    //.transition().duration(2000)
-                    .style("height", graphHeight + "px");
+                isAnyItemSelected = false;
+            };
 
-                //enable buttons
-                d3.select("#reset").classed("disabled", false);
-                d3.select("#remove").classed("disabled", false);
-                d3.select("#keep").classed("disabled", false);
+            // hide/show parallel coordinates
+            d3.select("#pcgraph").on("click", function() {
+                if (cleanedData.length==0) return; // don't let the user change the size before loading the file
 
-                // if there is a selecion let it in
-                if (graph.highlight().length!=0){
-                    d3.selectAll(".zoomed")
-                        .transition().duration(2000).style("height", zoomedHeight + "px");
-                    }else{
+                var height = d3.select("#graph").style("height").replace("px", "");
 
-                        //mirror collapse behavior with radar chart
-                        $("#radarChart").collapse("show");
-                    
-                        d3.select("#thumbnails-btm_container")
-                            .transition().duration(1000).style("height", zoomedHeight + "px");                        
-                    }
-            }
-        });
-
-        //hide/show radar chart
-        d3.select("#rcgraph").on("click", function() {
-
-            if (cleanedData.length==0) return; // don't let the user change the size before loading the file
-            
-            var height = d3.select("#radarChart").style("height").replace("px", "");
-
-            if (height > 1) {
-                
-                if (!isAnyItemSelected) {
-                    //collapse parcoords if there is nothing selected
+                if (height!=0){
+                    // collapse
                     d3.select("#graph")
-                        .attr("class", "parcoords collapse 2s")
-                        .transition().duration(200)
-                        .style("height", "0px");
+                      .attr("class", "parcoords collapse 2s")
+                      .transition().duration(200)
+                      .style("height", "0px");
 
                     //disable buttons
                     d3.select("#reset").classed("disabled", true);
                     d3.select("#remove").classed("disabled", true);
                     d3.select("#keep").classed("disabled", true);
 
-                    d3.select("#thumbnails-btm_container")
-                        .transition().duration(1000).style("height", cleanHeight + "px");
-                }
 
-                //collapse radar chart
-                $("#radarChart").collapse("hide");
+                    if (graph.highlight().length!=0){
 
-                // set height for thumbnails-side_container
-                d3.select("#thumbnails-side_container")
-                    .transition().duration(1500)
-                    .style("height", cleanHeight + "px");
+                        d3.selectAll(".zoomed")
+                            .transition().duration(1)
+                            .style("height", cleanHeight + "px")
+                            .each("end", function(){
+                                // resize view
+                                if(currentView=="3D"){
+                                    va3cViewer.viewerDiv.resize();
+                                }
+                            });
 
-            } else {
-                if (!isAnyItemSelected) {
-                    //expand parcoords
+                        }else{
+
+                            //mirror collapse behavior with radar chart
+                            $("#radarChart").collapse("hide");
+
+                        d3.select("#thumbnails-btm_container")
+                            .transition().duration(1000).style("height", cleanHeight + "px");
+                        }
+
+                }else{
+
+                    // collapse in
                     d3.select("#graph")
                         .transition("ease out").attr("class", "parcoords collapse in")
                         .transition().duration(350)
@@ -1189,26 +1128,88 @@ function changeLabelSize(size){
                     d3.select("#remove").classed("disabled", false);
                     d3.select("#keep").classed("disabled", false);
 
-                    d3.select("#thumbnails-btm_container")
-                            .transition().duration(1000).style("height", zoomedHeight + "px");
+                    // if there is a selecion let it in
+                    if (graph.highlight().length!=0){
+                        d3.selectAll(".zoomed")
+                            .transition().duration(2000).style("height", zoomedHeight + "px");
+                        }else{
+
+                            //mirror collapse behavior with radar chart
+                            $("#radarChart").collapse("show");
+
+                            d3.select("#thumbnails-btm_container")
+                                .transition().duration(1000).style("height", zoomedHeight + "px");
+                        }
                 }
-                
-                //expand radar chart
-                $("#radarChart").collapse("show");
+            });
 
-                // not the best practice - I should get it to work in a cleaner way
-                setTimeout( function(){
+            //hide/show radar chart
+            d3.select("#rcgraph").on("click", function() {
 
-                    var rcheight = d3.select("#radarChart").style("height").replace("px", "");
-                
+                if (cleanedData.length==0) return; // don't let the user change the size before loading the file
+
+                var height = d3.select("#radarChart").style("height").replace("px", "");
+
+                if (height > 1) {
+
+                    if (!isAnyItemSelected) {
+                        //collapse parcoords if there is nothing selected
+                        d3.select("#graph")
+                            .attr("class", "parcoords collapse 2s")
+                            .transition().duration(200)
+                            .style("height", "0px");
+
+                        //disable buttons
+                        d3.select("#reset").classed("disabled", true);
+                        d3.select("#remove").classed("disabled", true);
+                        d3.select("#keep").classed("disabled", true);
+
+                        d3.select("#thumbnails-btm_container")
+                            .transition().duration(1000).style("height", cleanHeight + "px");
+                    }
+
+                    //collapse radar chart
+                    $("#radarChart").collapse("hide");
+
                     // set height for thumbnails-side_container
                     d3.select("#thumbnails-side_container")
-                        .transition().duration(1000)
-                        .style("height", (cleanHeight - rcheight)  + "px");
-                    }, 500);
+                        .transition().duration(1500)
+                        .style("height", cleanHeight + "px");
 
-            }
-        })
+                } else {
+                    if (!isAnyItemSelected) {
+                        //expand parcoords
+                        d3.select("#graph")
+                            .transition("ease out").attr("class", "parcoords collapse in")
+                            .transition().duration(350)
+                            //.transition().duration(2000)
+                            .style("height", graphHeight + "px");
+
+                        //enable buttons
+                        d3.select("#reset").classed("disabled", false);
+                        d3.select("#remove").classed("disabled", false);
+                        d3.select("#keep").classed("disabled", false);
+
+                        d3.select("#thumbnails-btm_container")
+                                .transition().duration(1000).style("height", zoomedHeight + "px");
+                    }
+
+                    //expand radar chart
+                    $("#radarChart").collapse("show");
+
+                    // not the best practice - I should get it to work in a cleaner way
+                    setTimeout( function(){
+
+                        var rcheight = d3.select("#radarChart").style("height").replace("px", "");
+
+                        // set height for thumbnails-side_container
+                        d3.select("#thumbnails-side_container")
+                            .transition().duration(1000)
+                            .style("height", (cleanHeight - rcheight)  + "px");
+                        }, 500);
+
+                }
+            })
 
 
     </script>
@@ -1222,37 +1223,42 @@ function changeLabelSize(size){
             inputData = [],  // columns with input values - to be used for sliders
             outputData = [], // columns with output values - to be used for radar graph
             slidersInfo = [], // {name:'inputName', tickValues : [sorted set of values]},
-            currentSliderValues = {}, // collector for values 
+            currentSliderValues = {}, // collector for values
             allDataCollector = {},
             slidersMapping = {}, // I collect the data for all the input sliders here so I can use it to remap the sliders later
             ids = [], // Here I collect all data based on a unique ID from inputs
-			googleFolderLink;
+      			cleanedParams4pc = {},
+      			googleFolderLink;
 
 
         function analyzeInputData(originalData){
             var keys = d3.keys(originalData[0]);
-			
+
             originalData.forEach(function(row, rowCount){
-                
+
                 var inputParams = {},
                     outputParams = {},
                     cleanedParams = {};
 
                 keys.forEach(function(key, i){
-				
+
                     if (key.trim().startsWith("in:")){
-                    
+
                         inputParams[key.replace("in:", "").trim()] = row[key];
                         cleanedParams[key.replace("in:", "").trim()] = row[key];
-                    
+						            cleanedParams4pc[key.replace("in:", "").trim()] = {};
+
+
                     }else if(key.trim().startsWith("out:")){
-                    
+
                         outputParams[key.replace("out:", "").trim()] = row[key];
-                        cleanedParams[key.replace("out:", "").trim()] = row[key]; 
-                    
+                        cleanedParams[key.replace("out:", "").trim()] = row[key];
+						            cleanedParams4pc[key.replace("out:", "").trim()] = {};
+
+
                     }else{
-						
                         cleanedParams[key.trim()] = row[key]; // I need to add case for image and 3D here later
+						if(key.trim() != "img" && key.trim() != "threeD"){cleanedParams4pc[key.trim()] = {}};
                     }
                 });
 
@@ -1269,10 +1275,11 @@ function changeLabelSize(size){
                 outputData.push(outputParams);
                 cleanedData.push(cleanedParams);
             });
-        
+
         // add rating of 0 to all the options if not already there
         if (keys.indexOf("Rating")==-1) {
 
+			      cleanedParams4pc["Rating"] = {};
             cleanedData.forEach(function(d){
                 d.Rating = 0;
             });
@@ -1293,7 +1300,7 @@ function changeLabelSize(size){
                 }else{
                     var value = parseFloat(inputParams[key]);
                 }
-                
+
                 // add them to params
                 //params.push(k);
                 params.push(value);
@@ -1304,7 +1311,7 @@ function changeLabelSize(size){
             return id;
         }
 
-        function prepareSlidersInfo(){
+        function prepareSlidersInfo(){  // modified 6/7/2016 by Mingbo, this is only for input information.
             var sliderNames = d3.keys(inputData[0]);
             var tickValues = {};
             var originalTickValues = {}; // keep track of original values
@@ -1315,7 +1322,7 @@ function changeLabelSize(size){
                 tickValues[name] = [];
                 slidersMapping[name] = {};
             });
-          
+
             // find tick values
             inputData.forEach(function(d, i){
                 sliderNames.forEach(function(name){
@@ -1325,16 +1332,18 @@ function changeLabelSize(size){
                         tickValues[name].push(d[name]);
                         originalTickValues[name].push(d[name]);
                     }
-                    
+
                     //add the new combination to the list
                     slidersMapping[name][d[name]].push(cleanedData[i]);
                 });
             });
 
+
             // sort values and collect them
             sliderNames.forEach(function(name){
-                var tValues = tickValues[name].sort();
-                var oValues = originalTickValues[name].sort();
+                //var tValues = tickValues[name].sort();
+                var tValues = Object.keys(slidersMapping[name]);
+                var oValues = tValues; //it is equal at the beginning
                 slidersInfo.push({name: name, originalTickValues:oValues , tickValues: tValues});
 
             });
@@ -1369,23 +1378,28 @@ function changeLabelSize(size){
             // set the height for graph div - this is critical otherwise
             // parallel coordinates graph will be drawn by height of 0px
             d3.select("#graph").style("height",  graphHeight + "px");
-            
+
             // draw parallel coordiantes chart
             // click event should highlight the image in thumbnails and show it in zoomed
             // brush should filter thumbnails
-            // get parallel coordinates         
+            // get parallel coordinates
+
             graph = d3.parcoords()('#graph')
                 .data(cleanedData)
-                    .margin({ top: 50, left: 20, bottom: 10, right: 20 })
-                    .alpha(0.2)
-                    .mode("queue")
-                    .rate(20)
-                    .render()
-                    .brushMode("1D-axes")  // enable brushing
-                    .interactive()
-                    .reorderable()
-                    .scale("Rating", [0,5]).updateAxes(); // set initial domain for rating
-            
+        				.margin({ top: 50, left: 20, bottom: 10, right: 20 })
+        				.alpha(0.2)
+        				.mode("queue")
+        				.rate(20)
+        				.dimensions(cleanedParams4pc)
+        				.render()
+        				.brushMode("1D-axes")  // enable brushing
+        				.interactive()
+        				.reorderable()
+        				.scale("Rating", [0,5]).updateAxes(); // set initial domain for rating
+
+                //console.log(graph.scale("Rating", [0,5]));
+            //graph.toTypeCoerceNumbers();
+
             // modify labels
             var inputLabelColor = "black",
                 outputLabelColor = "steelblue",
@@ -1405,7 +1419,7 @@ function changeLabelSize(size){
                         } else if (outputLabels.indexOf(d) != -1) {
                             colorset.push(outputLabelColor);
                             return outputLabelColor; //it's an output
-                        
+
                         } else {
                             // undefined
                             colorset.push("black");
@@ -1413,14 +1427,15 @@ function changeLabelSize(size){
                         };
                     });
 
-            
+
             //modify axes
             d3.selectAll("path.domain")
                 .style("stroke", function(d,i){ return colorset[i];});
 
             // set color change
             // set the initial coloring based on the 3rd column
-            pcIsColoredBy = graph.dimensions()[0]; 
+            pcIsColoredBy = d3.keys(graph.dimensions())[0];
+
             update_colors(pcIsColoredBy);
 
             // click label to activate coloring
@@ -1429,8 +1444,8 @@ function changeLabelSize(size){
                     //.selectAll(".label")
                     //.style("font-size", "14px"); // change font sizes of selected lable
         };
-        
-        
+
+
         function updateLabels(){
             d3.selectAll("text.label")
                 // move every other label up
@@ -1439,9 +1454,9 @@ function changeLabelSize(size){
 
 
         // update color and font weight of chart based on axis selection
-        function update_colors(dimension) { 
+        function update_colors(dimension) {
 
-            pcIsColoredBy = dimension; 
+            pcIsColoredBy = dimension;
 
             // change the fonts to bold
             graph.svg.selectAll(".dimension")
@@ -1451,9 +1466,9 @@ function changeLabelSize(size){
 
             // change color of lines
             // set domain of color scale
-            var values = graph.data().map(function(d){return parseFloat(d[dimension])}); 
+            var values = graph.data().map(function(d){return parseFloat(d[dimension])});
             color.domain([d3.min(values), d3.max(values)]);
-            
+
             // change colors for each line
             graph.color(function(d){return color([d[dimension]])}).render();
 
@@ -1461,10 +1476,10 @@ function changeLabelSize(size){
             d3.selectAll("img#thumbnails-btm").style("border-color", function(d){ return color(d[dimension]);});
             d3.selectAll("img#thumbnails-side").style("border-color", function(d){ return color(d[dimension]);});
 
-        };      
+        };
 
     </script>
-    
+
     <!-- draw legend -->
     <script type="text/javascript">
 
@@ -1476,13 +1491,14 @@ function changeLabelSize(size){
             // get width and height for legend area
             var legendWidth = d3.select("#legend").style("width").replace("px", "");
             var legendHeight = d3.select("#sidebar-wrapper").style("height").replace("px", "")/3;
-            
+
             // legend boxes are diminsions of the graph
-            dimensions = graph.dimensions().map(function(d){return {name: d, enabled:true};});
+			      //console.log(Object.keys(graph.dimensions()));
+            dimensions = d3.keys(graph.dimensions()).map(function(d){return {name: d, enabled:true};});
 
             // find size of the square based on the height
             //var legendSquareSize = 16;
-            var legendSquareSize = Math.max(legendHeight/(graph.dimensions().length + 4), 12);
+            var legendSquareSize = Math.max(legendHeight/(d3.keys(graph.dimensions()).length + 4), 12);
 
             // create one group for each rect and text
             var legend = d3.select("#legend").append("svg")
@@ -1513,12 +1529,12 @@ function changeLabelSize(size){
 
     <!-- add sorting dropdowns -->
     <script type="text/javascript">
-        
+
         function addSortDropdowns(){
-            
-            sortBy = graph.dimensions()[0]; // will be used to sort thumbnail images
+
+            sortBy = d3.keys(graph.dimensions())[0]; // will be used to sort thumbnail images
             ascending = true;
-            
+
             var select = d3.selectAll("#sorting")
                 .text("Sort by: ")
                 .append("select")
@@ -1526,16 +1542,16 @@ function changeLabelSize(size){
 
             // add options based on input and outputs
             select.selectAll("option")
-              .data(graph.dimensions())
+              .data(d3.keys(graph.dimensions()))
               .enter()
                 .append("option")
                 .attr("value", function (d) { return d; })
                 .text(function (d) { return d; });
-            
+
             // add change event to resort images
             select.on("change", function(d) {
                 sortBy = d3.select(this).property("value");
-                
+
                 // update the value in other dropdown menu
                 d3.selectAll("select option").filter(function(d){return d == sortBy;}).attr("selected", "true");
 
@@ -1549,7 +1565,7 @@ function changeLabelSize(size){
                 .attr("class", "btn btn-default btn-xs")
                 .attr("id", "reverseSortOrder")
                 .attr("title", "Reverse sorting order")
-            
+
             // append icon
             sortingBtn.append("span")
                 .attr("class", "glyphicon glyphicon-circle-arrow-up")
@@ -1557,10 +1573,10 @@ function changeLabelSize(size){
 
             sortingBtn.on("click", function(){
                 ascending = !ascending;
-                
+
                 sortingBtn.selectAll("span")
                         .attr("class", function(){ return ascending? "glyphicon glyphicon-circle-arrow-up":"glyphicon glyphicon-circle-arrow-down"})
-                
+
                 updateImageGrid(graph.brushed(), false);
             });
         }
@@ -1572,10 +1588,10 @@ function changeLabelSize(size){
 
         function getTitle(data){
 
-            // get title for each image    
+            // get title for each image
             var title = [];
-            
-            graph.dimensions().forEach(function(key){
+
+            d3.keys(graph.dimensions()).forEach(function(key){
                 var info =  key + ":" + data[key];
                 title.push(info);
             });
@@ -1586,12 +1602,12 @@ function changeLabelSize(size){
         }
 
         function updateImageGrid(data, resizeImageDiv){
-            
+
             // this is based on bootstraps 12 column grid
             // we can replace it with a fancier version later
             var gridSizes = [1, 2, 3, 4, 6];
             var fgridSize = 1; //gridSizes[gridSize];
-            
+
             if (!data) data= graph.data(); //if data is false then use graph data
 
             // sort data based on dropdown selecion
@@ -1609,7 +1625,7 @@ function changeLabelSize(size){
             // I think eventually I will change this to a filter function
             d3.select("#thumbnails-btm").selectAll("div").remove();
             d3.select("#thumbnails-side").selectAll("div").remove();
-                        
+
             var pcHeight = d3.select("#graph")
                 .style("height").replace("px", "");
 
@@ -1624,15 +1640,15 @@ function changeLabelSize(size){
 			if(userInputs.length >0){
 				//loadImgfrom inputs
 				imgLink = function(d){return "http://www.googledrive.com/host/"+ userInputs + "/"+d["img"]};
-			
+
 			}else{
-			
+
 				imgLink = function(d){return d["img"]};
-		
+
 			}
-		
+
             d3.select("#thumbnails-btm")
-                //.style("height", "100%") //20px for credit line - 
+                //.style("height", "100%") //20px for credit line -
                 .selectAll("div")
                 .data(data).enter()
                     .append("div")
@@ -1644,7 +1660,7 @@ function changeLabelSize(size){
                     .on("click", updateLayoutOnSelect)
                     .attr("title", getTitle)
                     .style("border-color", function(d){ return color(d[pcIsColoredBy]);});
-            
+
             d3.select("#thumbnails-side")
                 .selectAll("div")
                 .data(data).enter()
@@ -1670,10 +1686,10 @@ function changeLabelSize(size){
         }
 
     </script>
-   
+
     <!-- set up events between charts and graphs -->
     <script type="text/javascript">
-        
+
         function setupEvents(){
 
             // brushing events for parallel coordinates graph
@@ -1683,9 +1699,9 @@ function changeLabelSize(size){
                 updateImageGrid(d, false);
             });
 
-             graph.on("brushend", function(d){
+            graph.on("brushend", function(d){
 
-                // if nothing is highlighted return                                
+                // if nothing is highlighted return
                 if (graph.highlight().length==0) return;
 
                 // in case highlighted data not in brused then deselect
@@ -1693,28 +1709,35 @@ function changeLabelSize(size){
                         updateLayoutOnDeselect();
                 }
             });
-            
-            
+
             // assign buttons
-            // Keep brushed
+            // Keep brushed (zoom to selection)
             d3.select("#keep")
                 .on("click", function() {
 
                     var newData = graph.brushed();
-                    
+                    console.log(newData);
                     if (newData == false || newData.length == 0){
                         alert("You need to select some data to be kept!")
                     }else{
                         // update graph with new data
-                        updateGraph(newData);
+                        //updateGraph(newData);
+						            //graph.data(newData).renderBrushed().updateAxes();
+                        //var currentDimensions = d3.keys(graph.dimensions());
+                        //console.log(currentDimensions);
+                        //graph.dimensions({}); // needs somehow clean the dimension for re-autoscale
+                        graph.data(newData).dimensions(d3.keys(graph.dimensions()));
+
+
+
                     }
                 });
 
             d3.select("#remove")
                 .on("click", function() {
-                    
+
                     var selectedData = graph.brushed();
-                    
+
                     if (selectedData == false || selectedData.length == 0){
                         alert("You need to select some data to be removed!")
                     }else{
@@ -1726,26 +1749,27 @@ function changeLabelSize(size){
 
             // go back to original
             d3.select("#reset")
-                .on("click", function() {           
+                .on("click", function() {
                     updateGraph(cleanedData);
+                    graph.clear();
                 });
 
 
             function updateGraph(newData){
-                graph.data(newData).render().interactive().reorderable().autoscale();
+                graph.data(newData).brushReset().render().interactive().reorderable();
                 //updateRadarChart();                   //-----here needs a switch for different charts-------
-				updateScatterChart();
-                updateLayoutOnDeselect();                        
+				        updateScatterChart();
+                updateLayoutOnDeselect();
                 updateImageGrid(newData, false);
                 updateSlidersTickValues();
             }
-            
-            
+
+
             d3.selectAll("rect.legend").on('click', function(d) {
                     var rect = d3.select(this);
                     var name = d.name;
                     var enabled = true;
-                    
+
 
                     if (rect.attr('class') === 'legend disabled')
                         {
@@ -1762,29 +1786,88 @@ function changeLabelSize(size){
 
                     // get active dimensios to update parallel coordinate charts
                     var activeDimensions = dimensions.filter(function(d){return (d.enabled) ? 1 : 0}).map(function(d){return d.name});
-                    
+                    //console.log(activeDimensions);
                     graph.dimensions(activeDimensions);
 
                     if(graph.highlighted().length!=0) graph.highlight(graph.highlighted());
                 });
 
-            
+
 
             //turn off rating rectangle
             d3.selectAll("rect.legend")
-                .attr("class", function(d){ 
-                    
+                .attr("class", function(d){
+
                     if (d.name=="Rating"){
                         d.enabled = false;
                         return 'legend disabled';
                     }
                 });
-            
+
             // remove Rating for on page load
             var activeDimensions = dimensions.filter(function(d){return d.name!="Rating";}).map(function(d){return d.name;});
             graph.dimensions(activeDimensions);
 
-            }
+
+
+      			// set left chart full screen
+      			var oldpcHeight = d3.select("#graph").style("height").replace("px", "");
+      			var oldpcWidth = d3.select("#graph").style("width").replace("px", "");
+      			var newpcHeight = (windowHeight-109)*0.66;
+      			var newpcWidth = windowWidth-30;
+
+      			d3.select("#pcFullScreen-toggle")
+      			.on("click", function() {
+
+
+      				isLeftChartFullScreenToggled = !isLeftChartFullScreenToggled;
+
+      				d3.select(".col-lg-3") //hide right side
+      					//.transition().duration(1000)
+      					.style("visibility", function(){
+      						if(isLeftChartFullScreenToggled){
+      							return "collapse";
+      						}else{
+      							return "visible";
+      						}
+      					});
+
+      				d3.select(".col-lg-9")
+      					.transition().duration(1000)
+      					.style("height", function(){
+      						if(isLeftChartFullScreenToggled){
+      							return newpcHeight+30+"px";
+      						}else{
+      							return "auto";
+      						}
+      					})
+      					.style("width", function(){
+      						if(isLeftChartFullScreenToggled){
+      							return newpcWidth+"px";
+      						}else{
+      							return oldpcWidth + "px";
+      						}
+      					});
+
+
+
+      				// change the chart size;
+      				if(isLeftChartFullScreenToggled){
+                    if(graph.highlighted().length!=0) {var highlightedData = graph.highlighted();} //graph.highlighted().length returns false when there is no data,
+      							graph.width(newpcWidth).height(newpcHeight);                                     //for some reason, here cannot compare with 0, needs to be fixed!
+      							if(graph.highlighted().length!=0) {graph.highlight(highlightedData);}
+      						}else{
+                    if(graph.highlighted().length!=0) {var highlightedData = graph.highlighted();}
+      							graph.width(oldpcWidth).height(oldpcHeight);
+      							if(graph.highlighted().length!=0) {graph.highlight(highlightedData);}
+      						}
+
+
+
+      			});
+
+
+        }
 
     </script>
 
@@ -1797,19 +1880,19 @@ function changeLabelSize(size){
             analyzeInputData(data);
 
             // get sliders information based on input data
-            prepareSlidersInfo();
+            prepareSlidersInfo(); // needed to be moved to after click toggle section.
 
             // add sliders to the page
-            initiateSliders();
+            initiateSliders(); // needed to be moved to after click toggle section.
 
             // draw parallel coordinates graph
             drawParallelCoordinates();
 
-            //draw radar chart                   
+            //draw radar chart
             //updateRadarChart();                //-----here needs a switch for different charts-------
-			
-			//draw scatter chart
-			addScatterChart();
+
+      			//draw scatter chart
+      			addScatterChart();
 
             // draw legend in side bar
             drawLegend();
@@ -1826,41 +1909,41 @@ function changeLabelSize(size){
             // set up events between graphs
             setupEvents();
             }
-		
-		//load GoogleSheet Json data_ Mingbo Peng Modified-------------------------------------------------------------------- 
+
+		//load GoogleSheet Json data_ Mingbo Peng Modified--------------------------------------------------------------------
 		function cleanAndLoadForDE(data) {
 			var data = mapEntries(data);
 			loadDataToDesignExplorer(data);
 			//onsole.log(data);
 		}
-		
-		//reMap Json from GoogleSheet_ Mingbo Peng Modified-------------------------------------------------------------------- 
+
+		//reMap Json from GoogleSheet_ Mingbo Peng Modified--------------------------------------------------------------------
 		function mapEntries(json, realrowlength, skip){
 		  if (!skip) skip = 1;
 		  var dataframe = new Array();
-		  
+
 		  var row = new Array();
 		  for (var i=0; i < json.feed.entry.length; i++) {
-			
+
 			var entry = json.feed.entry[i];
 
 				if (entry.gs$cell.col == '1') {
 				  if (row != null) {
-				  
+
 					if ((!realrowlength || row.length === realrowlength) && (skip  === 0)){
 					   dataframe.push(row);
 					} else {
 					   if (skip > 0) skip--;
 					}
 				  }
-				
+
 				  var row = new Array();
 				}
 			row.push(entry.content.$t);
-		  } 
-		  
+		  }
+
 		  dataframe.push(row);
-		  
+
 		  //console.log(dataframe[0]);
 		  var headers = dataframe[0];
 		  var obj;
@@ -1875,82 +1958,81 @@ function changeLabelSize(size){
 
 		  return objs;
 		}
-		
-		//add heaters Json _ Mingbo Peng Modified------------------------------------------------------------------------------ 
+
+		//add heaters Json _ Mingbo Peng Modified------------------------------------------------------------------------------
 		function loopHeaders(headers,data){
 			var obj = {};
 			for (var i =0 ; i< headers.length; i++){
-			
+
 						obj[headers[i]]= data[i];
 				  }
 			return obj;
 		}
-		
-		
-        window.onload = function() 
-		{
+
+
+    window.onload = function(){
 			if (window.location.href.toUpperCase().search("GSHEET")>0 && window.location.href.toUpperCase().search("GFOLDER")>0){
                  // this is old user with google drive files.
 				d3.select("#welcome").remove();
 				var googleSheetLinkID = getUrlVars()["GSHEET"];
 				var googleImgFolderLinkID = getUrlVars()["GFOLDER"];
-				
+
 				document.getElementById("googleSheetLinkID").value= googleSheetLinkID;
 				document.getElementById("googleImgFolderLinkID").value= googleImgFolderLinkID;
-				
+
 				var filePath = "https://spreadsheets.google.com/feeds/cells/"+googleSheetLinkID+"/1/public/values?alt=json";
-				// remove the current selection 
+				// remove the current selection
 				unloadPageContent();
 				// load the new GoogleSheet
 				d3.json(filePath, cleanAndLoadForDE);
 
 
 			}else{
-			
+
 				//function to close intro window div
 				d3.select("#close")
 					.on("click", function(){d3.select("#welcome").remove();});
-				
-				
+
+
 				// load default data
 				//parse the csv data from the design_explorer_data folder
 				d3.csv("http://tt-acm.github.io/DesignExplorer/design_explorer_data/default_onload.csv", loadDataToDesignExplorer);
 				//d3.json("https://spreadsheets.google.com/feeds/cells/1vNEiXJoP1xJdGGuByz-6UaV6NURkemltgDgT66TkPGk/1/public/values?alt=json", cleanAndLoadForDE);
-				
-				
+
+
 			}
-			
+
 			var fileInput = document.getElementById('csv-file');
-			
+
 			fileInput.addEventListener('change', function(e) {
-				
-				//clean whatever was added via Google 
+
+				//clean whatever was added via Google
 				document.getElementById("googleSheetLinkID").value= "";
 				document.getElementById("googleImgFolderLinkID").value= "";
 
 				unloadPageContent();
-				
-				
+
+
 				var file = fileInput.files[0];
 				var reader = new FileReader();
-				
+
 				var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.csv|.txt)$/;
-					
+
 
 				if (regex.test(file.name.toLowerCase())) {
-					
+
 					// Update project name
 					var inputFileName = file.name.toUpperCase().replace(".CSV","");
 
 					d3.select("p.navbar-brand").text(inputFileName);
 
 					reader.onload = function(e) {
-					
-						var inputString = e.target.result; 
+
+						var inputString = e.target.result;
 
 						// I need to add some defense here
 						// separateInputOutputs(e);
-						
+
 						var data = d3.csv.parse(inputString);
 
 						//originalDataLength = data.length;
@@ -1964,10 +2046,10 @@ function changeLabelSize(size){
 					}
 
 				reader.readAsText(file);
-			});	
-			
-			
-			
+			});
+
+
+
         }; // end of window.onload
     </script>
 
@@ -1989,7 +2071,7 @@ function changeLabelSize(size){
                     .append("input")
                     .attr("id", function(d){return d.namewithnospace})
                     .attr("name", function(d){return d.name});
-            
+
 
             // if number of ticks is less than 7 then show the numbers under slider
             var showGrid = function(info){return info.tickValues.length < 7;}
@@ -1997,7 +2079,7 @@ function changeLabelSize(size){
             // set up slider properties
             // they will be all set to disabled until user selects one option
             slidersInfo.forEach(function(info, i){
-                
+
                 $("#" + info.namewithnospace).ionRangeSlider({
                     grid: showGrid(info),
                     prettify_separator: ",",
@@ -2008,7 +2090,7 @@ function changeLabelSize(size){
                             // var sliderName = data.input[0].name.replace(/\s/g, '');
                             updateSliderValue(data.input[0].name, data.from_value);
                     }
-                
+
                });
             });
         }
@@ -2024,7 +2106,7 @@ function changeLabelSize(size){
             if (graph.brushed()==[] || graph.brushed().length == inputData.length){
                 // go back to default
                 // disable all sliders once no option is selected
-                slidersInfo.forEach(function(info){                       
+                slidersInfo.forEach(function(info){
                     $("#" + info.namewithnospace).data("ionRangeSlider")
                         .update({values:info.originalTickValues});
             });
@@ -2032,12 +2114,12 @@ function changeLabelSize(size){
             }else{
 
                 var tickValues = {};
-                
+
                 slidersInfo.forEach(function(info){tickValues[info.name] = []}); //create an empty list for each slider
 
                 if (!graph.brushed()){
                     // in case graph is just rendered
-                    var data = graph.data();    
+                    var data = graph.data();
                 }else{
                     var data = graph.brushed();
                 }
@@ -2050,13 +2132,14 @@ function changeLabelSize(size){
                     });
                 });
 
-                
+
                 slidersInfo.forEach(function(sliderInfo){
 
                     var sliderName = sliderInfo.name;
                     // remove spaces
                     var namewithnospace = sliderName.replace(/\s/g, '');
                     var newTickValues = tickValues[sliderName].sort();
+                    //console.log(sliderName);
 
                     // update values in sliderInfo
                     sliderInfo.tickValues = newTickValues;
@@ -2074,24 +2157,24 @@ function changeLabelSize(size){
 
         function disableAllSliders(){
             // disable all sliders once no option is selected
-            slidersInfo.forEach(function(info){                       
+            slidersInfo.forEach(function(info){
                 $("#" + info.namewithnospace).data("ionRangeSlider")
                     .update({disable: true});
             });
         }
 
-        
+
         function enableAllSliders(){
             // enable all sliders once an option is selected
             // This will be called after selecting a new option
-            slidersInfo.forEach(function(info){                       
+            slidersInfo.forEach(function(info){
                 $("#" + info.namewithnospace).data("ionRangeSlider")
                     .update({disable: false});
             });
         }
 
         function updateSlidersValue(data){
-            
+
             // clear report area
             d3.selectAll("#sliders-report").text("");
 
@@ -2113,7 +2196,7 @@ function changeLabelSize(size){
                     });
             });
         }
-        
+
 
         function updateSliderValue(changedSliderName, newValue){
             // This function update the value for a single slider
@@ -2122,12 +2205,12 @@ function changeLabelSize(size){
 
             // create the id
             var id = getCaseId(currentSliderValues);
-            
+
             if (ids.indexOf(id)!=-1){
 
                 var selectedData = allDataCollector[id].cleanedParams;
-				console.log(selectedData);
-                
+				            //console.log(selectedData);
+
                 // update chart
                 graph.highlight([selectedData]);
 
@@ -2138,28 +2221,28 @@ function changeLabelSize(size){
                 d3.selectAll(".zoomed")
                     .select("img")
                     .attr("src",  selectedData["img"]);
-                
+
                 if (currentView=="3D") loadNew3DModel();
-                
+
                 d3.selectAll("#sliders-report").text("");
 
                 }else{
 
                     // try to remap the values based on slider value
                     var possibleCombinations = slidersMapping[changedSliderName][newValue];
-                    
+
                     if (possibleCombinations.length==1){
                         // there is only one combination update the values to the new combination
                         updateSlidersValue(possibleCombinations[0]);
-                    
+
                     }else{
-                        
+
                         // sort them based on distance to current values
                         possibleCombinations.sort(function(x, y){
                             return d3.ascending(distanceFromCurrent(x), distanceFromCurrent(y));
                         });
 
-                                               
+
                         // if it is in the seletion then change the sliders to that value
                         var selectedData = graph.brushed();
 
@@ -2174,7 +2257,7 @@ function changeLabelSize(size){
                             }
                         }
                     }
-                    
+
             }
         }
 
@@ -2182,7 +2265,7 @@ function changeLabelSize(size){
             var distance = 0;
 
             slidersInfo.forEach(function(info){
-                var tValues = info.originalTickValues;               
+                var tValues = info.originalTickValues;
                 var d = tValues.indexOf(currentSliderValues[info.name]) - tValues.indexOf(sliderValues[info.name])
                 distance += Math.abs(d);
             });
@@ -2202,10 +2285,10 @@ function changeLabelSize(size){
 
         // Initiate 3D viewer
         function initiate3DViewer(){
-        
+
             var viewerId = "viewer3d";
             var jsonFileAddress = graph.highlighted()[0].threeD;
-            
+
             //load JSON file
             d3.json(jsonFileAddress, function( data ){
                 //Initialize a VA3C viewer
@@ -2234,9 +2317,9 @@ function changeLabelSize(size){
             currentView = this.value;
 
             if (currentView=="3D" && initit3DViewer){
-                
+
                 initit3DViewer = false;
-                
+
                 // initiate the viewer
                 initiate3DViewer()
 
@@ -2244,21 +2327,21 @@ function changeLabelSize(size){
 
                 // user is changing to 3D view so let's load it.
                 //$.when(loadNew3DModel()).then(va3cViewer.viewerDiv.resize());
-                loadNew3DModel();          
+                loadNew3DModel();
             }
 
-            
+
             var onOff = {"2D": ["zoomed", "viewer3d"], "3D": ["viewer3d", "zoomed"]};
-            
+
             d3.select("#" + onOff[currentView][0])
                 .attr("class", "zoomed");
-            
+
             d3.select("#" + onOff[currentView][1])
                 .attr("class", "zoomed hidden");
 
             // remove spectacles footer
             d3.select(".Spectacles_Footer").remove();
-            
+
             // resize the view
             va3cViewer.viewerDiv.resize();
 
@@ -2268,7 +2351,7 @@ function changeLabelSize(size){
         // active and de-activate full screen mode
         d3.select("button#fullscreentoggle")
             .on("click", toggleFullscreen);
-        
+
 
         function toggleFullscreen(){
 
@@ -2287,7 +2370,7 @@ function changeLabelSize(size){
             d3.select("#zoomed")
                 .style("width", "100%")
                 .style("height", "100%");
-            
+
             //change full screen icon
             d3.select("button#fullscreentoggle").select("span")
                 .attr("class", function(){
@@ -2309,11 +2392,11 @@ function changeLabelSize(size){
             callback: function(value, link){
             // 'value' is the value selected
             if (firstRating==true){
-                
+
                 //turn on rating rectangle
                 d3.selectAll("rect.legend")
-                    .attr("class", function(d){ 
-                        
+                    .attr("class", function(d){
+
                         if (d.name=="Rating"){
                             d.enabled = true;
                             return 'legend';
@@ -2321,8 +2404,8 @@ function changeLabelSize(size){
                     });
 
                 // add Rating to dimensions
-                graph.dimensions(graph.dimensions().concat("Rating"));
-
+                graph.dimensions(d3.keys(graph.dimensions()).concat("Rating"));//need changed in some way????
+                graph.scale("Rating",[0,1,2,3,4,5]).updateAxes();
                 firstRating = false;
             }
 
@@ -2332,7 +2415,8 @@ function changeLabelSize(size){
             graph.highlighted()[0].Rating = value;
 
             // this method is not really optimized. I couldn't find a solution just to change
-            // extent of dimensions for just rating axis            
+            // extent of dimensions for just rating axis
+
             graph.data(graph.data()).render().interactive().reorderable();
 
             // highlight selected option
@@ -2347,8 +2431,8 @@ function changeLabelSize(size){
 
             // remove any current value
             $('.star').data('rating').current=undefined; // set current value to undefined
-            
-            // set current value to undefined            
+
+            // set current value to undefined
             var offClass = "star-rating rater-0 star star-rating-applied star-rating-live";
             var onClass = offClass + " star-rating-on";
 
@@ -2363,21 +2447,21 @@ function changeLabelSize(size){
     <script type="text/javascript">
 
         function saveToCSV(){
-            
+
             // modified from http://stackoverflow.com/questions/14964035/how-to-export-javascript-array-info-to-csv-on-client-side
             var data = graph.brushed()==false? graph.data(): graph.brushed();
-            
+
 
             var csvContent = "data:attachment/csv;charset=utf-8,";
-            
+
             csvContent += d3.keys(data[0]).join(",") + "\n" //add first row
-            
+
             data.forEach(function(infoArray, index){
                 dataString = d3.values(infoArray).join(",");
                 csvContent += index < data.length ? dataString+ "\n" : dataString;
 
-            }); 
-            
+            });
+
             csvContent = encodeURI(csvContent);
 
             var a = d3.select("body")
