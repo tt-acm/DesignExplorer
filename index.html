@@ -57,11 +57,11 @@
     <!-- D3 Parallel Coordinates CSS -->
     <link rel="stylesheet" type="text/css" href="./pc_source_files/css/d3.parcoords.css">
 
-    <!-- Radar Chart -->
+    <!-- Radar Chart --> <!-- TODO: add a switch for picking different charts to present -->
     <script type="text/javascript" src="./radar_source_files/radar-chart.js"></script>
 
-    <!-- Radar Chart CSS -->
-    <link rel="stylesheet" type="text/css" href="./radar_source_files/radar-chart.css" />
+    <!-- Radar Chart CSS --><!-- TODO: add a switch for picking different charts to present -->
+    <!-- <link rel="stylesheet" type="text/css" href="./radar_source_files/radar-chart.css" /> -->
 
     <!-- Scatter-matrix -->
     <script src="./scatter_matrix_source_files/scatter-matrix.js"></script>
@@ -108,172 +108,7 @@
 
     <!-- Design Explorer Scripts -->
     <script src="./js/designExplorer.js" type="text/javascript" language="javascript"></script>
-
-
-    <style>
-        body {
-            font-family: sans-serif;
-            font-size: 12px;
-        }
-
-        div {
-            background-color: white;
-        }
-
-        input {
-            display: inline-block;
-            font-family: sans-serif;
-            font-size: 12px;
-        }
-
-        output {
-            display: inline-block;
-            font-size: 11px;
-            font-weight: bold;
-            color: red;
-        }
-        /* centered columns styles */
-
-        .row-centered {
-            text-align: center;
-        }
-
-        .col-centered {
-            display: inline-block;
-            float: none;
-            /* reset the text-align */
-            text-align: left;
-            /* inline-block space fix */
-            margin-right: -4px;
-        }
-
-        .vertical-center {
-            min-height: 100%;
-            /* Fallback for browsers do NOT support vh unit */
-            min-height: 100vh;
-            /* These two lines are counted as one           */
-            display: flex;
-            align-items: center;
-        }
-
-        .footer {
-            width: 95%;
-            height: 20px;
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-        }
-
-        .credit {
-            margin-left: 1em;
-            margin-bottom: .5em;
-        }
-
-        .fullscreen {
-            top: 0;
-            left: 0;
-            height: 100% !important;
-            width: 100% !important;
-            position: fixed !important;
-            z-index: 1001 !important;
-            overflow: auto;
-        }
-
-        #thumbnails-side img,
-        #thumbnails-btm img {
-            width: 100%;
-            margin-top: 1em;
-            border-radius: 50%;
-        }
-
-        #thumbnails-side img {
-            border: .3em solid;
-        }
-
-        #thumbnails-btm img {
-            border: .5em solid;
-        }
-
-        #zoomed img,
-        #zoomedArea img {
-            height: 100%;
-            width: auto;
-            display: block;
-            /* to center the imge - hopefully! */
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        #thumbnails-side,
-        #thumbnails-btm {
-            overflow: auto;
-            height: 100%;
-        }
-
-        #thumbnails-btm_container,
-        #zoomedArea {
-            overflow: hidden;
-        }
-
-        #legend {
-            overflow-y: auto;
-            overflow-x: hidden;
-        }
-
-        rect.disabled {
-            fill: transparent !important;
-        }
-
-        .navbar-default {
-            height: 50px;
-            /* overwrite default navbar size */
-        }
-
-        .Spectacles_Footer {
-            visibility: hidden;
-        }
-
-        .sampleImage {
-            width: 100%;
-            cursor: pointer;
-        }
-
-        .sampleImage:hover img {
-            border-color: black;
-            border-width: .2em solid;
-        }
-
-        input#csv-file {
-            opacity: 0;
-            top: 0;
-            right: 0;
-            margin: 0;
-            padding: 0;
-            filter: alpha(opacity=0);
-            position: absolute;
-        }
-
-        .file-upload {
-            position: relative;
-            overflow: hidden;
-            height: 2.2em;
-            border-width: 0px;
-            width: 10em;
-            border-radius: 10em;
-        }
-
-        .col-lg-3 {
-            -webkit-transition: all 1s ease;
-            -moz-transition: all 1s ease;
-            -o-transition: all 1s ease;
-            transition: all 1s ease;
-        }
-
-        div#thumbnails-side_container {
-            margin-top: 30px;
-        }
-    </style>
-
+    <!-- for clean parameters before new data comes in -->
 
 
 </head>
@@ -517,7 +352,7 @@
                                     </div>
                                 </div>
 
-                                <div class="row">
+                                <div class="row chartSide">
 
                                     <div id="radarChart" class="col-lg-12 collaps in center-block" style="font-size:14px; font-weight:bold">
                                         <!-- // <h5>Radar Chart Place Holder</h5> -->
@@ -526,7 +361,7 @@
 										 place holder for the scatterChart
 									</div>-->
                                 </div>
-                                <div class="row">
+                                <div class="row thumbnailSide">
                                     <div class="col-lg-12" id="thumbnails-side_container" style="height:0px">
                                         <div class="col-lg-12 sorting" style="float:right; margin-top: 2px;"></div>
                                         <div id="thumbnails-side" class="col-lg-12">
@@ -629,7 +464,7 @@
         }
     </script>
 
-
+    <!-- welcome div  -->
     <script type="text/javascript">
         sampleFiles = {
             1: "design_explorer_data/LittleRedBox.csv",
@@ -718,13 +553,10 @@
                 .style("font-size", 9);
         }
 
-
-
         // clean radar chart
         function cleanRadarChart() {
             d3.selectAll(".radar-chart").remove();
         }
-
 
         // add scatter chart
         function addScatterChart() {
@@ -766,16 +598,11 @@
         }
 
         function updateScatterChart() {
-            var data;
-            if (graph.brushed().length > 0) {
-                data = graph.brushed();
-            } else {
-                data = graph.data();
-            }
+            var data = graph.brushed().length > 0 ? graph.brushed():graph.data();
+
             d3.selectAll(".cell circle").attr("visibility", "hidden");
 
             data.forEach(function(d) {
-                //console.log(getCircleID(d));
                 d3.selectAll("#" + getCircleID(d)).attr("visibility", "shown");
             });
 
@@ -787,19 +614,17 @@
 
                 d3.selectAll(".cell circle")
                     .style("r", function(d) {
-
                         if (isRightChartFullScreenToggled) {
-                            return 2;
+                            return 3;
                         } else {
-                            return 1;
+                            return 2;
                         }
-
                     })
                     .style("fill-opacity", "0.1");
 
                 data.forEach(function(d) {
                     d3.selectAll("#" + getCircleID(d))
-                        .style("r", "3")
+                        .style("r", "5")
                         .style("fill-opacity", "1");
                 });
 
@@ -811,7 +636,12 @@
         function unlighlightScatter() {
             d3.selectAll(".cell circle")
                 .style("r", function(d) {
-                    return 1;
+
+                    if (isRightChartFullScreenToggled) {
+                        return 3;
+                    } else {
+                        return 2;
+                    }
 
                 })
                 .style("fill-opacity", "0.4");
@@ -830,9 +660,6 @@
             windowHeight = window.innerHeight;
 
 
-
-
-
         // side bar for sliders
         $("#menu-toggle").click(function(e) {
             e.preventDefault();
@@ -846,7 +673,7 @@
         });
 
 
-        $("#scatter-menu-toggle").click(function(e) {
+        $("#scatter-menu-toggle, .scatter-matrix-control").click(function(e) {
 
             isScatterToggled = !isScatterToggled;
             d3.select(".scatter-matrix-control")
@@ -857,43 +684,39 @@
 
 
         //--------------------------------------------------set right side chart full screen -----------------------------------//
+
+        var divWidth = d3.select(".col-lg-3").style("width").replace("px", "");
+
         $("#scatter-fullscreen-toggle").click(function(e) {
-
-            var divWidth = d3.select(".col-lg-3").style("width").replace("px", "");
-
             isRightChartFullScreenToggled = !isRightChartFullScreenToggled;
-            d3.select(".col-lg-3")
-                .transition().duration(500)
-                .style("float", "right")
+
+            d3.selectAll(".col-lg-3,.chartSide,.col-lg-3 .row-fluid,.thumbnailSide,#copyRightButton")
+                .classed("rightChartFullScreenToggled", isRightChartFullScreenToggled);
+                // .transition().duration(100);
+
+            d3.select("#thumbnails-side_container")
+                // .transition().duration(100)
                 .style("height", function() {
                     if (isRightChartFullScreenToggled) {
-                        return windowHeight - 50 + "px";
+                        return windowHeight - 220 + "px";
                     } else {
-                        return "auto";
-                    }
-                })
-                .style("right", function() {
-                    if (isRightChartFullScreenToggled) {
-                        return windowWidth - divWidth - 15 + "px";
-                    } else {
-                        return "0";
+                        return d3.select("#zoomedArea").style("height").replace("px", "");
                     }
                 });
 
-            d3.selectAll(".col-lg-3 .row, #rightTopButtonGroup")
-                .transition().delay(100)
-                .transition().duration(1000)
-                .style("width", function() {
-                    if (isRightChartFullScreenToggled) {
-                        return windowWidth - 50 + "px";
-                    } else {
-                        return "auto";
-                    }
-                });
+            // d3.selectAll(".col-lg-3 .row, #rightTopButtonGroup")
+            //     .transition().delay(100)
+            //     .transition().duration(1000)
+            //     .style("width", function() {
+            //         if (isRightChartFullScreenToggled) {
+            //             return windowWidth - 50 + "px";
+            //         } else {
+            //             return;
+            //         }
+            //     });
 
-            d3.select(".col-lg-9") // hide left side
-                .transition().delay(500)
-                .transition().duration(1000)
+            d3.selectAll(".col-lg-9,#thumbnails-btm_container") // hide left side
+                .transition().delay(200)
                 .style("display", function() {
                     if (isRightChartFullScreenToggled) {
                         return "none";
@@ -903,24 +726,34 @@
                 });
 
 
-            d3.select(".scatter-matrix-svg")
+            d3.select(".scatter-matrix-svg") // for centering the chart
                 .style("width", function() {
                     if (isRightChartFullScreenToggled) {
-                        return windowHeight - 200 + "px";
+                        return windowHeight -200 + "px";
                     } else {
-                        return d3.select("#graph").style("height").replace("px", "") - 10 + "px";
+                        return d3.select("#graph").style("height").replace("px", "") - 20 + "px";
                     }
                 });
 
             // reset the size of right side top button
-            d3.select("#copyRightButton")
-                .transition().delay(100)
-                .transition().duration(1000)
-                .style("width", function() {
+            // d3.select("#copyRightButton")
+            //     .transition().delay(100)
+            //     .transition().duration(1000)
+            //     .style("width", function() {
+            //         if (isRightChartFullScreenToggled) {
+            //             return windowWidth - 180 + "px";
+            //         } else {
+            //             return "70%";
+            //         }
+            //     });
+
+            //set the menu size
+            d3.select(".scatter-matrix-control")
+                .style("height", function() {
                     if (isRightChartFullScreenToggled) {
-                        return windowWidth - 180 + "px";
+                        return windowHeight - 200 + "px";
                     } else {
-                        return divWidth - 180 + "px";
+                        return d3.select("#graph").style("height").replace("px", "") - 20 + "px";
                     }
                 });
 
@@ -1003,13 +836,22 @@
             highlightScatterDot();
 
 
-            var radarHeight = d3.select("#radarChart")
-                .style("height").replace("px", "");
+            // var radarHeight = d3.select("#radarChart")
+            //     .style("height").replace("px", "");
 
             // let's side thumbnail show up
             d3.select("#thumbnails-side_container")
                 .transition().duration(1500)
-                .style("height", (cleanHeight - radarHeight) + "px");
+                .style("height", function(){
+
+                    if(isRightChartFullScreenToggled){
+                        return d3.select(".scatter-matrix-svg").style("width").replace("px", "")-20 + "px";
+                    }else {
+                        return (cleanHeight - pcHeight) + "px";
+                    }
+                    //console.log(isRightChartFullScreenToggled);
+
+                });
 
             isAnyItemSelected = true;
 
@@ -1212,7 +1054,7 @@
 
         function analyzeInputData(originalData) {
             var keys = d3.keys(originalData[0]);
-            cleanedParams4pc = {};
+            var id = 0;
 
             originalData.forEach(function(row, rowCount) {
 
@@ -1235,7 +1077,6 @@
                         cleanedParams[key.replace("out:", "").trim()] = row[key];
                         cleanedParams4pc[key.replace("out:", "").trim()] = {};
 
-
                     } else {
                         cleanedParams[key.trim()] = row[key]; // I need to add case for image and 3D here later
                         if (key.trim() != "img" && key.trim() != "threeD") {
@@ -1244,9 +1085,10 @@
                     }
                 });
 
-                var id = getCaseId(inputParams);
+                //var id = getCaseId(inputParams);
+                // id += 1;
+                // ids.push(id);
 
-                ids.push(id);
 
                 allDataCollector[id] = {};
                 //allDataCollector[id]["inputData"] = inputParams; //don't need them for now
@@ -1258,6 +1100,7 @@
                 cleanedData.push(cleanedParams);
             });
 
+
             // add rating of 0 to all the options if not already there
             if (keys.indexOf("Rating") == -1) {
 
@@ -1268,6 +1111,61 @@
             }
 
         }
+
+
+        //load GoogleSheet ,Json data_ Mingbo Peng Modified--------------------------------------------------------------------
+        function cleanAndLoadForDE(data) {
+            loadDataToDesignExplorer(mapEntries(data));
+        }
+
+        //add heaters ,Json _ Mingbo Peng Modified------------------------------------------------------------------------------
+        function loopHeaders(headers, data) {
+            var obj = {};
+            for (var i = 0; i < headers.length; i++) {
+
+                obj[headers[i]] = data[i];
+            }
+            return obj;
+        }
+
+        //reMap ,Json from GoogleSheet_ Mingbo Peng Modified--------------------------------------------------------------------
+        function mapEntries(json, realrowlength, skip) {
+            if (!skip) skip = 1;
+            var dataframe = [];
+            var row = [];
+            for (var i = 0; i < json.feed.entry.length; i++) {
+
+                var entry = json.feed.entry[i];
+
+                if (entry.gs$cell.col == '1') {
+                    if (row !== null) {
+
+                        if ((!realrowlength || row.length === realrowlength) && (skip === 0)) {
+                            dataframe.push(row);
+                        } else {
+                            if (skip > 0) skip--;
+                        }
+                    }
+
+                    row = [];
+                }
+                row.push(entry.content.$t);
+            }
+
+            dataframe.push(row);
+
+            //console.log(dataframe[0]);
+            var headers = dataframe[0];
+            var obj;
+            var objs = [];
+            for (var j = 1; j < dataframe.length; j++) {
+                obj = loopHeaders(headers, dataframe[j]);
+                objs.push(obj);
+            }
+
+            return objs;
+        }
+
 
         function getCaseId(inputParams) {
             // create the id based on inputs
@@ -1342,7 +1240,7 @@
         }
     </script>
 
-    <!-- draw parallel coordinates graph -->
+    <!-- NOTE:  draw parallel coordinates graph -->
     <script type="text/javascript">
         var graph;
 
@@ -1355,12 +1253,10 @@
             zoomedHeight = cleanHeight - graphHeight,
             opacity = 0.7;
 
+        var pcIsColoredBy;
 
         var color = d3.scale.linear()
             .range(["#3182bd", "#f33"]);
-
-        var pcIsColoredBy;
-
 
         function drawParallelCoordinates() {
             // set the height for graph div - this is critical otherwise
@@ -1393,6 +1289,12 @@
             //console.log(graph.scale("Rating", [0,5]));
             //graph.toTypeCoerceNumbers();
 
+            updateLabels();
+
+        }
+
+        // update pc chart labels and axis color based on input and outputs parameters
+        function updateLabels() {
             // modify labels
             var inputLabelColor = "black",
                 outputLabelColor = "steelblue",
@@ -1401,10 +1303,6 @@
                 colorset = []; //color set for lables
 
             d3.selectAll("text.label")
-                // move every other label up
-                .attr("transform", function(d, i) {
-                    return "translate (0 , -" + (10 + ((i % 2) * 15)) + ")";
-                })
                 .style("fill", function(d) {
                     // change colors for inputs vs outputs
                     if (inputLabels.indexOf(d) != -1) {
@@ -1429,60 +1327,56 @@
                     return colorset[i];
                 });
 
-            // set color change
-            // set the initial coloring based on the 3rd column
-            pcIsColoredBy = d3.keys(graph.dimensions())[0];
 
-            update_colors(pcIsColoredBy);
+            setupPcLabelEvent();
 
-            // click label to activate coloring
-            graph.svg.selectAll(".dimension")
-                .on("click", update_colors);
-            //.selectAll(".label")
-            //.style("font-size", "14px"); // change font sizes of selected lable
         }
 
-
-        function updateLabels() {
-            d3.selectAll("text.label")
-                // move every other label up
-                .attr("transform", function(d, i) {
-                    return "translate (0 , -" + (10 + ((i % 2) * 15)) + ")";
+        // click label to activate coloring
+        function setupPcLabelEvent(){
+            d3.selectAll(".dimension")
+                .on("click", function(d){
+                    pcIsColoredBy = d;
+                    update_colors(d);
                 });
         }
 
-
         // update color and font weight of chart based on axis selection
-        function update_colors(dimension) {
-
-            pcIsColoredBy = dimension;
-
-            // change the fonts to bold
-            graph.svg.selectAll(".dimension")
-                .style("font-weight", "normal")
-                .filter(function(d) {
-                    return d == dimension;
-                })
-                .style("font-weight", "bold");
+        function update_colors(dim,chart) {
+            pcIsColoredBy = dim;
 
             // change color of lines
             // set domain of color scale
             var values = graph.data().map(function(d) {
-                return parseFloat(d[dimension]);
+                return parseFloat(d[dim]);
+
             });
-            color.domain([d3.min(values), d3.max(values)]);
+
+            colorDomain = color.domain(d3.extent(values));
 
             // change colors for each line
             graph.color(function(d) {
-                return color([d[dimension]]);
+                return color([d[dim]]);
             }).render();
 
             // change border color for images
             d3.selectAll("img#thumbnails-btm").style("border-color", function(d) {
-                return color(d[dimension]);
+                //console.log(color(d[dim]));
+                return color(d[dim]);
             });
             d3.selectAll("img#thumbnails-side").style("border-color", function(d) {
-                return color(d[dimension]);
+                return color(d[dim]);
+            });
+
+            // change ScatterMatrix dots color
+            update_sc_colorsOnly();
+
+        }
+
+        //update_sc_colorsOnly
+        function update_sc_colorsOnly() {
+            d3.selectAll(".cell circle").style("fill", function(d) {
+                return color(d[pcIsColoredBy]);
             });
 
         }
@@ -1716,8 +1610,8 @@
 
     <!-- set up events between charts and graphs -->
     <script type="text/javascript">
-        function setupEvents() {
 
+        function setupEvents() {
             // brushing events for parallel coordinates graph
             graph.on("brush", function(d) {
                 //rc.updateData(graph.brushed());   //-----TODO:here needs a switch for different charts-------
@@ -1742,14 +1636,11 @@
                 .on("click", function() {
 
                     var newData = graph.brushed();
-                    console.log(newData);
                     if (newData === false || newData.length === 0) {
                         alert("You need to select some data to be kept!");
                     } else {
                         graph.data(newData).dimensions(d3.keys(graph.dimensions()));
                         updateSlidersTickValues();
-
-
 
                     }
                 });
@@ -1774,7 +1665,7 @@
             d3.select("#reset")
                 .on("click", function() {
                     updateGraph(cleanedData);
-                    graph.clear();
+
                 });
 
 
@@ -1878,31 +1769,39 @@
                             }
                         });
 
-                     d3.selectAll(".zoomed")
-                        .transition().duration(1500)
-                        .style("height", function() {
+                    d3.selectAll(".zoomed")
+                        .transition().duration(500)
+                        .style("width", function() {
                             if (isLeftChartFullScreenToggled) {
-                                return 0 + "px";
+                                return "0px";
                             } else {
                                 return "100%";
                             }
                         });
 
+                    d3.select(".row-fluid #thumbnails-btm_container")
+                        .transition().duration(500)
+                        .style("height", function() {
+                            if (isLeftChartFullScreenToggled) {
+                                return "auto";
+                            } else {
+                                return d3.select("#zoomedArea").style("height") == "0px"? "auto":"0px";
+                            }
+                        });
+
+
+
                     // change the chart size;
-                    var highlightedData;
+                    var highlightedData = graph.highlighted().length !== 0?graph.highlighted():0;
+
                     if (isLeftChartFullScreenToggled) {
-                        if (graph.highlighted().length !== 0) {   //FIXME:for some reason, here cannot compare with 0, needs to be fixed!
-                            highlightedData = graph.highlighted();
-                        } //graph.highlighted().length returns false when there is no data,
+
                         graph.width(newpcWidth).height(newpcHeight);
-                        if (graph.highlighted().length !== 0) {
-                            graph.highlight(highlightedData);
-                        }
+                        if (highlightedData !== 0) graph.highlight(highlightedData);
+
                     } else {
                         //back to normal size mode
-                        if (graph.highlighted().length !== 0) {
-                            highlightedData = graph.highlighted();
-                        }
+
                         graph.width(oldpcWidth).height(oldpcHeight);
                         if (graph.highlighted().length !== 0) {
                             graph.highlight(highlightedData);
@@ -1914,9 +1813,7 @@
                             .style("height", (newpcHeight*2) - oldpcHeight + "px");
                     }
 
-
-
-
+                    updateLabels();
 
                 });
 
@@ -1945,6 +1842,11 @@
             //draw scatter chart
             addScatterChart();
 
+            // set color change
+            // set the initial coloring based on the 3rd column
+            pcIsColoredBy = d3.keys(graph.dimensions())[0];
+            update_colors(pcIsColoredBy);
+
             // draw legend in side bar
             drawLegend();
 
@@ -1959,64 +1861,6 @@
 
             // set up events between graphs
             setupEvents();
-        }
-
-        //load GoogleSheet Json data_ Mingbo Peng Modified--------------------------------------------------------------------
-        function cleanAndLoadForDE(data) {
-            //var data = mapEntries(data);
-            loadDataToDesignExplorer(mapEntries(data));
-            //onsole.log(data);
-        }
-
-        //reMap Json from GoogleSheet_ Mingbo Peng Modified--------------------------------------------------------------------
-        function mapEntries(json, realrowlength, skip) {
-            if (!skip) skip = 1;
-            var dataframe = [];
-            var row = [];
-            for (var i = 0; i < json.feed.entry.length; i++) {
-
-                var entry = json.feed.entry[i];
-
-                if (entry.gs$cell.col == '1') {
-                    if (row !== null) {
-
-                        if ((!realrowlength || row.length === realrowlength) && (skip === 0)) {
-                            dataframe.push(row);
-                        } else {
-                            if (skip > 0) skip--;
-                        }
-                    }
-
-                    row = [];
-                }
-                row.push(entry.content.$t);
-            }
-
-            dataframe.push(row);
-
-            //console.log(dataframe[0]);
-            var headers = dataframe[0];
-            var obj;
-            var objs = [];
-            for (var j = 1; j < dataframe.length; j++) {
-                //console.log("j:"+j);
-                obj = loopHeaders(headers, dataframe[j]);
-                //console.log(obj);
-                objs.push(obj);
-            }
-            //console.log(objs);
-
-            return objs;
-        }
-
-        //add heaters Json _ Mingbo Peng Modified------------------------------------------------------------------------------
-        function loopHeaders(headers, data) {
-            var obj = {};
-            for (var i = 0; i < headers.length; i++) {
-
-                obj[headers[i]] = data[i];
-            }
-            return obj;
         }
 
 
@@ -2051,13 +1895,11 @@
                 d3.csv("http://tt-acm.github.io/DesignExplorer/design_explorer_data/default_onload.csv", loadDataToDesignExplorer);
                 //d3.json("https://spreadsheets.google.com/feeds/cells/1vNEiXJoP1xJdGGuByz-6UaV6NURkemltgDgT66TkPGk/1/public/values?alt=json", cleanAndLoadForDE);
 
-
             }
 
             var fileInput = document.getElementById('csv-file');
 
             fileInput.addEventListener('change', function(e) {
-
                 //clean whatever was added via Google
                 document.getElementById("googleSheetLinkID").value = "";
                 document.getElementById("googleImgFolderLinkID").value = "";
@@ -2099,8 +1941,6 @@
 
                 reader.readAsText(file);
             });
-
-
 
         }; // end of window.onload
     </script>
@@ -2530,14 +2370,18 @@
 
             // modified from http://stackoverflow.com/questions/14964035/how-to-export-javascript-array-info-to-csv-on-client-side
             var data = graph.brushed() === false ? graph.data() : graph.brushed();
-
+            var csvTitle = d3.keys(data[0]);
 
             var csvContent = "data:attachment/csv;charset=utf-8,";
+            var scidIndex = csvTitle.indexOf("scid");
+            csvTitle.splice(scidIndex,1);
 
-            csvContent += d3.keys(data[0]).join(",") + "\n"; //add first row
+            csvContent += csvTitle.join(",") + "\n"; //add first row
 
             data.forEach(function(infoArray, index) {
-                dataString = d3.values(infoArray).join(",");
+                dataString = d3.values(infoArray);
+                dataString.splice(scidIndex,1);
+                dataString = dataString.join(",");
                 csvContent += index < data.length ? dataString + "\n" : dataString;
 
             });

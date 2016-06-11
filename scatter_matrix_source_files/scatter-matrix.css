@@ -9,16 +9,16 @@
 .scatter-matrix-container rect.extent { fill: #000; fill-opacity: .125; stroke: #fff; }
 .scatter-matrix-container rect.frame { fill: #fff; fill-opacity: .7; stroke: #aaa; }
 
-.scatter-matrix-svg .cell circle { fill: #ccc; fill-opacity: .4; }
+/*.scatter-matrix-svg .cell circle { fill: #ccc; fill-opacity: .4; }*/
 
-.scatter-matrix-container circle { fill-opacity: 1; }
+.scatter-matrix-container circle { fill-opacity: 0.4; }
 .scatter-matrix-container.legend text { font-size: 18px; font-style: oblique; }
 
 .scatter-matrix-container.cell text { pointer-events: none; }
 
 .color-0  { fill: #800; }
 .color-1  { fill: #080; }
-.color-2  { fill: #008  !important;}
+.color-2  { fill-opacity: 1 !important;}
 .color-3  { fill: #440; }
 .color-4  { fill: #044; }
 .color-5  { fill: #404; }
@@ -39,13 +39,13 @@
 .scatter-matrix-variable-control ul { list-style: none; padding-left: 10px; }
 .scatter-matrix-drill-control ul { list-style: none; padding-left: 10px; }
 
-.scatter-matrix-control { 
-	position:absolute; 
-	float: right; 
-	padding: 20px 0 20px 30px; 
-	right:30px; 
-	width: 230px; 
-	overflow-y: auto; 
+.scatter-matrix-control {
+	position:absolute;
+	float: right;
+	padding: 20px 0 20px 30px;
+	right:30px;
+	width: 230px;
+	overflow-y: auto;
 	-webkit-transition: all 0.5s ease;
 	-moz-transition: all 0.5s ease;
 	-o-transition: all 0.5s ease;

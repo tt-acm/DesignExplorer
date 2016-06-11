@@ -1,3 +1,172 @@
+
+body {
+    font-family: sans-serif;
+    font-size: 12px;
+}
+
+div {
+    background-color: white;
+}
+
+input {
+    display: inline-block;
+    font-family: sans-serif;
+    font-size: 12px;
+}
+
+output {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: bold;
+    color: red;
+}
+/* centered columns styles */
+
+.row-centered {
+    text-align: center;
+}
+
+.col-centered {
+    display: inline-block;
+    float: none;
+    /* reset the text-align */
+    text-align: left;
+    /* inline-block space fix */
+    margin-right: -4px;
+}
+
+.vertical-center {
+    min-height: 100%;
+    /* Fallback for browsers do NOT support vh unit */
+    min-height: 100vh;
+    /* These two lines are counted as one           */
+    display: flex;
+    align-items: center;
+}
+
+.footer {
+    width: 95%;
+    height: 20px;
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+}
+
+.credit {
+    margin-left: 1em;
+    margin-bottom: .5em;
+}
+
+.fullscreen {
+    top: 0;
+    left: 0;
+    height: 100% !important;
+    width: 100% !important;
+    position: fixed !important;
+    z-index: 1001 !important;
+    overflow: auto;
+}
+
+#thumbnails-side img,
+#thumbnails-btm img {
+    width: 100%;
+    margin-top: 1em;
+    border-radius: 50%;
+}
+
+#thumbnails-side img {
+    border: .3em solid;
+}
+
+#thumbnails-btm img {
+    border: .5em solid;
+}
+
+#zoomed img,
+#zoomedArea img {
+    height: 100%;
+    width: auto;
+    display: block;
+    /* to center the imge - hopefully! */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#thumbnails-side,
+#thumbnails-btm {
+    overflow: auto;
+    height: 100%;
+}
+
+#thumbnails-btm_container,
+#zoomedArea {
+    overflow: hidden;
+}
+
+#legend {
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+rect.disabled {
+    fill: transparent !important;
+}
+
+.navbar-default {
+    height: 50px;
+    /* overwrite default navbar size */
+}
+
+.Spectacles_Footer {
+    visibility: hidden;
+}
+
+.sampleImage {
+    width: 100%;
+    cursor: pointer;
+}
+
+.sampleImage:hover img {
+    border-color: black;
+    border-width: .2em solid;
+}
+
+input#csv-file {
+    opacity: 0;
+    top: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+    filter: alpha(opacity=0);
+    position: absolute;
+}
+
+.file-upload {
+    position: relative;
+    overflow: hidden;
+    height: 2.2em;
+    border-width: 0px;
+    width: 10em;
+    border-radius: 10em;
+}
+
+.col-lg-3 {
+    position: fixed;
+    right: 0;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+div#thumbnails-side_container {
+    margin-top: 30px;
+}
+
+a#copyRightButton {
+    overflow: hidden;
+}
+
 /*custom cs*/
 #close{
     margin: 5px;
@@ -16,4 +185,20 @@
     overflow-y: auto;
     margin-left: auto;
     margin-right: auto;
+}
+
+.col-lg-3.rightChartFullScreenToggled{
+    width: 100%;
+}
+.col-lg-3 .chartSide.rightChartFullScreenToggled, .col-lg-3 .row-fluid.rightChartFullScreenToggled{
+    width: 70%;
+    float: left;
+}
+
+.col-lg-3 .thumbnailSide.rightChartFullScreenToggled{
+    width: 30%;
+    float: left;
+}
+.col-lg-3 #copyRightButton.rightChartFullScreenToggled{
+    width: 85% !important;
 }
