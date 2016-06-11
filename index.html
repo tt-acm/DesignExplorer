@@ -115,6 +115,7 @@
 
 <script>
     function MP_getGoogleIDandLoad() {
+        // if(isGoodForLoading ==0) return;
         document.getElementById('csv-file').value = "";
         var googleSheetLink = document.getElementById("googleSheetLink").value.split("/");
         var googleImgFolderLink = document.getElementById("googleImgFolderLink").value.split("/");
@@ -122,6 +123,7 @@
 
         var googleSheetLinkID = googleSheetLink[5];
         var googleImgFolderLinkID = googleImgFolderLink[googleImgFolderLink.length - 1];
+
         if (googleSheetLinkID.length > 0 && googleImgFolderLinkID.length > 0) {
 
             document.getElementById("googleSheetLinkID").value = googleSheetLinkID;
@@ -172,8 +174,9 @@
             d3.selectAll(".label")
                 .style("font-size", "75%");
         }
-
     }
+
+
 </script>
 
 <body>
@@ -202,20 +205,20 @@
                         <!--button to load csv uncommented-->
 
                         <p class="navbar-text">
-                            <input type="text" id="googleSheetLink" class="btn btn-default btn-sm" name="sheet" style="border-radius: 20px 0 0 20px; width: 15em; height: 2.2em;" placeholder="Google Spreadsheets Link" />
+                            <input type="text" id="googleSheetLink" class="btn btn-default btn-sm toggled" name="sheet" style="border-radius: 20px 0 0 20px; " placeholder="Google Spreadsheets Link" />
                         </p>
                         <p class="navbar-text" style="margin-left: -1px;">
-                            <input type="text" id="googleImgFolderLink" class="btn btn-default btn-sm" name="imgfolder" style="border-radius: 0; width: 15em; height: 2.2em;" placeholder="Google Drive Folder Link" />
+                            <input type="text" id="googleImgFolderLink" class="btn btn-default btn-sm toggled" name="imgfolder" style="border-radius: 0;" placeholder="Google Drive Folder Link" />
                         </p>
                             <input type="text" id="googleSheetLinkID" class="btn btn-default btn-hd" name="sheet" placeholder="sheetsID" style="display: none;" />
                             <input type="text" id="googleImgFolderLinkID" class="btn btn-default btn-hd" name="imgfolder" placeholder="FolderID" style="display: none;" />
                         <p class="navbar-text" style="margin-left: -1px;">
-                            <button onclick="MP_getGoogleIDandLoad()" class="file-upload" style="border-radius:0 20px 20px 0;">Load Data</button>
+                            <button id="loadData" onclick="MP_getGoogleIDandLoad()" class="file-upload" style="border-radius:0 20px 20px 0;">Load Data</button>
                         </p>
                         <p style="float:left; margin: 20px 0 0 15px;"> OR </p>
                         <p class="navbar-text">
-                            <button class="file-upload">
-                                <input type="file" id="csv-file" class="btn btn-default btn-sm-upload" name="files" /> Upload CSV
+                            <button class="file-upload" id = "uploadCSV">
+                                <input  type="file" id="csv-file" class="btn btn-default btn-sm-upload" name="files" /> Upload CSV
                             </button>
                         </p>
 
@@ -600,7 +603,9 @@
         function updateScatterChart() {
             var data = graph.brushed().length > 0 ? graph.brushed():graph.data();
 
-            d3.selectAll(".cell circle").attr("visibility", "hidden");
+            d3.selectAll(".cell circle")
+                .classed("faded",false)
+                .attr("visibility", "hidden");
 
             data.forEach(function(d) {
                 d3.selectAll("#" + getCircleID(d)).attr("visibility", "shown");
@@ -613,38 +618,22 @@
             if (data.length > 0) {
 
                 d3.selectAll(".cell circle")
-                    .style("r", function(d) {
-                        if (isRightChartFullScreenToggled) {
-                            return 3;
-                        } else {
-                            return 2;
-                        }
-                    })
-                    .style("fill-opacity", "0.1");
+                    .classed("faded", true);
+
+                unlighlightScatter();
 
                 data.forEach(function(d) {
                     d3.selectAll("#" + getCircleID(d))
-                        .style("r", "5")
-                        .style("fill-opacity", "1");
+                        .classed("highlighted", true);
                 });
 
             }
-
 
         }
 
         function unlighlightScatter() {
             d3.selectAll(".cell circle")
-                .style("r", function(d) {
-
-                    if (isRightChartFullScreenToggled) {
-                        return 3;
-                    } else {
-                        return 2;
-                    }
-
-                })
-                .style("fill-opacity", "0.4");
+                .classed("highlighted", false);
 
         }
     </script>
@@ -658,6 +647,20 @@
         var isRightChartFullScreenToggled = false;
         var windowWidth = window.innerWidth,
             windowHeight = window.innerHeight;
+
+        // TODO: latter updates. simplify the load menu.
+        // var isGoodForLoading = 0;
+        //
+        // d3.select("#loadData.file-upload")
+        //     .on("click", function() {
+        //         d3.selectAll("#googleImgFolderLink,#googleSheetLink")
+        //             .classed("toggled", false);
+        //
+        //         d3.select("#uploadCSV")
+        //             .classed("toggled", true);
+        //
+        //         isGoodForLoading = 1;
+        //     });
 
 
         // side bar for sliders
@@ -690,7 +693,7 @@
         $("#scatter-fullscreen-toggle").click(function(e) {
             isRightChartFullScreenToggled = !isRightChartFullScreenToggled;
 
-            d3.selectAll(".col-lg-3,.chartSide,.col-lg-3 .row-fluid,.thumbnailSide,#copyRightButton")
+            d3.selectAll(".col-lg-3,.chartSide,.col-lg-3 .row-fluid,.thumbnailSide,#copyRightButton, .scatter-matrix-container circle")
                 .classed("rightChartFullScreenToggled", isRightChartFullScreenToggled);
                 // .transition().duration(100);
 
@@ -735,19 +738,6 @@
                     }
                 });
 
-            // reset the size of right side top button
-            // d3.select("#copyRightButton")
-            //     .transition().delay(100)
-            //     .transition().duration(1000)
-            //     .style("width", function() {
-            //         if (isRightChartFullScreenToggled) {
-            //             return windowWidth - 180 + "px";
-            //         } else {
-            //             return "70%";
-            //         }
-            //     });
-
-            //set the menu size
             d3.select(".scatter-matrix-control")
                 .style("height", function() {
                     if (isRightChartFullScreenToggled) {

@@ -196,21 +196,21 @@ d3.parcoords = function(config) {
                 return obj;
             };
         });
-    };
+    }
 
     function extend(target, source) {
         for (var key in source) {
             target[key] = source[key];
         }
         return target;
-    };
+    }
 
     function without(arr, items) {
         items.forEach(function(el) {
             delete arr[el];
         });
         return arr;
-    };
+    }
     /** adjusts an axis' default range [h()+1, 1] if a NullValueSeparator is set */
     function getRange() {
         if (__.nullValueSeparator == "bottom") {
@@ -219,7 +219,7 @@ d3.parcoords = function(config) {
             return [h() + 1, 1 + __.nullValueSeparatorPadding.bottom + __.nullValueSeparatorPadding.top];
         }
         return [h() + 1, 1];
-    };
+    }
 
     pc.autoscale = function() {
         // yscale
@@ -696,17 +696,17 @@ d3.parcoords = function(config) {
             ctx.brushed.strokeStyle = d3.functor(__.color)(d, i);
         }
         return color_path(d, ctx.brushed)
-    };
+    }
 
     function path_foreground(d, i) {
         ctx.foreground.strokeStyle = d3.functor(__.color)(d, i);
         return color_path(d, ctx.foreground);
-    };
+    }
 
     function path_highlight(d, i) {
         ctx.highlight.strokeStyle = d3.functor(__.color)(d, i);
         return color_path(d, ctx.highlight);
-    };
+    }
     pc.clear = function(layer) {
         ctx[layer].clearRect(0, 0, w() + 2, h() + 2);
 
@@ -720,7 +720,7 @@ d3.parcoords = function(config) {
             ctx.brushed.globalAlpha = __.alpha;
         }
         return this;
-    };
+    }
     d3.rebind(pc, axis, "ticks", "orient", "tickValues", "tickSubdivide", "tickSize", "tickPadding", "tickFormat");
 
     function flipAxisAndUpdatePCP(dimension) {
@@ -903,7 +903,7 @@ d3.parcoords = function(config) {
             .innerTickSize(dimension.innerTickSize)
             .outerTickSize(dimension.outerTickSize)
             .tickPadding(dimension.tickPadding)
-            .tickFormat(dimension.tickFormat)
+            .tickFormat(dimension.tickFormat);
     };
 
     // Jason Davies, http://bl.ocks.org/1341281
@@ -1014,7 +1014,7 @@ d3.parcoords = function(config) {
             __.dimensions[p] = copy[p];
             __.dimensions[p].index = i;
         });
-    }
+    };
 
     pc.sortDimensions = function() {
         var copy = __.dimensions;
@@ -1025,7 +1025,7 @@ d3.parcoords = function(config) {
         positionSortedKeys.forEach(function(p, i) {
             __.dimensions[p] = copy[p];
             __.dimensions[p].index = i;
-        })
+        });
     };
 
     // pairs of adjacent dimensions
@@ -1033,7 +1033,7 @@ d3.parcoords = function(config) {
         var ret = [];
         for (var i = 0; i < arr.length - 1; i++) {
             ret.push([arr[i], arr[i + 1]]);
-        };
+        }
         return ret;
     };
 

@@ -101,6 +101,7 @@ output {
 #thumbnails-btm_container,
 #zoomedArea {
     overflow: hidden;
+    margin-top: 10px;
 }
 
 #legend {
@@ -202,3 +203,19 @@ a#copyRightButton {
 .col-lg-3 #copyRightButton.rightChartFullScreenToggled{
     width: 85% !important;
 }
+
+g.cell text {
+    font-size: 0.85em;
+}
+#googleImgFolderLink, #googleSheetLink{
+    width: 15em;
+    height: 2.2em;
+    transition-duration: 0.5s;
+
+}
+/* TODO: simplify the upload and load menu. combine two together(via either google link or server link)!*/
+/*#googleImgFolderLink.toggled, #googleSheetLink.toggled{
+    width: 0;
+    padding: 0;
+}
+#uploadCSV.toggled{width:2.2em;}*/

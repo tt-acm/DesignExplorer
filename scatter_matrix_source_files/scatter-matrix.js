@@ -585,21 +585,15 @@ ScatterMatrix.prototype.__draw = function(cell_size, container_el, color_variabl
                     return getCircleID(d);
 
                 })
-                .attr("class", "222plot")
+                // .attr("class", "selected")
                 .attr("cx", function(d) {
                     return x[p.x](d[p.x]);
                 })
                 .attr("cy", function(d) {
                     return y[p.y](d[p.y]);
                 })
-                .attr("r", function(d) {
-
-                    if (isRightChartFullScreenToggled) {
-                        return 3;
-                    } else {
-                        return 2;
-                    }
-
+                .attr("r",function(d){
+                    return isRightChartFullScreenToggled?2:1;
                 });
 
             // Add titles for x variables and drill variable values
@@ -644,18 +638,15 @@ ScatterMatrix.prototype.__draw = function(cell_size, container_el, color_variabl
         // Highlight selected circles
         function brush(p) {
             var e = brush.extent();
-            svg.selectAll(".cell circle").attr("class", function(d) {
-                return e[0][0] <= d[p.x] && d[p.x] <= e[1][0] &&
-                    e[0][1] <= d[p.y] && d[p.y] <= e[1][1] ?
-                    color_class(d) : null;
+            svg.selectAll(".cell circle").classed("faded", function(d) {
+                return e[0][0] <= d[p.x] && d[p.x] <= e[1][0] && e[0][1] <= d[p.y] && d[p.y] <= e[1][1] ? false : true;
             });
+
         }
 
         // If brush is empty, select all circles
         function brushend() {
-            if (brush.empty()) svg.selectAll(".scatter-matrix-svg .cell circle").attr("class", function(d) {
-                return color_class(d);
-            });
+            if (brush.empty()) svg.selectAll(".scatter-matrix-svg .cell circle").classed("faded", true);
         }
 
         function cross(a, b) {

@@ -11,14 +11,17 @@
 
 /*.scatter-matrix-svg .cell circle { fill: #ccc; fill-opacity: .4; }*/
 
-.scatter-matrix-container circle { fill-opacity: 0.4; }
+.scatter-matrix-container circle { fill-opacity: 0.5; }
+.scatter-matrix-container circle.highlighted { fill-opacity: 1 !important; r:3;}
+.scatter-matrix-svg .cell circle.faded{fill-opacity: 0.15;}
+
 .scatter-matrix-container.legend text { font-size: 18px; font-style: oblique; }
 
 .scatter-matrix-container.cell text { pointer-events: none; }
 
 .color-0  { fill: #800; }
 .color-1  { fill: #080; }
-.color-2  { fill-opacity: 1 !important;}
+/*.color-2  { fill-opacity: 1 !important;}*/
 .color-3  { fill: #440; }
 .color-4  { fill: #044; }
 .color-5  { fill: #404; }
