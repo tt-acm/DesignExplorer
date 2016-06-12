@@ -588,17 +588,17 @@
 
         }
 
-        //unique id for each Circle
-        function getCircleID(d) {
-            var id;
-            var keys = d3.keys(graph.data()[0]);
-
-            keys.forEach(function(key) {
-                id = "scatter_" + cleanString(d[key].toString());
-            });
-
-            return id;
-        }
+        // //unique id for each Circle
+        // function getCircleID(d) {
+        //     var id;
+        //     var keys = d3.keys(graph.data()[0]);
+        //
+        //     keys.forEach(function(key) {
+        //         id = "scatter_" + cleanString(d[key].toString());
+        //     });
+        //
+        //     return id;
+        // }
 
         function updateScatterChart() {
             var data = graph.brushed().length > 0 ? graph.brushed():graph.data();
@@ -759,7 +759,7 @@
             // highlight the line graph
             graph.highlight(selectedImage.data());
 
-            if(isLeftChartFullScreenToggled){return;}
+            //if(isLeftChartFullScreenToggled)return;
 
             // update rating based
             setStarValue(selectedImage.data()[0].Rating);
@@ -1044,7 +1044,7 @@
 
         function analyzeInputData(originalData) {
             var keys = d3.keys(originalData[0]);
-            var id = 0;
+            // var id = 0;
 
             originalData.forEach(function(row, rowCount) {
 
@@ -1054,6 +1054,7 @@
 
                 keys.forEach(function(key, i) {
 
+                    // if (key.trim().startsWith("in:") !== true) {console.log("there is no inputs");}
                     if (key.trim().startsWith("in:")) {
 
                         inputParams[key.replace("in:", "").trim()] = row[key];
@@ -1075,9 +1076,11 @@
                     }
                 });
 
-                //var id = getCaseId(inputParams);
+                // var id = getCaseId(inputParams);
                 // id += 1;
                 // ids.push(id);
+                var id = getCaseId(inputParams);
+                ids.push(id);
 
 
                 allDataCollector[id] = {};
@@ -1093,7 +1096,6 @@
 
             // add rating of 0 to all the options if not already there
             if (keys.indexOf("Rating") == -1) {
-
                 cleanedParams4pc.Rating = {};
                 cleanedData.forEach(function(d) {
                     d.Rating = 0;
@@ -1273,10 +1275,10 @@
                 .render()
                 .brushMode("1D-axes") // enable brushing
                 .interactive()
-                .reorderable()
-                .scale("Rating", [0, 5]).updateAxes(); // set initial domain for rating
+                .reorderable();
+                //.scale("Rating", [0, 5]).updateAxes(); // set initial domain for rating
 
-            //console.log(graph.scale("Rating", [0,5]));
+            // graph.scale("Rating", [0,5]).updateAxes();
             //graph.toTypeCoerceNumbers();
 
             updateLabels();
@@ -2116,8 +2118,11 @@
                 // update chart
                 graph.highlight([selectedData]);
 
+
+
                 //update radar chart
-                //rc.highlight([selectedData]);       //-----TODO:here needs a switch for different charts-------
+                //rc.highlight([selectedData]);
+                highlightScatterDot();      //-----TODO:here needs a switch for different charts-------
 
                 // push the image to zoomed area
                 d3.selectAll(".zoomed")
@@ -2313,8 +2318,9 @@
                         });
 
                     // add Rating to dimensions
-                    graph.dimensions(d3.keys(graph.dimensions()).concat("Rating")); //need changed in some way????
-                    graph.scale("Rating", [0, 1, 2, 3, 4, 5]).updateAxes();
+                    graph.dimensions(cleanedParams4pc);
+                    graph.scale("Rating",[0,5]);
+                    graph.updateAxes();
                     firstRating = false;
                 }
 
@@ -2323,10 +2329,11 @@
                 // update rating value
                 graph.highlighted()[0].Rating = value;
 
-                // this method is not really optimized. I couldn't find a solution just to change
+                // this method is not really optimized. I couldn't find a solution just to change          //I agree
                 // extent of dimensions for just rating axis
 
-                graph.data(graph.data()).render().interactive().reorderable();
+                graph.update().interactive().reorderable();
+                //if(graph.brushed()) graph.clear("foreground");
 
                 // highlight selected option
                 graph.highlight(graph.highlighted());

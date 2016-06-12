@@ -244,6 +244,7 @@ d3.parcoords = function(config) {
                 var extent = d3.extent(__.data, function(d) {
                     return +d[k];
                 });
+                if (k == "Rating"){extent = [0,5];}
 
                 // special case if single value
                 if (extent[0] === extent[1]) {
@@ -284,10 +285,10 @@ d3.parcoords = function(config) {
         };
 
         d3.keys(__.dimensions).forEach(function(k) {
-            //if (!__.dimensions[k].yscale){
+            // if (!__.dimensions[k].yscale){
             __.dimensions[k].yscale = defaultScales[__.dimensions[k].type](k);
-            //console.log(k);
-            //}
+            // console.log(k);
+            // }
         });
 
         // xscale
@@ -324,7 +325,6 @@ d3.parcoords = function(config) {
 
     pc.scale = function(d, domain) {
         __.dimensions[d].yscale.domain(domain);
-
         return this;
     };
 
@@ -2438,6 +2438,36 @@ d3.parcoords = function(config) {
         return this;
     };
 
+    pc.update = function() {
+        // reference the current brushMode
+        // var currentBrushMode = pc.brushMode();
+        //
+        // // reinstalling brushes when resizing currently works for "1D-axes" and "1D-axes-multi"
+        // if (currentBrushMode === "1D-axes" || currentBrushMode === "1D-axes-multi") {
+        //     //store the current brush state
+        //     var brushModeState = pc.brushExtents();
+        // }
+
+        if (isBrushed()) {
+            pc.renderBrushed();
+        }else{
+            pc.render();
+        }
+
+        // axes, destroys old brushes.
+        if (flags.brushable) pc.brushable();
+        if (flags.reorderable) pc.reorderable();
+        //
+        // // reinstalling brushes when resizing currently works for "1D-axes" and "1D-axes-multi"
+        // // createAxes() destroyed the brush elements, reinstall them and restore the brush state
+        // if (currentBrushMode === "1D-axes" || currentBrushMode === "1D-axes-multi") {
+        //     // install() recreates the brush elements and their events, assigns empty brush extents
+        //     brushmodeObject.install();
+        //     // set the empty brush extents to the saved brush state
+        //     pc.brushExtents(brushModeState);
+        // }
+        return this;
+    };
     // highlight an array of data
     pc.highlight = function(data) {
         if (arguments.length === 0) {
@@ -2447,6 +2477,7 @@ d3.parcoords = function(config) {
         __.highlighted = data;
         pc.clear("highlight");
         if(__.brushed){
+            console.log("brushed");
             d3.select(canvas.brushed).classed("faded", true);
             pc.clear("foreground");
         }else {
@@ -2461,7 +2492,7 @@ d3.parcoords = function(config) {
     // clear highlighting
     pc.unhighlight = function() {
         __.highlighted = [];
-        console.log("unhighlight!");
+
         pc.clear("highlight");
         d3.selectAll([canvas.foreground,canvas.brushed]).classed("faded", false);
         return this;
