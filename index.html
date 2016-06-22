@@ -759,7 +759,6 @@
             // highlight the line graph
             graph.highlight(selectedImage.data());
 
-            //if(isLeftChartFullScreenToggled)return;
 
             // update rating based
             setStarValue(selectedImage.data()[0].Rating);
@@ -777,7 +776,10 @@
             // hide btm thumbnail
             d3.select("#thumbnails-btm_container")
                 .transition().duration(1000)
-                .style("height", "0px");
+                .style("height", function(){
+
+                    return isLeftChartFullScreenToggled?"auto":"0px";
+                });
 
             // push the image to zoomed area
 
