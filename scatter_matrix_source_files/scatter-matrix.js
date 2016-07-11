@@ -236,34 +236,34 @@ ScatterMatrix.prototype.render = function() {
                 return '' + i + ': ' + d;
             });
 
-        drill_li =
-            drill_control
-            .append('p').text('Horizontal Variable:')
-            .append('ul')
-            .selectAll('li')
-            .data(original_numeric_variables)
-            .enter().append('li');
-
-        drill_li.append('input')
-            .attr('type', 'checkbox')
-            .on('click', function(d, i) {
-                var new_drill_variables = [];
-                for (var j in drill_variables) {
-                    var v = drill_variables[j];
-                    if (v !== d || this.checked) {
-                        new_drill_variables.push(v);
-                    }
-                }
-                if (this.checked) {
-                    new_drill_variables.push(d);
-                }
-                drill_variables = new_drill_variables;
-                self.__draw(self.__cell_size, svg, color_variable, selected_colors, to_include, drill_variables);
-            });
-        drill_li.append('label')
-            .html(function(d) {
-                return d;
-            });
+        // drill_li =
+        //     drill_control
+        //     .append('p').text('Horizontal Variable:')
+        //     .append('ul')
+        //     .selectAll('li')
+        //     .data(original_numeric_variables)
+        //     .enter().append('li');
+        //
+        // drill_li.append('input')
+        //     .attr('type', 'checkbox')
+        //     .on('click', function(d, i) {
+        //         var new_drill_variables = [];
+        //         for (var j in drill_variables) {
+        //             var v = drill_variables[j];
+        //             if (v !== d || this.checked) {
+        //                 new_drill_variables.push(v);
+        //             }
+        //         }
+        //         if (this.checked) {
+        //             new_drill_variables.push(d);
+        //         }
+        //         drill_variables = new_drill_variables;
+        //         self.__draw(self.__cell_size, svg, color_variable, selected_colors, to_include, drill_variables);
+        //     });
+        // drill_li.append('label')
+        //     .html(function(d) {
+        //         return d;
+        //     });
 
         self.__draw(self.__cell_size, svg, color_variable, selected_colors, to_include, drill_variables);
     });

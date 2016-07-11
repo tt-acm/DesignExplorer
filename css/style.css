@@ -132,15 +132,6 @@ rect.disabled {
     border-width: .2em solid;
 }
 
-input#csv-file {
-    opacity: 0;
-    top: 0;
-    right: 0;
-    margin: 0;
-    padding: 0;
-    filter: alpha(opacity=0);
-    position: absolute;
-}
 
 .file-upload {
     position: relative;
@@ -148,9 +139,17 @@ input#csv-file {
     height: 2.2em;
     border-width: 0px;
     width: 10em;
-    border-radius: 10em;
+    border-radius: 0 20px 20px 0;
+    margin-left: -4px;
 }
 
+input#csv-file {
+    /* text-align: center; */
+    margin: 0 auto 0 auto;
+    border-radius: 20px;
+    height: 2.6em;
+    width: 420px;
+}
 .col-lg-3 {
     position: fixed;
     right: 0;
@@ -169,7 +168,7 @@ a#copyRightButton {
 }
 
 /*custom cs*/
-#close{
+#close, #loadDataclose{
     margin: 5px;
 }
 
@@ -177,7 +176,7 @@ a#copyRightButton {
     background-color: rgba(0, 0, 0, 0.30);
 }
 
-#welcomeContainer{
+#welcomeContainer, #loadDataContainer{
     background-color: #ffffff;
     opacity: 1;
     z-index: 1000;
@@ -186,6 +185,7 @@ a#copyRightButton {
     overflow-y: auto;
     margin-left: auto;
     margin-right: auto;
+    min-width: 700px;
 }
 
 .col-lg-3.rightChartFullScreenToggled{
@@ -207,15 +207,8 @@ a#copyRightButton {
 g.cell text {
     font-size: 0.85em;
 }
-#googleImgFolderLink, #googleSheetLink{
-    width: 15em;
+#folderLink{
+    border-radius: 20px 0 0 20px;
+    width: 300px;
     height: 2.2em;
-    transition-duration: 0.5s;
-
 }
-/* TODO: simplify the upload and load menu. combine two together(via either google link or server link)!*/
-/*#googleImgFolderLink.toggled, #googleSheetLink.toggled{
-    width: 0;
-    padding: 0;
-}
-#uploadCSV.toggled{width:2.2em;}*/
