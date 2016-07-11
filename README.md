@@ -11,3 +11,4 @@ Design Explore is a web application to make exploring multi-dimensional design s
 ### [Pace](http://github.hubspot.com/pace/docs/welcome/)
 ### [Radar Chart](https://github.com/alangrafu/radar-chart-d3)
 ### [Spectacles](https://github.com/tt-acm/Spectacles.WebViewer) - 3D viewer
+### [Scatter-matrix Chart](https://github.com/benjiec/scatter-matrix)
