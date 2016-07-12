@@ -117,12 +117,26 @@
     function MP_getGoogleIDandLoad() {
         // if(isGoodForLoading ==0) return;
         document.getElementById('csv-file').value = "";
-        var googleImgFolderLink = document.getElementById("folderLink").value.split("/");
-        var googleImgFolderLinkID = googleImgFolderLink[googleImgFolderLink.length - 1];
+        var serverFolderLink = document.getElementById("folderLink").value;
+        var link;
+        var filePath;
 
-        if (googleImgFolderLinkID.length > 0) {
-            document.getElementById("folderLinkID").value = googleImgFolderLinkID;
-            var filePath = "http://www.googledrive.com/host/" + googleImgFolderLinkID + "/data.csv";
+
+        if (serverFolderLink.search("google.com")>0){
+
+            link  = serverFolderLink.split("/");
+            link = link[link.length - 1];
+            filePath = "http://www.googledrive.com/host/" + link + "/data.csv";
+
+        }else {
+
+            link = serverFolderLink;
+            filePath = serverFolderLink + "/data.csv";
+
+        }
+
+        if (link.length > 0) {
+            document.getElementById("folderLinkID").value = link;
             // remove the current selection
             unloadPageContent();
             d3.csv(filePath, loadDataToDesignExplorer);
@@ -132,8 +146,6 @@
             alert("You have to put Google Drive Folder information first!");
         }
         //alert(googleImgFolderLinkID);
-
-
     }
 
     function getUrlVars() {
@@ -143,13 +155,33 @@
         });
         return vars;
     }
+    function makeUrl(file){
+        var link;
+        var folderLinkID = document.getElementById("folderLinkID").value;
+
+        if (folderLinkID.length > 0) {
+            //loadImgfrom inputs
+            if(folderLinkID.search("/")>0){
+                //folderUrl is server link
+                link = folderLinkID + "/" + file;
+            }else{
+                //folderUrl is google folder ID
+                link = "http://www.googledrive.com/host/" + folderLinkID + "/" + file;
+            }
+        } else {
+            // file is the valid Url path
+            link = file;
+        }
+
+        return link;
+    }
 
     function getStillLink() {
         if (document.getElementById("folderLinkID").value.length > 0) {
             var msg = window.location.href + "?GFOLDER=" + document.getElementById("folderLinkID").value;
             window.prompt("This is the link that you can access next time without loading!", msg);
         } else {
-            alert("You have to put folder information first!");
+            alert("You have to put online folder information first!");
         }
     }
 
@@ -415,14 +447,14 @@
                         <input type="text" id="folderLinkID" class="btn btn-default btn-hd" name="imgfolder" placeholder="FolderID" />
                         <button id="loadData" onclick="MP_getGoogleIDandLoad()" class="file-upload" style="border-radius:0 20px 20px 0;">Load Data</button>
                     </p>
-                    <h5 class="text-center" style="color: #9d9d9d;">Please put "data.csv", images, and 3D json files into the same folder</h5>
-
+                    <h5 class="text-center" style="color: #9d9d9d;">Please put data.csv, images, and 3D-json files into the same folder.(Example:<a href="design_explorer_data/example/online/data.csv" target="_blank">data.csv</a>)</h5>
                     <h4 class="text-center" style="margin: 80px 0 60px 0;">
                             Or
                     </h4>
                     <p class="text-center">
                         <input type="file" id="csv-file" class="btn btn-default btn-sm" name="files">
                     </p>
+                    <h5 class="text-center" style="color: #9d9d9d;">Please put valid images and 3D-json files URL. (Example:<a href="design_explorer_data/example/LocalCSV_example.csv" target="_blank">data.csv</a>)</h5>
 
                 </div>
             </div>
@@ -760,21 +792,10 @@
             // push the image to zoomed area
 
 
-            var imgLink;
-            var userInputs = document.getElementById("folderLinkID").value;
-            if (userInputs.length > 0) {
-                //loadImgfrom inputs
-                imgLink = "http://www.googledrive.com/host/" + userInputs + "/" + selectedImage.datum().img;
-
-            } else {
-                imgLink = selectedImage.datum().img;
-            }
-
-
             d3.selectAll(".zoomed")
                 .select("img")
                 .data(selectedImage.data())
-                .attr("src", imgLink)
+                .attr("src", makeUrl(selectedImage.datum().img))
                 .attr("title", getTitle);
 
             // load 3d geometry if the view is set to 3D
@@ -1511,21 +1532,10 @@
             }
 
             // attach images ---------------------------------------------------------------------------------------------------
-            var imgLink;
-            var userInputs = document.getElementById("folderLinkID").value;
-            if (userInputs.length > 0) {
-                //loadImgfrom inputs
-                imgLink = function(d) {
-                    return "http://www.googledrive.com/host/" + userInputs + "/" + d.img;
+            var imgLink = function(d) {
+                    return makeUrl(d.img);
                 };
 
-            } else {
-
-                imgLink = function(d) {
-                    return d.img;
-                };
-
-            }
 
             d3.select("#thumbnails-btm")
                 //.style("height", "100%") //20px for credit line -
@@ -1830,29 +1840,36 @@
             if (window.location.href.toUpperCase().search("GFOLDER") > 0) {
                 // this is old user with google drive files.
                 d3.select("#welcome").style("display","none");
-                var folderLinkID = getUrlVars().GFOLDER;
+                var folderUrl = getUrlVars().GFOLDER;
+                var filePath;
 
-                document.getElementById("folderLinkID").value = folderLinkID;
+                document.getElementById("folderLinkID").value = folderUrl;
 
-                var filePath = "http://www.googledrive.com/host/" + folderLinkID + "/data.csv";
+                if(folderUrl.search("/")>0){
+                    //folderUrl is server link
+                    filePath = folderUrl;
+                }else{
+                    //folderUrl is google folder ID
+                    filePath = "http://www.googledrive.com/host/" + folderUrl + "/data.csv";
+                }
+
                 // remove the current selection
                 unloadPageContent();
                 d3.csv(filePath, loadDataToDesignExplorer);
 
             } else {
-
-                //function to close intro window div
-                d3.selectAll("#close, #loadDataclose")
-                    .on("click", function() {
-                        d3.select("#welcome")
-                        .style("display","none");
-                    });
-
                 // load default data
                 //parse the csv data from the design_explorer_data folder
                 d3.csv("http://tt-acm.github.io/DesignExplorer/design_explorer_data/default_onload.csv", loadDataToDesignExplorer);
 
             }
+
+            //function to close intro window div
+            d3.selectAll("#close, #loadDataclose")
+                .on("click", function() {
+                    d3.select("#welcome")
+                    .style("display","none");
+                });
 
             d3.select("#showLoadData")
                 .on("click", function() {
@@ -2102,17 +2119,11 @@
                 highlightScatterDot();      //-----TODO:here needs a switch for different charts-------
 
                 // push the image to zoomed area
-                var userInputs = document.getElementById("folderLinkID").value;
-                if (userInputs.length > 0) {
-                    //loadImgfrom inputs
-                    imgLink = "http://www.googledrive.com/host/" + userInputs + "/" + selectedData.img;
 
-                } else {
-                    imgLink = selectedData.img;
-                }
+
                 d3.selectAll(".zoomed")
                     .select("img")
-                    .attr("src", imgLink);
+                    .attr("src", makeUrl(selectedData.img));
 
                 if (currentView == "3D") loadNew3DModel();
 
@@ -2176,7 +2187,8 @@
 
         // Initiate 3D viewer
         function initiate3DViewer() {
-            var jsonFileAddress = "http://www.googledrive.com/host/" + document.getElementById("folderLinkID").value+"/"+graph.highlighted()[0].threeD;
+
+            var jsonFileAddress = makeUrl(graph.highlighted()[0].threeD);
             var viewerId = "viewer3d";
 
             //load JSON file
@@ -2191,7 +2203,7 @@
 
         // load new models
         function loadNew3DModel() {
-            var jsonFileAddress = "http://www.googledrive.com/host/" + document.getElementById("folderLinkID").value+"/"+graph.highlighted()[0].threeD;
+            var jsonFileAddress = makeUrl(graph.highlighted()[0].threeD);
             d3.json(jsonFileAddress, function(data) {
                 va3cViewer.loadNewModel(data);
             });
