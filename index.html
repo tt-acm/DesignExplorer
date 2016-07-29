@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <!--
 //The MIT License (MIT)
 //
@@ -22,7 +23,7 @@
 //THE SOFTWARE.
 -->
 
-<!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -33,8 +34,8 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Design Explorer</title>
-    
+    <title>Design Explorer 2</title>
+
     <link rel="shortcut icon" href="favicon.ico">
     <link rel="icon" type="image/png" href="favicon.png">
 
@@ -48,20 +49,25 @@
     <script src="./rangeslider_files/js/ion.rangeSlider.js"></script>
     <link rel="stylesheet" href="./rangeslider_files/css/normalize.css" />
     <link rel="stylesheet" href="./rangeslider_files/css/ion.rangeSlider.css" />
-    <link rel="stylesheet" href="./rangeslider_files/css/ion.rangeSlider.skinNice.css"/>
+    <link rel="stylesheet" href="./rangeslider_files/css/ion.rangeSlider.skinNice.css" />
 
     <!-- Parallel Coordinates -->
-    <script type="text/javascript" src = "http://mostapharoudsari.github.io/Honeybee/pc_source_files/d3/d3.parcoords.js"></script>
-    
+    <script type="text/javascript" src="./pc_source_files/d3/d3.parcoords.js"></script>
+
     <!-- D3 Parallel Coordinates CSS -->
     <link rel="stylesheet" type="text/css" href="./pc_source_files/css/d3.parcoords.css">
 
-    <!-- Radar Chart -->
+    <!-- Radar Chart --> <!-- TODO: add a switch for picking different charts to present -->
     <script type="text/javascript" src="./radar_source_files/radar-chart.js"></script>
 
-    <!-- Radar Chart CSS -->
-    <link rel="stylesheet" type="text/css" href="./radar_source_files/radar-chart.css"/>
-    
+    <!-- Radar Chart CSS --><!-- TODO: add a switch for picking different charts to present -->
+    <!-- <link rel="stylesheet" type="text/css" href="./radar_source_files/radar-chart.css" /> -->
+
+    <!-- Scatter-matrix -->
+    <script src="./scatter_matrix_source_files/scatter-matrix.js"></script>
+    <!-- Scatter-matrix CSS -->
+    <link type="text/css" rel="stylesheet" href="./scatter_matrix_source_files/scatter-matrix.css">
+
     <!-- Bootstrap Core CSS -->
     <link href="bootstrap_side_bar/css/bootstrap.min.css" rel="stylesheet">
 
@@ -87,210 +93,165 @@
     <script type="text/javascript" src="va3c_source_files/js/libs/jquery-ui.js"></script>
 
     <!-- Application Files -->
-    <link rel='stylesheet' type='text/css' href='https://rawgit.com/tt-acm/Spectacles.WebViewer/gh-pages/css/SPECTACLES.css'/>  <!-- the vA3C stylesheet -->
-    <script type="text/javascript" src="https://rawgit.com/tt-acm/Spectacles.WebViewer/gh-pages/js/SPECTACLES.js"></script>  <!-- the vA3C library -->
+    <link rel="stylesheet" type="text/css" href="https://rawgit.com/tt-acm/Spectacles.WebViewer/gh-pages/css/SPECTACLES.css" />
+    <!-- the vA3C stylesheet -->
+    <script type="text/javascript" src="https://rawgit.com/tt-acm/Spectacles.WebViewer/gh-pages/js/SPECTACLES.js"></script>
+    <!-- the vA3C library -->
 
     <!-- Pace for loading bar-->
-    <link rel='stylesheet' type='text/css' href='pace/pace.css'/>
+    <link rel="stylesheet" type="text/css" href="pace/pace.css" />
     <script type="text/javascript" src="pace/pace.min.js"></script>
 
     <!-- rating system -->
-    <script src='./rating_source_files/jquery.rating.js' type="text/javascript" language="javascript"></script>
-    <link href='./rating_source_files/jquery.rating.css' type="text/css" rel="stylesheet"/>
+    <script src="./rating_source_files/jquery.rating.js" type="text/javascript" language="javascript"></script>
+    <link href="./rating_source_files/jquery.rating.css" type="text/css" rel="stylesheet" />
 
     <!-- Design Explorer Scripts -->
-    <script src='./js/designExplorer.js' type="text/javascript" language="javascript"></script>
-
-    <style>
-        body {
-           font-family: sans-serif;
-           font-size: 12px;
-        }
-        
-        div {
-            background-color: white;
-        }
-        
-
-        input {
-           display: inline-block;
-           font-family: sans-serif;
-           font-size: 12px;
-        }
-
-        output {
-            display: inline-block;
-            font-size: 11px;
-            font-weight: bold;
-            color: red;
-             }
-
-        /* centered columns styles */
-        .row-centered {
-            text-align:center;
-        }
-        
-        .col-centered {
-            display:inline-block;
-            float:none;
-            /* reset the text-align */
-            text-align:left;
-            /* inline-block space fix */
-            margin-right:-4px;
-        }
-
-        .vertical-center {
-            min-height: 100%;  /* Fallback for browsers do NOT support vh unit */
-            min-height: 100vh; /* These two lines are counted as one           */
-
-            display: flex;
-            align-items: center;
-        }
-
-        .footer {
-            width: 95%;
-            height: 20px;
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-        }
-
-        .credit{
-            margin-left: 1em;
-            margin-bottom: .5em;
-        }
-
-        .fullscreen{
-            top: 0;
-            left: 0;
-            height: 100% !important;
-            width: 100% !important;
-            position: fixed !important;
-            z-index: 1001 !important;
-            overflow: auto;
-        }
-
-        #thumbnails-side img,
-        #thumbnails-btm img {
-            width: 100%;
-            margin-top: 1em;
-            border-radius: 50%;
-            }
-
-        #thumbnails-side img {
-            border: .3em solid;
-        }
-
-        #thumbnails-btm img {
-            border: .5em solid;
-        }
-
-        #zoomed img,
-        #zoomedArea img {
-            height: 100%;
-            width: auto;
-            display:block; /* to center the imge - hopefully! */
-            margin-left:auto; 
-            margin-right:auto;
-            }
-
-        #thumbnails-side,
-        #thumbnails-btm {
-            overflow: auto;
-            height: 100%;
-        }
-
-        
-        #thumbnails-btm_container,
-        #zoomedArea {
-            overflow: hidden;
-        }
-
-        
-        #legend{
-            overflow-y: auto;
-            overflow-x: hidden;  
-        }
-
-        rect.disabled {
-            fill: transparent !important;
-        }
-
-       .navbar-default {
-            height: 50px; /* overwrite default navbar size */
-       }
-
-       .Spectacles_Footer{
-        visibility: hidden;
-       }
-
-       .sampleImage {
-            width:100%;
-            cursor: pointer;
-       }
-
-       .sampleImage:hover img{
-        border-color: black;
-        border-width: .2em solid;
-       }
-
-    </style>
-
+    <script src="./js/designExplorer.js" type="text/javascript" language="javascript"></script>
+    <!-- for clean parameters before new data comes in -->
 
 
 </head>
+
+<script>
+    function MP_getGoogleIDandLoad() {
+        // if(isGoodForLoading ==0) return;
+        document.getElementById('csv-file').value = "";
+        var serverFolderLink = document.getElementById("folderLink").value;
+        var link;
+        var filePath;
+
+
+        if (serverFolderLink.search("google.com")>0){
+
+            link  = serverFolderLink.split("/");
+            link = link[link.length - 1];
+            filePath = "http://www.googledrive.com/host/" + link + "/data.csv";
+
+        }else {
+
+            link = serverFolderLink;
+            filePath = serverFolderLink + "/data.csv";
+
+        }
+
+        if (link.length > 0) {
+            document.getElementById("folderLinkID").value = link;
+            // remove the current selection
+            unloadPageContent();
+            d3.csv(filePath, loadDataToDesignExplorer);
+            getStillLink();
+            d3.select("#welcome").style("display","none");
+        } else {
+            alert("You have to put Google Drive Folder information first!");
+        }
+        //alert(googleImgFolderLinkID);
+    }
+
+    function getUrlVars() {
+        var vars = {};
+        var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m, key, value) {
+            vars[key] = value;
+        });
+        return vars;
+    }
+    function makeUrl(file){
+        var link;
+        var folderLinkID = document.getElementById("folderLinkID").value;
+
+        if (folderLinkID.length > 0) {
+            //loadImgfrom inputs
+            if(folderLinkID.search("/")>0){
+                //folderUrl is server link
+                link = folderLinkID + "/" + file;
+            }else{
+                //folderUrl is google folder ID
+                link = "http://www.googledrive.com/host/" + folderLinkID + "/" + file;
+            }
+        } else {
+            // file is the valid Url path
+            link = file;
+        }
+
+        return link;
+    }
+
+    function getStillLink() {
+        if (document.getElementById("folderLinkID").value.length > 0) {
+            var msg = window.location.href + "?GFOLDER=" + document.getElementById("folderLinkID").value;
+            window.prompt("This is the link that you can access next time without loading!", msg);
+        } else {
+            alert("You have to put online folder information first!");
+        }
+    }
+
+    function changeLabelSize(size) {
+        if (size == "largeLabel") {
+            d3.selectAll(".label")
+                .style("font-size", "95%");
+        } else if (size == "mediumLabel") {
+            d3.selectAll(".label")
+                .style("font-size", "85%");
+        } else if (size == "smallLabel") {
+            d3.selectAll(".label")
+                .style("font-size", "75%");
+        }
+    }
+
+
+</script>
 
 <body>
 
     <!-- Navbar -->
     <nav class="navbar navbar-default" style="margin-bottom:0">
-      <div class="container-fluid">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#buttons-navbar-collapse-1">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#buttons-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
 
-            <div class="navbar-header" title="Design Explorer">
-                <img style="max-width:350px; padding-top: 10px;" src="./img/DesignExplorerLogo3.png">
-            </div>           
+                <div class="navbar-header" title="Design Explorer">
+                    <img style="max-width:350px; padding-top: 10px;" src="./img/DesignExplorerLogo3.png">
+                </div>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="buttons-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <!--button to load csv uncommented-->
+                        <p class="navbar-text">
+                            <button id="showLoadData" class="file-upload" style="border-radius: 20px;">Get Data</button>
+                        </p>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
         </div>
-
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="buttons-navbar-collapse-1">
-            <ul class="nav navbar-nav">
-                <li>
-                    <!--button to load csv uncommented-->
-                    <p class="navbar-text">
-                        <input type="file" id="csv-file" class="btn btn-default btn-sm" name="files"/>
-                    </p>
-
-                </li>
-            </ul>
-        </div>
-        <!-- /.navbar-collapse -->
-      </div>
     </nav>
 
     <div id="wrapper" class="toggled">
         <!-- Sidebar -->
         <div id="sidebar-wrapper">
             <ul class="sidebar-nav">
-                <div id= "legend-heading" class="sidebar-brand col-xs-12" style="text-align:center"></div>
+                <div id="legend-heading" class="sidebar-brand col-xs-12" style="text-align:center"></div>
                 <div class="legend col-xs-12" id="legend">
                     <!--place holder for legends-->
                 </div>
-                <div id= "sliders-heading" class="sidebar-brand" style="text-align:center">
+                <div id="sliders-heading" class="sidebar-brand" style="text-align:center">
                     LOAD YOUR DATA!
                 </div>
                 <div class="inputSliders col-xs-11" id="inputSliders">
-                    <form class="sliders"> <!-- I will use this form to disable all the sliders together. -->
+                    <form class="sliders">
+                        <!-- I will use this form to disable all the sliders together. -->
                     </form>
                 </div>
-                <div id= "sliders-report" class="sidebar-brand col-xs-12" style="text-align:center"></div>
+                <div id="sliders-report" class="sidebar-brand col-xs-12" style="text-align:center"></div>
             </ul>
         </div>
         <!-- /#sidebar-wrapper -->
@@ -302,22 +263,33 @@
                     <div class="col-lg-12">
                         <div class="row">
                             <div class="col-lg-9">
-                                
+
                                 <div class="row">
-                                    <div class="btn-group col-xs-12">
+                                    <div class="btn-group col-xs-12" style=" width: auto;">
                                         <button type="button" class="btn btn-default btn-xs" id="menu-toggle" title="Show sliders">
                                             <span class="glyphicon glyphicon-triangle-left" aria-hidden="true"></span>
                                         </button>
-                                        <button type="button" class="btn btn-default btn-xs" id ="pcgraph" data-toggle="collapse">
+                                        <button type="button" class="btn btn-default btn-xs" id="pcgraph" data-toggle="collapse">
                                             <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
                                         </button>
                                         <button id="reset" class="btn btn-default btn-xs">Reset Selection</button>
                                         <button id="remove" class="btn btn-default btn-xs">Exclude Selection</button>
                                         <button id="keep" class="btn btn-default btn-xs">Zoom to Selection</button>
-                                        <button id="savecsv" class="btn btn-default btn-xs" onclick = saveToCSV()>Save Selection to File</button>
+                                        <button id="savecsv" class="btn btn-default btn-xs" onclick="saveToCSV()">Save Selection to File</button>
+                                        <button id="stilllink" class="btn btn-default btn-xs" onclick="getStillLink()">My Static Link</button>
+                                        <a class="btn btn-default btn-xs" href="http://www.mpendesign.com/category/tutorial/" target="_blank">Tutorial</a>
                                         <a href="https://github.com/tt-acm/DesignExplorer/wiki" class="btn btn-default btn-xs" target="_blank">
                                             Info <span class="glyphicon glyphicon-new-window"></span>
                                         </a>
+                                    </div>
+                                    <!-- Change label size -->
+                                    <div class="btn-group col-xs-12" style="width: auto;float: right;right: 60px;">
+                                        <button id="LL" class="btn btn-default btn-xs" onclick="changeLabelSize('largeLabel')" title="Large Label">L</button>
+                                        <button id="MM" class="btn btn-default btn-xs" onclick="changeLabelSize('mediumLabel')" title="Medium Label">M</button>
+                                        <button id="SS" class="btn btn-default btn-xs" onclick="changeLabelSize('smallLabel')" title="Small Label">S</button>
+                                        <button id="pcFullScreen-toggle" class="btn btn-default btn-xs" title="Full Screen">
+                                            <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
+                                        </button>
                                     </div>
                                 </div>
                                 <!-- parallel coordinates -->
@@ -326,17 +298,20 @@
                                         <!-- <h1>Parallel coordinates graph</h1> -->
                                     </div>
                                 </div>
-                                
+
                                 <!-- Zoomed div for zoomed in areas -->
                                 <div class="row-fluid">
                                     <div class="zoomed" id="zoomedArea" style="height:0px">
 
                                         <div class="pull-right" id="vis">
                                             <form>
-                                                   
-                                                <label><input type="radio" id="toggleView" name="visMode" value="2D" checked> 2D</label> <!-- show 2D image on load-->
-                                                <label><input type="radio" id="toggleView" name="visMode" value="3D"> 3D</label>
-                                                
+
+                                                <label>
+                                                    <input type="radio" class="toggleView" name="visMode" value="2D" checked> 2D</label>
+                                                <!-- show 2D image on load-->
+                                                <label>
+                                                    <input type="radio" class="toggleView" name="visMode" value="3D"> 3D</label>
+
                                                 <button type="button" class="btn btn-default btn-xs" id="toggleComments" style="margin-right:10px; margin-left:5px; margin-top: 2px;" title="Add Comments">
                                                     <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                                                 </button>
@@ -347,45 +322,57 @@
                                             </form>
                                             <form>
                                                 <!--rating div-->
-                                                <input class="star" type="radio" name="rating" value="1"/>
-                                                <input class="star" type="radio" name="rating" value="2"/>
-                                                <input class="star" type="radio" name="rating" value="3"/>
-                                                <input class="star" type="radio" name="rating" value="4"/>
-                                                <input class="star" type="radio" name="rating" value="5"/>
+                                                <input class="star" type="radio" name="rating" value="1" />
+                                                <input class="star" type="radio" name="rating" value="2" />
+                                                <input class="star" type="radio" name="rating" value="3" />
+                                                <input class="star" type="radio" name="rating" value="4" />
+                                                <input class="star" type="radio" name="rating" value="5" />
 
                                             </form>
                                         </div>
-                                            <div id = "viewer3d" style="width:100%; height:100%" class="hidden">
-                                                <!-- place holder for the viewer -->
-                                            </div>
-                                            <div class="zoomed" id = "zoomed" style="width:100%; height:100%">
-                                                <!-- place holder for the image -->
-                                            </div>
+                                        <div id="viewer3d" style="width:100%; height:100%" class="hidden">
+                                            <!-- place holder for the viewer -->
+                                        </div>
+                                        <div class="zoomed" id="zoomed" style="width:100%; height:100%">
+                                            <!-- place holder for the image -->
+                                        </div>
                                     </div>
                                 </div>
-                            </div> <!-- end of left side charts-->
-                            
-                            <div class="col-lg-3">
-                                
+                            </div>
+                            <!-- end of left side charts-->
+
+                            <!-- start of right side charts-->
+                            <div class="col-lg-3" style="padding-left: 0;">
+
                                 <div class="row-fluid">
-                                    <div class="btn-group col-xs-12">
-                                        <a href="http://core.thorntontomasetti.com/" class="btn btn-default btn-xs" target="_blank">
-                                            &copy; Copyright 2015 CORE studio | Thornton Tomasetti
+                                    <div id="rightTopButtonGroup" class="btn-group col-xs-12">
+                                        <button type="button" class="btn btn-default btn-xs" id="scatter-fullscreen-toggle" title="Full Screen">
+                                            <span class="glyphicon glyphicon-triangle-left" aria-hidden="true"></span>
+                                        </button>
+                                        <a id="copyRightButton" href="http://core.thorntontomasetti.com/" class="btn btn-default btn-xs" target="_blank" style="width: 70%;">
+                                            &copy; Copyright 2015 Thornton Tomasetti
                                         </a>
                                         <button type="button" class="btn btn-default btn-xs" id="rcgraph" data-toggle="collapse" data-target="#radarChart">
                                             <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
                                         </button>
+                                        <button type="button" class="btn btn-default btn-xs" id="scatter-menu-toggle" title="Show sliders">
+                                            <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
+                                        </button>
                                     </div>
                                 </div>
-                                
-                                <div class="row">
+
+                                <div class="row chartSide">
+
                                     <div id="radarChart" class="col-lg-12 collaps in center-block" style="font-size:14px; font-weight:bold">
-                                        <!-- <h5>Radar Chart Place Holder</h5> -->
+                                        <!-- // <h5>Radar Chart Place Holder</h5> -->
                                     </div>
+                                    <!--<div id="scatterChart" class="col-lg-12 collaps in center-block">
+										 place holder for the scatterChart
+									</div>-->
                                 </div>
-                                <div class="row">
+                                <div class="row thumbnailSide">
                                     <div class="col-lg-12" id="thumbnails-side_container" style="height:0px">
-                                        <div id="sorting" class="col-lg-12" style="float:right; margin-top: 2px;"></div>
+                                        <div class="col-lg-12 sorting" style="float:right; margin-top: 2px;"></div>
                                         <div id="thumbnails-side" class="col-lg-12">
                                             <!-- <p>Thumbnails on load</p> -->
                                         </div>
@@ -396,49 +383,80 @@
                     </div>
                     <div class="row-fluid col-lg-12">
                         <div class="col-lg-12" id="thumbnails-btm_container">
-                            <div id="sorting" class="col-lg-12" style="float:right; margin-top: 2px;"></div>
+                            <div class="col-lg-12 sorting" style="float:right; margin-top: 2px;"></div>
                             <div class="col-lg-12" id="thumbnails-btm"></div>
-                        </div>            
+                        </div>
                     </div>
                 </div>
             </div>
-
+            <!-- /#Welcome content -->
             <div class="row-fluid col-lg-12 row-centered vertical-center fullscreen" id="welcome">
-                <div class="col-sm-12 col-centered" id="welcomeContainer" style="opacity: 1" >
+                <div class="col-sm-12 col-centered" id="welcomeContainer">
                     <button id="close" class="btn btn-default btn-sm pull-right">
                         <span class="glyphicon glyphicon-remove"></span>
                     </button>
-                        <h1 class="text-center"> Welcome to Design Explorer!</h1>
-                        <br>
-                        <h4 class="text-center">
+                    <h1 class="text-center"> Welcome to Design Explorer!</h1>
+                    <br>
+                    <h4 class="text-center">
                             Design Explorer is an open source web interface for exploring multi-dimensional design spaces!
-                        </h4>
-                        <br><br>
-                        <h3 class="text-center">Try one of sample design sets</h3>
-                        <br>
-                        <div class="row">
-                            <div class="col-sm-4">
-                                <img src = "https://dl.dropboxusercontent.com/u/16228160/DesignExplorer/gif/RedBox.gif" class="sampleImage image-rounded" id="sample1">
-                            </div>
-                            <div class="col-sm-4">
-                                <img src="https://dl.dropboxusercontent.com/u/16228160/DesignExplorer/gif/Daylighting.gif" class="sampleImage image-rounded" id="sample2">
-                            </div>
-                            <div class="col-sm-4">
-                                <img src = "https://dl.dropboxusercontent.com/u/16228160/DesignExplorer/gif/BoxBuilding.gif" class="sampleImage image-rounded" id="sample3">
-                            </div>
-                            <br><br>
+                    </h4>
+                    <br>
+
+                    <h3 class="text-center">Try one of sample design sets</h3>
+                    <h5 class="text-center"><a href="http://www.mpendesign.com/category/tutorial/" target="_blank" >Tutorial</a></h5>
+                    <br>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <img src="img/RedBox.gif" class="sampleImage image-rounded" id="sample1">
                         </div>
-                        <div class="col-lg-12">
-                            <h2 class="text-center"> Happy Exploring! </h2>
-                            <br><br>
-                            <h5 class="text-center">
+                        <div class="col-sm-4">
+                            <img src="img/Daylighting.gif" class="sampleImage image-rounded" id="sample2">
+                        </div>
+                        <div class="col-sm-4">
+                            <img src="img/BoxBuilding.gif" class="sampleImage image-rounded" id="sample3">
+                        </div>
+                        <br>
+                        <br>
+                    </div>
+                    <div class="col-lg-12">
+                        <h2 class="text-center"> Happy Exploring! </h2>
+                        <h5 class="text-center" >v2.2</h5>
+                        <br>
+                        <h5 class="text-center">
                                 Design Explorer &copy; Copyright 2015 CORE studio | Thornton Tomasetti |
                                 <a href="http://core.thorntontomasetti.com/about" target="_blank"> About</a> |
                                 <a href="http://core.thorntontomasetti.com/about/services" target="_blank">Services</a> |
                                 <a href="http://core.thorntontomasetti.com/about/contact" target="_blank">Contact</a> |
                             </h5>
-                        </div>
+                        <h5 class="text-center">
+                                Updated by
+                                <a href="http://www.mpendesign.com" target="_blank">Mingbo Peng</a>
+                            </h5>
                     </div>
+                </div>
+                <div class="col-sm-12 col-centered" id="loadDataContainer" style=" display:none;width: 700px;height: 500px" >
+                    <button id="loadDataclose" class="btn btn-default btn-sm pull-right">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </button>
+
+                    <h4 class="text-center" style="margin: 100px 0 30px 0;">
+                            Load data from Google Drive or your server:
+                    </h4>
+                    <p class="text-center">
+                        <input type="text" id="folderLink" class="btn btn-default btn-sm toggled" name="imgfolder" placeholder="Google Drive or server link" />
+                        <input type="text" id="folderLinkID" class="btn btn-default btn-hd" name="imgfolder" placeholder="FolderID" />
+                        <button id="loadData" onclick="MP_getGoogleIDandLoad()" class="file-upload" style="border-radius:0 20px 20px 0;">Load Data</button>
+                    </p>
+                    <h5 class="text-center" style="color: #9d9d9d;">Please put data.csv, images, and 3D-json files into the same folder.(Example:<a href="design_explorer_data/example/online/data.csv" target="_blank">data.csv</a>)</h5>
+                    <h4 class="text-center" style="margin: 80px 0 60px 0;">
+                            Or
+                    </h4>
+                    <p class="text-center">
+                        <input type="file" id="csv-file" class="btn btn-default btn-sm" name="files">
+                    </p>
+                    <h5 class="text-center" style="color: #9d9d9d;">Please put valid images and 3D-json files URL. (Example:<a href="design_explorer_data/example/LocalCSV_example.csv" target="_blank">data.csv</a>)</h5>
+
+                </div>
             </div>
         </div>
         <!-- /#page-content-wrapper -->
@@ -452,59 +470,208 @@
     <!-- Hide sliders if user asked for a stripped down version -->
     <script type="text/javascript">
         // A dictionary to carry users input to customize the interface
-        var inputParameters = { "min": false}; // currently only a single item, other options to be added later
+        var inputParameters = {
+            "min": false
+        }; // currently only a single item, other options to be added later
 
         // get url parameters
         // current valid key is on "min" for minimum interface
-        function parseUri(){
-            var pars = window.location.search.replace("?","").split("&")
-            if (pars[0]=="") return null;
-            pars.forEach(function(d){
+        function parseUri() {
+            var pars = window.location.search.replace("?", "").split("&");
+            if (pars[0] === "") return null;
+            pars.forEach(function(d) {
                 keyValue = d.split("=");
                 inputParameters[keyValue[0].toLowerCase()] = keyValue[1].toLowerCase();
-            })
+            });
         }
-        
+
         // read optional url parameters
         parseUri();
 
-        if(inputParameters["min"] == 'true'){
+        if (inputParameters.min == 'true') {
             // remove the button so sliders are hidden
             d3.selectAll("button#menu-toggle").remove();
         }
     </script>
 
-
+    <!-- welcome div  -->
     <script type="text/javascript">
-        
         sampleFiles = {
-                1:"design_explorer_data/LittleRedBox.csv",
-                2: "design_explorer_data/default_onload.csv",
-                3: "design_explorer_data/AIA building.csv"
-                    }
+            1: "design_explorer_data/LittleRedBox.csv",
+            2: "design_explorer_data/default_onload.csv",
+            3: "design_explorer_data/AIA building.csv"
+        };
 
         d3.selectAll(".sampleImage")
-            .on("click", function(){
+            .on("click", function() {
                 var selSample = d3.select(this);
-                var id = selSample[0][0].id.replace("sample","");
+                var id = selSample[0][0].id.replace("sample", "");
 
                 var filePath = sampleFiles[id];
 
-                // remove the current selection 
+                // remove the current selection
                 unloadPageContent();
 
-                d3.select("div#welcome").remove();
+                d3.select("div#welcome").style("display","none");
 
                 // load the new file
                 d3.csv(filePath, loadDataToDesignExplorer);
             });
-
     </script>
-    
+
+    <!-- right side chart -->
+    <script type="text/javascript">
+        // update radar chart
+        function updateRadarChart() {
+            //format data for radar chart
+            var selectedData;
+            var outputKeys = d3.keys(outputData[0]);
+            if (graph.brushed().length > 0) {
+                selectedData = graph.brushed();
+            } else {
+                selectedData = graph.data();
+
+            }
+
+            //var selectedData = graph.brushed();
+            selectedDataFormatted = [];
+            radarChartColors = [];
+
+            selectedData.forEach(function(d) {
+                selectedDataFormatted.push(formatData(d));
+                //debugger;
+                radarChartColors.push(color(d[pcIsColoredBy]));
+
+            });
+
+
+            //get height, width for radar chart
+            //we want the graph to be centered above the thumbnails
+            //65px is to fit text
+            var divWidth = d3.select("#thumbnails-side").style("width").replace("px", "");
+            var pcHeight = d3.select("#graph").style("height").replace("px", "");
+            var rcDimension = Math.min(pcHeight, divWidth) - 65;
+
+            radarGrey = "rgb(160,160,160)";
+
+            //configure radar chart
+            cfg = ({
+                w: rcDimension,
+                h: rcDimension,
+                color: function() {
+                    return radarGrey;
+                },
+                radius: 4,
+                maxValue: 100,
+                extraWidthX: divWidth - rcDimension,
+                extraWidthY: 65,
+                translateX: (divWidth - rcDimension) / 2,
+                translateY: 65 / 2,
+                levels: 5,
+            });
+
+            RadarChart.draw("#radarChart", selectedDataFormatted, cfg);
+
+            //move lines to back
+            d3.selectAll(".area").moveToBack();
+
+            //did not work using CSS
+            d3.selectAll(".rclegend")
+                .style("fill", "steelblue")
+                .style("font-size", 9);
+        }
+
+        // clean radar chart
+        function cleanRadarChart() {
+            d3.selectAll(".radar-chart").remove();
+        }
+
+        // add scatter chart
+        function addScatterChart() {
+            var pcHeight = d3.select("#graph").style("height").replace("px", "");
+            var rightChartWidth = d3.select("#radarChart").style("width").replace("px", "");
+            var selectedData;
+            if (graph.brushed().length > 0) {
+                selectedData = graph.brushed();
+            } else {
+                selectedData = graph.data();
+
+            }
+            var sm = new ScatterMatrix("", selectedData, '#radarChart');
+            sm.cellSize((pcHeight - 60) / 2);
+            sm.render();
+
+            // adjust the chart style
+            //var chartWidth = d3.select(".scatter-matrix-svg svg").style("width").replace("px", "");
+            d3.select(".scatter-matrix-svg")
+                .style("width", pcHeight - 10 + "px");
+
+            d3.select(".scatter-matrix-control")
+                .style("height", pcHeight - 30 + "px");
+
+            //return sm;
+
+        }
+
+        // //unique id for each Circle
+        // function getCircleID(d) {
+        //     var id;
+        //     var keys = d3.keys(graph.data()[0]);
+        //
+        //     keys.forEach(function(key) {
+        //         id = "scatter_" + cleanString(d[key].toString());
+        //     });
+        //
+        //     return id;
+        // }
+
+        function updateScatterChart() {
+            var data = graph.brushed().length > 0 ? graph.brushed():graph.data();
+
+            d3.selectAll(".cell circle")
+                .classed("faded",false)
+                .attr("visibility", "hidden");
+
+            data.forEach(function(d) {
+                d3.selectAll("#" + getCircleID(d)).attr("visibility", "shown");
+            });
+
+        }
+
+        function highlightScatterDot() {
+            var data = graph.highlighted();
+            if (data.length > 0) {
+
+                d3.selectAll(".cell circle")
+                    .classed("faded", true);
+
+                unlighlightScatter();
+
+                data.forEach(function(d) {
+                    d3.selectAll("#" + getCircleID(d))
+                        .classed("highlighted", true);
+                });
+
+            }
+
+        }
+
+        function unlighlightScatter() {
+            d3.selectAll(".cell circle")
+                .classed("highlighted", false);
+
+        }
+    </script>
+
     <!-- Dynamic Divs script -->
     <script>
         var isAnyItemSelected = false;
         var isToggled = true;
+        var isScatterToggled = true;
+        var isLeftChartFullScreenToggled = false;
+        var isRightChartFullScreenToggled = false;
+        var windowWidth = window.innerWidth,
+            windowHeight = window.innerHeight;
 
         // side bar for sliders
         $("#menu-toggle").click(function(e) {
@@ -514,19 +681,96 @@
             isToggled = !isToggled;
             d3.select("#wrapper")
                 .classed("toggled", isToggled)
-                .transition().duration(500) //length of toggle animation
-                .each("end", resizeRadarChart())
+                .transition().duration(500); //length of toggle animation
+            //.each("end", resizeRadarChart())
         });
 
-        
+
+        $("#scatter-menu-toggle, .scatter-matrix-control").click(function(e) {
+
+            isScatterToggled = !isScatterToggled;
+            d3.select(".scatter-matrix-control")
+                .classed("toggled", isScatterToggled);
+        });
+
+
+        //--------------------------------------------------set right side chart full screen -----------------------------------//
+
+        var divWidth = d3.select(".col-lg-3").style("width").replace("px", "");
+
+        $("#scatter-fullscreen-toggle").click(function(e) {
+            isRightChartFullScreenToggled = !isRightChartFullScreenToggled;
+
+            d3.selectAll(".col-lg-3,.chartSide,.col-lg-3 .row-fluid,.thumbnailSide,#copyRightButton, .scatter-matrix-container circle")
+                .classed("rightChartFullScreenToggled", isRightChartFullScreenToggled);
+                // .transition().duration(100);
+
+            d3.select("#thumbnails-side_container")
+                // .transition().duration(100)
+                .style("height", function() {
+                    if (isRightChartFullScreenToggled) {
+                        return windowHeight - 220 + "px";
+                    } else {
+                        return d3.select("#zoomedArea").style("height").replace("px", "");
+                    }
+                });
+
+            // d3.selectAll(".col-lg-3 .row, #rightTopButtonGroup")
+            //     .transition().delay(100)
+            //     .transition().duration(1000)
+            //     .style("width", function() {
+            //         if (isRightChartFullScreenToggled) {
+            //             return windowWidth - 50 + "px";
+            //         } else {
+            //             return;
+            //         }
+            //     });
+
+            d3.selectAll(".col-lg-9,#thumbnails-btm_container") // hide left side
+                .transition().delay(200)
+                .style("display", function() {
+                    if (isRightChartFullScreenToggled) {
+                        return "none";
+                    } else {
+                        return "block";
+                    }
+                });
+
+
+            d3.select(".scatter-matrix-svg") // for centering the chart
+                .style("width", function() {
+                    if (isRightChartFullScreenToggled) {
+                        return windowHeight -200 + "px";
+                    } else {
+                        return d3.select("#graph").style("height").replace("px", "") - 20 + "px";
+                    }
+                });
+
+            d3.select(".scatter-matrix-control")
+                .style("height", function() {
+                    if (isRightChartFullScreenToggled) {
+                        return windowHeight - 200 + "px";
+                    } else {
+                        return d3.select("#graph").style("height").replace("px", "") - 20 + "px";
+                    }
+                });
+
+        });
+
+
+
         // update layout on select
-        function updateLayoutOnSelect(){
-            
+        function updateLayoutOnSelect() {
+
             var selectedImage = d3.select(this);
+
+            // highlight the line graph
+            graph.highlight(selectedImage.data());
+
 
             // update rating based
             setStarValue(selectedImage.data()[0].Rating);
-            
+
             // find height of parallel coordinate
             // to find the height for zoomed div
             var pcHeight = d3.select("#graph")
@@ -540,22 +784,24 @@
             // hide btm thumbnail
             d3.select("#thumbnails-btm_container")
                 .transition().duration(1000)
-                .style("height", "0px");
+                .style("height", function(){
+
+                    return isLeftChartFullScreenToggled?"auto":"0px";
+                });
 
             // push the image to zoomed area
+
+
             d3.selectAll(".zoomed")
                 .select("img")
                 .data(selectedImage.data())
-                .attr("src", selectedImage.datum()["img"])
-                .attr("title", getTitle);           
-
-            // highlight the line graph
-            graph.highlight(selectedImage.data());
+                .attr("src", makeUrl(selectedImage.datum().img))
+                .attr("title", getTitle);
 
             // load 3d geometry if the view is set to 3D
-            if (currentView=="3D") loadNew3DModel();
-            
-            if (!isAnyItemSelected){
+            if (currentView == "3D") loadNew3DModel();
+
+            if (!isAnyItemSelected) {
                 // if there is a brushed selection
                 // update the range of the sliders
                 updateSlidersTickValues();
@@ -567,24 +813,35 @@
             // enable sliders
             enableAllSliders();
 
-            //highlight the radar chart
-            rc.highlight(selectedImage.data());
+            //highlight the radar chart  //-----TODO:here needs a switch for different charts-------
+            //rc.highlight(selectedImage.data());
+            highlightScatterDot();
 
-            var radarHeight = d3.select("#radarChart")
-                .style("height").replace("px", "");
+
+            // var radarHeight = d3.select("#radarChart")
+            //     .style("height").replace("px", "");
 
             // let's side thumbnail show up
             d3.select("#thumbnails-side_container")
                 .transition().duration(1500)
-                .style("height", (cleanHeight - radarHeight) + "px");
+                .style("height", function(){
+
+                    if(isRightChartFullScreenToggled){
+                        return d3.select(".scatter-matrix-svg").style("width").replace("px", "")-20 + "px";
+                    }else {
+                        return (cleanHeight - pcHeight) + "px";
+                    }
+                    //console.log(isRightChartFullScreenToggled);
+
+                });
 
             isAnyItemSelected = true;
 
-        };
+        }
 
 
         // update layout on select
-        function updateLayoutOnDeselect(){
+        function updateLayoutOnDeselect() {
 
             // find height of parallel coordinate
             // to find the height for thumbnail div
@@ -612,22 +869,23 @@
             // enable sliders
             disableAllSliders();
 
-            // unhighlight the radar chart
-            rc.unhighlight();
+            // unhighlight the radar chart        //-----TODO:here needs a switch for different charts-------//
+            //rc.unhighlight();
+            unlighlightScatter();
 
             //show radar chart
             $("#radarChart").collapse("show");
 
             isAnyItemSelected = false;
-        };
+        }
 
         // hide/show parallel coordinates
         d3.select("#pcgraph").on("click", function() {
-            if (cleanedData.length==0) return; // don't let the user change the size before loading the file
+            if (cleanedData.length === 0) return; // don't let the user change the size before loading the file
 
             var height = d3.select("#graph").style("height").replace("px", "");
-            
-            if (height!=0){
+
+            if (height >1) { //for some reasons, height ! == 0 doesn't work at here
                 // collapse
                 d3.select("#graph")
                     .attr("class", "parcoords collapse 2s")
@@ -640,29 +898,28 @@
                 d3.select("#keep").classed("disabled", true);
 
 
-                if (graph.highlight().length!=0){
-                    
+                if (graph.highlight().length !== 0) {
+
                     d3.selectAll(".zoomed")
                         .transition().duration(1)
                         .style("height", cleanHeight + "px")
-                        .each("end", function(){
+                        .each("end", function() {
                             // resize view
-                            if(currentView=="3D"){
+                            if (currentView == "3D") {
                                 va3cViewer.viewerDiv.resize();
                             }
                         });
 
-                    }else{
+                } else {
 
-                        //mirror collapse behavior with radar chart
-                        $("#radarChart").collapse("hide");
-                    
+                    //mirror collapse behavior with radar chart
+                    $("#radarChart").collapse("hide");
+
                     d3.select("#thumbnails-btm_container")
-                        .transition().duration(1000).style("height", cleanHeight + "px");                        
-                    }
+                        .transition().duration(1000).style("height", cleanHeight + "px");
+                }
 
-            }else{
-
+            } else {
                 // collapse in
                 d3.select("#graph")
                     .transition("ease out").attr("class", "parcoords collapse in")
@@ -676,29 +933,29 @@
                 d3.select("#keep").classed("disabled", false);
 
                 // if there is a selecion let it in
-                if (graph.highlight().length!=0){
+                if (graph.highlight().length !== 0) {
                     d3.selectAll(".zoomed")
                         .transition().duration(2000).style("height", zoomedHeight + "px");
-                    }else{
+                } else {
 
-                        //mirror collapse behavior with radar chart
-                        $("#radarChart").collapse("show");
-                    
-                        d3.select("#thumbnails-btm_container")
-                            .transition().duration(1000).style("height", zoomedHeight + "px");                        
-                    }
+                    //mirror collapse behavior with radar chart
+                    $("#radarChart").collapse("show");
+
+                    d3.select("#thumbnails-btm_container")
+                        .transition().duration(1000).style("height", zoomedHeight + "px");
+                }
             }
         });
 
         //hide/show radar chart
         d3.select("#rcgraph").on("click", function() {
 
-            if (cleanedData.length==0) return; // don't let the user change the size before loading the file
-            
+            if (cleanedData.length === 0) return; // don't let the user change the size before loading the file
+
             var height = d3.select("#radarChart").style("height").replace("px", "");
 
             if (height > 1) {
-                
+
                 if (!isAnyItemSelected) {
                     //collapse parcoords if there is nothing selected
                     d3.select("#graph")
@@ -738,135 +995,26 @@
                     d3.select("#keep").classed("disabled", false);
 
                     d3.select("#thumbnails-btm_container")
-                            .transition().duration(1000).style("height", zoomedHeight + "px");
+                        .transition().duration(1000).style("height", zoomedHeight + "px");
                 }
-                
+
                 //expand radar chart
                 $("#radarChart").collapse("show");
 
                 // not the best practice - I should get it to work in a cleaner way
-                setTimeout( function(){
+                setTimeout(function() {
 
                     var rcheight = d3.select("#radarChart").style("height").replace("px", "");
-                
+
                     // set height for thumbnails-side_container
                     d3.select("#thumbnails-side_container")
                         .transition().duration(1000)
-                        .style("height", (cleanHeight - rcheight)  + "px");
-                    }, 500);
+                        .style("height", (cleanHeight - rcheight) + "px");
+                }, 500);
 
             }
-        })
-
-
+        });
     </script>
-
-    <!-- radar chart -->
-    <script type="text/javascript">
-
-        // update radar chart
-        function updateRadarChart(){
-            //format data for radar chart
-            var outputKeys = d3.keys(outputData[0]);
-            if (graph.brushed().length > 0) {
-                var selectedData = graph.brushed();
-            } else {
-               var selectedData = graph.data();
-            }
-            
-            //var selectedData = graph.brushed();
-            selectedDataFormatted = [];
-            radarChartColors = [];
-
-            selectedData.forEach(function(d) {
-                selectedDataFormatted.push(formatData(d));
-                //debugger;
-
-                radarChartColors.push(color(d[pcIsColoredBy]));
-
-            })
-
-            //get height, width for radar chart
-            //we want the graph to be centered above the thumbnails
-            //65px is to fit text
-            var divWidth = d3.select("#thumbnails-side").style("width").replace("px", "");
-            var pcHeight = d3.select("#graph").style("height").replace("px", "");
-            var rcDimension = Math.min(pcHeight, divWidth) - 65;
-
-            radarGrey = "rgb(160,160,160)";
-
-            //configure radar chart
-            cfg = ({
-                w: rcDimension,
-                h: rcDimension,
-                color: function(){return radarGrey;},
-                radius: 4,
-                maxValue: 100,
-                extraWidthX: divWidth - rcDimension, 
-                extraWidthY: 65,
-                translateX: (divWidth - rcDimension) / 2, 
-                translateY: 65 / 2,
-                levels: 5,
-            });
-
-            RadarChart.draw("#radarChart", selectedDataFormatted, cfg);
-
-            //move lines to back
-            d3.selectAll(".area").moveToBack();
-
-            //did not work using CSS
-            d3.selectAll(".rclegend")
-                .style("fill", "steelblue")
-                .style("font-size", 9);
-        }
-
-        //resize radar chart
-        function resizeRadarChart() {
-            
-            return;
-            
-            var divWidth = d3.select("#thumbnails-side").style("width").replace("px", "");
-            var pcHeight = d3.select("#graph").style("height").replace("px", "");
-            if (pcHeight > 0) {
-                var rcDimension = Math.min(pcHeight, divWidth) - 65;
-            } else {
-                var rcDimension = divWidth - 65;
-            }
-            
-            cfg.w = rcDimension;
-            cfg.h = rcDimension;
-            cfg.extraWidthX = divWidth - rcDimension;
-            cfg.translateX = (divWidth - rcDimension) / 2;
-            cfg.transitionDuration = 0;
-
-            RadarChart.draw("#radarChart", selectedDataFormatted, cfg);
-
-            //move lines to back
-            d3.selectAll(".area").moveToBack();
-
-            //did not work using CSS
-            d3.selectAll(".rclegend")
-                .style("fill", "steelblue")
-                .style("font-size", 9);
-
-            if (graph.brushed().length > 0) {
-               rc.updateData(graph.brushed()); 
-           }
-            
-
-            if (graph.highlighted().length > 0) {
-                rc.highlight(graph.highlighted());
-            }
-
-        }
-
-        // clean radar chart
-        function cleanRadarChart() {
-            d3.selectAll(".radar-chart").remove();
-        }
-
-    </script>
-
 
     <!-- process input data -->
     <script type="text/javascript">
@@ -874,79 +1022,149 @@
         // such as separating inputs, outputs, images, etc.
         var originalData, //csv as it is imported
             cleanedData = [], //all the columns to be used for parallel coordinates
-            inputData = [],  // columns with input values - to be used for sliders
+            inputData = [], // columns with input values - to be used for sliders
             outputData = [], // columns with output values - to be used for radar graph
             slidersInfo = [], // {name:'inputName', tickValues : [sorted set of values]},
-            currentSliderValues = {}, // collector for values 
+            currentSliderValues = {}, // collector for values
             allDataCollector = {},
             slidersMapping = {}, // I collect the data for all the input sliders here so I can use it to remap the sliders later
-            ids = []; // Here I collect all data based on a unique ID from inputs
+            ids = [], // Here I collect all data based on a unique ID from inputs
+            cleanedParams4pc = {},
+            googleFolderLink;
 
 
-        function analyzeInputData(originalData){
+        function analyzeInputData(originalData) {
             var keys = d3.keys(originalData[0]);
+            // var id = 0;
 
-            originalData.forEach(function(row, rowCount){
-                
+            originalData.forEach(function(row, rowCount) {
+
                 var inputParams = {},
                     outputParams = {},
                     cleanedParams = {};
 
-                keys.forEach(function(key, i){
-                    
-                    if (key.trim().startsWith("in:")){
-                    
+                keys.forEach(function(key, i) {
+
+                    // if (key.trim().startsWith("in:") !== true) {console.log("there is no inputs");}
+                    if (key.trim().startsWith("in:")) {
+
                         inputParams[key.replace("in:", "").trim()] = row[key];
                         cleanedParams[key.replace("in:", "").trim()] = row[key];
-                    
-                    }else if(key.trim().startsWith("out:")){
-                    
+                        cleanedParams4pc[key.replace("in:", "").trim()] = {};
+
+
+                    } else if (key.trim().startsWith("out:")) {
+
                         outputParams[key.replace("out:", "").trim()] = row[key];
-                        cleanedParams[key.replace("out:", "").trim()] = row[key]; 
-                    
-                    }else{
+                        cleanedParams[key.replace("out:", "").trim()] = row[key];
+                        cleanedParams4pc[key.replace("out:", "").trim()] = {};
+
+                    } else {
                         cleanedParams[key.trim()] = row[key]; // I need to add case for image and 3D here later
+                        if (key.trim() != "img" && key.trim() != "threeD") {
+                            cleanedParams4pc[key.trim()] = {};
+                        }
                     }
                 });
 
+                // var id = getCaseId(inputParams);
+                // id += 1;
+                // ids.push(id);
                 var id = getCaseId(inputParams);
-
                 ids.push(id);
+
 
                 allDataCollector[id] = {};
                 //allDataCollector[id]["inputData"] = inputParams; //don't need them for now
                 //allDataCollector[id]["outputParams"] = outputParams;
-                allDataCollector[id]["cleanedParams"] = cleanedParams;
+                allDataCollector[id].cleanedParams = cleanedParams;
 
                 inputData.push(inputParams);
                 outputData.push(outputParams);
                 cleanedData.push(cleanedParams);
             });
-        
-        // add rating of 0 to all the options if not already there
-        if (keys.indexOf("Rating")==-1) {
 
-            cleanedData.forEach(function(d){
-                d.Rating = 0;
-            });
+
+            // add rating of 0 to all the options if not already there
+            if (keys.indexOf("Rating") == -1) {
+                cleanedParams4pc.Rating = {};
+                cleanedData.forEach(function(d) {
+                    d.Rating = 0;
+                });
+            }
+
         }
 
+
+        //load GoogleSheet ,Json data_ Mingbo Peng Modified--------------------------------------------------------------------
+        function cleanAndLoadForDE(data) {
+            loadDataToDesignExplorer(mapEntries(data));
         }
 
-        function getCaseId(inputParams){
+        //add heaters ,Json _ Mingbo Peng Modified------------------------------------------------------------------------------
+        function loopHeaders(headers, data) {
+            var obj = {};
+            for (var i = 0; i < headers.length; i++) {
+
+                obj[headers[i]] = data[i];
+            }
+            return obj;
+        }
+
+        //reMap ,Json from GoogleSheet_ Mingbo Peng Modified--------------------------------------------------------------------
+        function mapEntries(json, realrowlength, skip) {
+            if (!skip) skip = 1;
+            var dataframe = [];
+            var row = [];
+            for (var i = 0; i < json.feed.entry.length; i++) {
+
+                var entry = json.feed.entry[i];
+
+                if (entry.gs$cell.col == '1') {
+                    if (row !== null) {
+
+                        if ((!realrowlength || row.length === realrowlength) && (skip === 0)) {
+                            dataframe.push(row);
+                        } else {
+                            if (skip > 0) skip--;
+                        }
+                    }
+
+                    row = [];
+                }
+                row.push(entry.content.$t);
+            }
+
+            dataframe.push(row);
+
+            //console.log(dataframe[0]);
+            var headers = dataframe[0];
+            var obj;
+            var objs = [];
+            for (var j = 1; j < dataframe.length; j++) {
+                obj = loopHeaders(headers, dataframe[j]);
+                objs.push(obj);
+            }
+
+            return objs;
+        }
+
+
+        function getCaseId(inputParams) {
             // create the id based on inputs
             var params = [];
-            d3.keys(inputParams).forEach(function(key){
+            d3.keys(inputParams).forEach(function(key) {
                 // remove spaces
                 //var k = key.replace(/\s/g, '');
                 // convert to numbers and back to string
                 // so zeros doesn't make inconsistency
-                if (isNaN(inputParams[key])){
-                    var value = inputParams[key];
-                }else{
-                    var value = parseFloat(inputParams[key]);
+                var value;
+                if (isNaN(inputParams[key])) {
+                    value = inputParams[key];
+                } else {
+                    value = parseFloat(inputParams[key]);
                 }
-                
+
                 // add them to params
                 //params.push(k);
                 params.push(value);
@@ -957,185 +1175,219 @@
             return id;
         }
 
-        function prepareSlidersInfo(){
+        function prepareSlidersInfo() { // modified 6/7/2016 by Mingbo, this is only for input information.
             var sliderNames = d3.keys(inputData[0]);
             var tickValues = {};
             var originalTickValues = {}; // keep track of original values
 
             // create an object with place holder for tickValues
-            sliderNames.forEach(function(name){
-                originalTickValues[name]= [];
+            sliderNames.forEach(function(name) {
+                originalTickValues[name] = [];
                 tickValues[name] = [];
                 slidersMapping[name] = {};
             });
-          
+
             // find tick values
-            inputData.forEach(function(d, i){
-                sliderNames.forEach(function(name){
+            inputData.forEach(function(d, i) {
+                sliderNames.forEach(function(name) {
                     // check if the value is already in list - add it to the list if not
-                    if(tickValues[name].indexOf(d[name])==-1){
+                    if (tickValues[name].indexOf(d[name]) == -1) {
                         slidersMapping[name][d[name]] = []; // create an empty list for this value
                         tickValues[name].push(d[name]);
                         originalTickValues[name].push(d[name]);
                     }
-                    
+
                     //add the new combination to the list
                     slidersMapping[name][d[name]].push(cleanedData[i]);
                 });
             });
 
+
             // sort values and collect them
-            sliderNames.forEach(function(name){
-                var tValues = tickValues[name].sort();
-                var oValues = originalTickValues[name].sort();
-                slidersInfo.push({name: name, originalTickValues:oValues , tickValues: tValues});
+            sliderNames.forEach(function(name) {
+                //var tValues = tickValues[name].sort();
+                var tValues = Object.keys(slidersMapping[name]);
+                var oValues = tValues; //it is equal at the beginning
+                slidersInfo.push({
+                    name: name,
+                    originalTickValues: oValues,
+                    tickValues: tValues
+                });
 
             });
 
             // take care of whitespace in slider names! oh people...
-            slidersInfo.forEach(function(d){d.namewithnospace = d.name.replace(/\s/g, '');});
+            slidersInfo.forEach(function(d) {
+                d.namewithnospace = d.name.replace(/\s/g, '');
+            });
         }
-
     </script>
 
-    <!-- draw parallel coordinates graph -->
+    <!-- NOTE:  draw parallel coordinates graph -->
     <script type="text/javascript">
         var graph;
 
         //set up heights of divs
         var windowWidth = window.innerWidth,
-            windowHeight = window.innerHeight
-            cleanHeight = windowHeight - 85 - 24 // 2
+            windowHeight = window.innerHeight,
+            cleanHeight = windowHeight - 85 - 24, // 2
             cleanWidth = windowWidth - 100,
-            graphHeight = cleanHeight/3,
+            graphHeight = cleanHeight / 3,
             zoomedHeight = cleanHeight - graphHeight,
-            opacity = .7;
-
-
-        var color = d3.scale.linear()
-                .range(["#3182bd", "#f33"]);
+            opacity = 0.7;
 
         var pcIsColoredBy;
 
+        var color = d3.scale.linear()
+            .range(["#3182bd", "#f33"]);
 
-        function drawParallelCoordinates(){
+        function drawParallelCoordinates() {
             // set the height for graph div - this is critical otherwise
             // parallel coordinates graph will be drawn by height of 0px
-            d3.select("#graph").style("height",  graphHeight + "px");
-            
+            d3.select("#graph").style("height", graphHeight + "px");
+
             // draw parallel coordiantes chart
             // click event should highlight the image in thumbnails and show it in zoomed
             // brush should filter thumbnails
-            // get parallel coordinates         
+            // get parallel coordinates
+
             graph = d3.parcoords()('#graph')
                 .data(cleanedData)
-                    .margin({ top: 50, left: 20, bottom: 10, right: 20 })
-                    .alpha(0.2)
-                    .mode("queue")
-                    .rate(20)
-                    .render()
-                    .brushMode("1D-axes")  // enable brushing
-                    .interactive()
-                    .reorderable()
-                    .scale("Rating", [0,5]).updateAxes(); // set initial domain for rating
-            
+                .margin({
+                    top: 50,
+                    left: 20,
+                    bottom: 10,
+                    right: 20
+                })
+                .alpha(0.2)
+                .mode("queue")
+                .rate(20)
+                .dimensions(cleanedParams4pc)
+                .render()
+                .brushMode("1D-axes") // enable brushing
+                .interactive()
+                .reorderable();
+                //.scale("Rating", [0, 5]).updateAxes(); // set initial domain for rating
+
+            // graph.scale("Rating", [0,5]).updateAxes();
+            //graph.toTypeCoerceNumbers();
+
+            updateLabels();
+
+        }
+
+        // update pc chart labels and axis color based on input and outputs parameters
+        function updateLabels() {
             // modify labels
             var inputLabelColor = "black",
                 outputLabelColor = "steelblue",
                 inputLabels = d3.keys(inputData[0]),
-                outputLabels = d3.keys(outputData[0])
+                outputLabels = d3.keys(outputData[0]),
                 colorset = []; //color set for lables
 
             d3.selectAll("text.label")
-                // move every other label up
-                .attr("transform", function(d,i){return "translate (0 , -" + (10 + ((i%2) * 15)) + ")"})
-                .style("fill", function(d){
-                        // change colors for inputs vs outputs
-                        if (inputLabels.indexOf(d) != -1) {
-                            colorset.push(inputLabelColor);
-                            return inputLabelColor; // it is an input
+                .style("fill", function(d) {
+                    // change colors for inputs vs outputs
+                    if (inputLabels.indexOf(d) != -1) {
+                        colorset.push(inputLabelColor);
+                        return inputLabelColor; // it is an input
 
-                        } else if (outputLabels.indexOf(d) != -1) {
-                            colorset.push(outputLabelColor);
-                            return outputLabelColor; //it's an output
-                        
-                        } else {
-                            // undefined
-                            colorset.push("black");
-                            return "black";
-                        };
-                    });
+                    } else if (outputLabels.indexOf(d) != -1) {
+                        colorset.push(outputLabelColor);
+                        return outputLabelColor; //it's an output
 
-            
+                    } else {
+                        // undefined
+                        colorset.push("black");
+                        return "black";
+                    }
+                });
+
+
             //modify axes
             d3.selectAll("path.domain")
-                .style("stroke", function(d,i){ return colorset[i];});
+                .style("stroke", function(d, i) {
+                    return colorset[i];
+                });
 
-            // set color change
-            // set the initial coloring based on the 3rd column
-            pcIsColoredBy = graph.dimensions()[0]; 
-            update_colors(pcIsColoredBy);
 
-            // click label to activate coloring
-            graph.svg.selectAll(".dimension")
-                .on("click", update_colors);
-                    //.selectAll(".label")
-                    //.style("font-size", "14px"); // change font sizes of selected lable
-        };
-        
-        
-        function updateLabels(){
-            d3.selectAll("text.label")
-                // move every other label up
-                .attr("transform", function(d,i){return "translate (0 , -" + (10 + ((i%2) * 15)) + ")"})
-        };
+            setupPcLabelEvent();
 
+        }
+
+        // click label to activate coloring
+        function setupPcLabelEvent(){
+            d3.selectAll(".dimension")
+                .on("click", function(d){
+                    pcIsColoredBy = d;
+                    update_colors(d);
+                });
+        }
 
         // update color and font weight of chart based on axis selection
-        function update_colors(dimension) { 
-
-            pcIsColoredBy = dimension; 
-
-            // change the fonts to bold
-            graph.svg.selectAll(".dimension")
-                .style("font-weight", "normal")
-                .filter(function(d) { return d == dimension; })
-                    .style("font-weight", "bold");
+        function update_colors(dim,chart) {
+            pcIsColoredBy = dim;
 
             // change color of lines
             // set domain of color scale
-            var values = graph.data().map(function(d){return parseFloat(d[dimension])}); 
-            color.domain([d3.min(values), d3.max(values)]);
-            
+            var values = graph.data().map(function(d) {
+                return parseFloat(d[dim]);
+
+            });
+
+            colorDomain = color.domain(d3.extent(values));
+
             // change colors for each line
-            graph.color(function(d){return color([d[dimension]])}).render();
+            graph.color(function(d) {
+                return color([d[dim]]);
+            }).render();
 
             // change border color for images
-            d3.selectAll("img#thumbnails-btm").style("border-color", function(d){ return color(d[dimension]);});
-            d3.selectAll("img#thumbnails-side").style("border-color", function(d){ return color(d[dimension]);});
+            d3.selectAll("img#thumbnails-btm").style("border-color", function(d) {
+                //console.log(color(d[dim]));
+                return color(d[dim]);
+            });
+            d3.selectAll("img#thumbnails-side").style("border-color", function(d) {
+                return color(d[dim]);
+            });
 
-        };      
+            // change ScatterMatrix dots color
+            update_sc_colorsOnly();
 
+        }
+
+        //update_sc_colorsOnly
+        function update_sc_colorsOnly() {
+            d3.selectAll(".cell circle").style("fill", function(d) {
+                return color(d[pcIsColoredBy]);
+            });
+
+        }
     </script>
-    
+
     <!-- draw legend -->
     <script type="text/javascript">
-
-        function drawLegend(){
+        function drawLegend() {
 
             // add text
             //d3.select("#legend-heading").text("LEGEND");
 
             // get width and height for legend area
             var legendWidth = d3.select("#legend").style("width").replace("px", "");
-            var legendHeight = d3.select("#sidebar-wrapper").style("height").replace("px", "")/3;
-            
+            var legendHeight = d3.select("#sidebar-wrapper").style("height").replace("px", "") / 3;
+
             // legend boxes are diminsions of the graph
-            dimensions = graph.dimensions().map(function(d){return {name: d, enabled:true};});
+            //console.log(Object.keys(graph.dimensions()));
+            dimensions = d3.keys(graph.dimensions()).map(function(d) {
+                return {
+                    name: d,
+                    enabled: true
+                };
+            });
 
             // find size of the square based on the height
             //var legendSquareSize = 16;
-            var legendSquareSize = Math.max(legendHeight/(graph.dimensions().length + 4), 12);
+            var legendSquareSize = Math.max(legendHeight / (d3.keys(graph.dimensions()).length + 4), 12);
 
             // create one group for each rect and text
             var legend = d3.select("#legend").append("svg")
@@ -1144,7 +1396,9 @@
                 .selectAll("g")
                 .data(dimensions)
                 .enter().append("g")
-                    .attr("transform", function(d, i) { return "translate(10," + ((legendSquareSize + 3) * i)  + ")"; });
+                .attr("transform", function(d, i) {
+                    return "translate(10," + ((legendSquareSize + 3) * i) + ")";
+                });
 
             legend.append("rect")
                 .attr("width", legendSquareSize)
@@ -1157,79 +1411,85 @@
 
             legend.append("text")
                 .attr("x", legendSquareSize + 6)
-                .attr("y", legendSquareSize/2)
+                .attr("y", legendSquareSize / 2)
                 .attr("dy", ".35em")
-                .text(function(d) { return d.name;});
+                .text(function(d) {
+                    return d.name;
+                });
         }
-
     </script>
 
     <!-- add sorting dropdowns -->
     <script type="text/javascript">
-        
-        function addSortDropdowns(){
-            
-            sortBy = graph.dimensions()[0]; // will be used to sort thumbnail images
+        function addSortDropdowns() {
+
+            sortBy = d3.keys(graph.dimensions())[0]; // will be used to sort thumbnail images
             ascending = true;
-            
-            var select = d3.selectAll("#sorting")
+
+            var select = d3.selectAll(".sorting")
                 .text("Sort by: ")
                 .append("select")
                 .attr("class", "btn btn-default btn-xs");
 
             // add options based on input and outputs
             select.selectAll("option")
-              .data(graph.dimensions())
-              .enter()
+                .data(d3.keys(graph.dimensions()))
+                .enter()
                 .append("option")
-                .attr("value", function (d) { return d; })
-                .text(function (d) { return d; });
-            
+                .attr("value", function(d) {
+                    return d;
+                })
+                .text(function(d) {
+                    return d;
+                });
+
             // add change event to resort images
             select.on("change", function(d) {
                 sortBy = d3.select(this).property("value");
-                
+
                 // update the value in other dropdown menu
-                d3.selectAll("select option").filter(function(d){return d == sortBy;}).attr("selected", "true");
+                d3.selectAll("select option").filter(function(d) {
+                    return d == sortBy;
+                }).attr("selected", "true");
 
                 updateImageGrid(graph.brushed(), false);
-            })
+            });
 
             // add option to reverse sorting order
-            var sortingBtn = d3.selectAll("#sorting")
+            var sortingBtn = d3.selectAll(".sorting")
                 .append("button")
                 .attr("type", "button")
                 .attr("class", "btn btn-default btn-xs")
                 .attr("id", "reverseSortOrder")
-                .attr("title", "Reverse sorting order")
-            
+                .attr("title", "Reverse sorting order");
+
             // append icon
             sortingBtn.append("span")
                 .attr("class", "glyphicon glyphicon-circle-arrow-up")
                 .attr("aria-hidden", "true");
 
-            sortingBtn.on("click", function(){
+            sortingBtn.on("click", function() {
                 ascending = !ascending;
-                
+
                 sortingBtn.selectAll("span")
-                        .attr("class", function(){ return ascending? "glyphicon glyphicon-circle-arrow-up":"glyphicon glyphicon-circle-arrow-down"})
-                
+                    .attr("class", function() {
+                        return ascending ? "glyphicon glyphicon-circle-arrow-up" : "glyphicon glyphicon-circle-arrow-down";
+                    });
+
                 updateImageGrid(graph.brushed(), false);
             });
         }
-
     </script>
 
     <!-- add thumbnail images to both thumbnail divs-->
     <script type="text/javascript">
+        function getTitle(data) {
 
-        function getTitle(data){
-
-            // get title for each image    
+            // get title for each image
             var title = [];
-            
-            graph.dimensions().forEach(function(key){
-                var info =  key + ":" + data[key];
+
+            d3.keys(graph.dimensions()).forEach(function(key) {
+                var info = key + ":" + data[key];
                 title.push(info);
             });
 
@@ -1238,22 +1498,22 @@
             //return title.join(" &#013; "); //I tried to add them for each line but it didn't work
         }
 
-        function updateImageGrid(data, resizeImageDiv){
-            
+        function updateImageGrid(data, resizeImageDiv) {
+
             // this is based on bootstraps 12 column grid
             // we can replace it with a fancier version later
             var gridSizes = [1, 2, 3, 4, 6];
             var fgridSize = 1; //gridSizes[gridSize];
-            
-            if (!data) data= graph.data(); //if data is false then use graph data
+
+            if (!data) data = graph.data(); //if data is false then use graph data
 
             // sort data based on dropdown selecion
-            if(ascending){
-                data.sort(function(x, y){
+            if (ascending) {
+                data.sort(function(x, y) {
                     return d3.ascending(parseFloat(x[sortBy]), parseFloat(y[sortBy]));
                 });
-            }else{
-                data.sort(function(x, y){
+            } else {
+                data.sort(function(x, y) {
                     return d3.descending(parseFloat(x[sortBy]), parseFloat(y[sortBy]));
                 });
             }
@@ -1262,177 +1522,280 @@
             // I think eventually I will change this to a filter function
             d3.select("#thumbnails-btm").selectAll("div").remove();
             d3.select("#thumbnails-side").selectAll("div").remove();
-                        
+
             var pcHeight = d3.select("#graph")
                 .style("height").replace("px", "");
 
-            if (resizeImageDiv){
+            if (resizeImageDiv) {
                 d3.select("#thumbnails-btm_container")
                     .style("height", (cleanHeight - pcHeight) + "px");
             }
 
-            // attach images
+            // attach images ---------------------------------------------------------------------------------------------------
+            var imgLink = function(d) {
+                    return makeUrl(d.img);
+                };
+
+
             d3.select("#thumbnails-btm")
-                //.style("height", "100%") //20px for credit line - 
+                //.style("height", "100%") //20px for credit line -
                 .selectAll("div")
                 .data(data).enter()
-                    .append("div")
-                    .attr("class", "col-xs-1")
-                    .style("cursor", "pointer")
-                    .append("img")
-                    .attr("id", "thumbnails-btm")
-                    .attr("src", function(d){return d["img"]})
-                    .on("click", updateLayoutOnSelect)
-                    .attr("title", getTitle)
-                    .style("border-color", function(d){ return color(d[pcIsColoredBy]);});
-            
+                .append("div")
+                .attr("class", "col-xs-1")
+                .style("cursor", "pointer")
+                .append("img")
+                .attr("id", "thumbnails-btm")
+                .attr("src", imgLink)
+                .on("click", updateLayoutOnSelect)
+                .attr("title", getTitle)
+                .style("border-color", function(d) {
+                    return color(d[pcIsColoredBy]);
+                });
+
             d3.select("#thumbnails-side")
                 .selectAll("div")
                 .data(data).enter()
-                    .append("div")
-                    .attr("class", "col-xs-3")
-                    .style("cursor", "pointer")
-                    .append("img")
-                    .attr("id", "thumbnails-side")
-                    .attr("src", function(d){return d["img"]})
-                    .on("click", updateLayoutOnSelect)
-                    .attr("title", getTitle)
-                    .style("border-color", function(d){ return color(d[pcIsColoredBy]);});
+                .append("div")
+                .attr("class", "col-xs-3")
+                .style("cursor", "pointer")
+                .append("img")
+                .attr("id", "thumbnails-side")
+                .attr("src", imgLink)
+                .on("click", updateLayoutOnSelect)
+                .attr("title", getTitle)
+                .style("border-color", function(d) {
+                    return color(d[pcIsColoredBy]);
+                });
         }
 
 
-        function addPlaceHolderImage(){
+        function addPlaceHolderImage() {
             // add an image holder with toggle between 2D and 3D
             // just toggle between 2d and 3d
             d3.select("#zoomed")
-            .style("height", zoomedHeight)
-            .append("img");
+                .style("height", zoomedHeight)
+                .append("img");
             //.attr("src", "https://raw.githubusercontent.com/tt-acm/DesignExplorer/gh-pages/design_explorer_data/img/placeholder/placeholder.png?token=ACx89Xl7jGRusi88wWHKH97INGjRifH5ks5Vy6YGwA%3D%3D");
         }
-
     </script>
-   
+
     <!-- set up events between charts and graphs -->
     <script type="text/javascript">
-        
-        function setupEvents(){
 
+        function setupEvents() {
             // brushing events for parallel coordinates graph
             graph.on("brush", function(d) {
-                rc.updateData(graph.brushed());
-                
+                //rc.updateData(graph.brushed());   //-----TODO:here needs a switch for different charts-------
+                updateScatterChart();
                 updateImageGrid(d, false);
             });
 
-             graph.on("brushend", function(d){
+            graph.on("brushend", function(d) {
 
-                // if nothing is highlighted return                                
-                if (graph.highlight().length==0) return;
+                // if nothing is highlighted return
+                if (graph.highlight().length === 0) return;
 
                 // in case highlighted data not in brused then deselect
-                if (graph.brushed().length == inputData.length || graph.brushed().indexOf(graph.highlight()[0])==-1){
-                        updateLayoutOnDeselect();
+                if (graph.brushed().length == inputData.length || graph.brushed().indexOf(graph.highlight()[0]) == -1) {
+                    updateLayoutOnDeselect();
                 }
             });
-            
-            
+
             // assign buttons
-            // Keep brushed
+            // Keep brushed (zoom to selection)
             d3.select("#keep")
                 .on("click", function() {
 
                     var newData = graph.brushed();
-                    
-                    if (newData == false || newData.length == 0){
-                        alert("You need to select some data to be kept!")
-                    }else{
-                        // update graph with new data
-                        updateGraph(newData);
+                    if (newData === false || newData.length === 0) {
+                        alert("You need to select some data to be kept!");
+                    } else {
+                        graph.data(newData).dimensions(d3.keys(graph.dimensions()));
+                        updateSlidersTickValues();
+
                     }
                 });
 
             d3.select("#remove")
                 .on("click", function() {
-                    
+
                     var selectedData = graph.brushed();
-                    
-                    if (selectedData == false || selectedData.length == 0){
-                        alert("You need to select some data to be removed!")
-                    }else{
+
+                    if (selectedData === false || selectedData.length === 0) {
+                        alert("You need to select some data to be removed!");
+                    } else {
                         // update graph with new data
-                        var newData = graph.data().filter(function(d){return selectedData.indexOf(d)==-1;});
+                        var newData = graph.data().filter(function(d) {
+                            return selectedData.indexOf(d) == -1;
+                        });
                         updateGraph(newData);
                     }
                 });
 
             // go back to original
             d3.select("#reset")
-                .on("click", function() {           
+                .on("click", function() {
                     updateGraph(cleanedData);
+
                 });
 
 
-            function updateGraph(newData){
-                graph.data(newData).render().interactive().reorderable().autoscale();
-                updateRadarChart();
-                updateLayoutOnDeselect();                        
+            function updateGraph(newData) {
+                graph.data(newData).brushReset().render().interactive().reorderable();
+                //updateRadarChart();                   //-----TODO:here needs a switch for different charts-------
+                updateScatterChart();
+                updateLayoutOnDeselect();
                 updateImageGrid(newData, false);
                 updateSlidersTickValues();
             }
-            
-            
+
+
             d3.selectAll("rect.legend").on('click', function(d) {
-                    var rect = d3.select(this);
-                    var name = d.name;
-                    var enabled = true;
-                    
+                var rect = d3.select(this);
+                var name = d.name;
+                var enabled = true;
 
-                    if (rect.attr('class') === 'legend disabled')
-                        {
-                            rect.attr('class', 'legend');
-                        }
-                    else
-                        {
-                            rect.attr('class', 'legend disabled');
-                            enabled = false;
-                        }
 
-                    // update dimensions
-                    dimensions.forEach(function(dim){if (d.name === name) d.enabled = enabled;});
+                if (rect.attr('class') === 'legend disabled') {
+                    rect.attr('class', 'legend');
+                } else {
+                    rect.attr('class', 'legend disabled');
+                    enabled = false;
+                }
 
-                    // get active dimensios to update parallel coordinate charts
-                    var activeDimensions = dimensions.filter(function(d){return (d.enabled) ? 1 : 0}).map(function(d){return d.name});
-                    
-                    graph.dimensions(activeDimensions);
-
-                    if(graph.highlighted().length!=0) graph.highlight(graph.highlighted());
+                // update dimensions
+                dimensions.forEach(function(dim) {
+                    if (d.name === name) d.enabled = enabled;
                 });
 
-            
+                // get active dimensios to update parallel coordinate charts
+                var activeDimensions = dimensions.filter(function(d) {
+                    return (d.enabled) ? 1 : 0;
+                }).map(function(d) {
+                    return d.name;
+                });
+                //console.log(activeDimensions);
+                graph.dimensions(activeDimensions);
+
+                if (graph.highlighted().length !== 0) graph.highlight(graph.highlighted());
+            });
+
+
 
             //turn off rating rectangle
             d3.selectAll("rect.legend")
-                .attr("class", function(d){ 
-                    
-                    if (d.name=="Rating"){
+                .attr("class", function(d) {
+
+                    if (d.name == "Rating") {
                         d.enabled = false;
                         return 'legend disabled';
                     }
                 });
-            
+
             // remove Rating for on page load
-            var activeDimensions = dimensions.filter(function(d){return d.name!="Rating";}).map(function(d){return d.name;});
+            var activeDimensions = dimensions.filter(function(d) {
+                return d.name != "Rating";
+            }).map(function(d) {
+                return d.name;
+            });
             graph.dimensions(activeDimensions);
 
-            }
 
+
+            // set left chart full screen
+            var oldpcHeight = d3.select("#graph").style("height").replace("px", "");
+            var oldpcWidth = d3.select("#graph").style("width").replace("px", "");
+            var newpcHeight = (windowHeight - 109) * 0.5;
+            var newpcWidth = windowWidth - 30;
+
+            d3.select("#pcFullScreen-toggle")
+                .on("click", function() {
+
+                    isLeftChartFullScreenToggled = !isLeftChartFullScreenToggled;
+
+                    d3.select(".col-lg-3") //hide right side
+                        .transition().delay(200)
+                        .style("display", function() {
+                            if (isLeftChartFullScreenToggled) {
+                                return "none";
+                            } else {
+                                return "block";
+                            }
+                        });
+
+                    d3.select(".col-lg-9")
+                        .transition().duration(500)
+                        .style("height", function() {
+                            if (isLeftChartFullScreenToggled) {
+                                return newpcHeight + 30 + "px";
+                            } else {
+                                return "auto";
+                            }
+                        })
+                        .style("width", function() {
+                            if (isLeftChartFullScreenToggled) {
+                                return newpcWidth + "px";
+                            } else {
+                                return oldpcWidth + "px";
+                            }
+                        });
+
+                    d3.selectAll(".zoomed")
+                        .transition().duration(500)
+                        .style("width", function() {
+                            if (isLeftChartFullScreenToggled) {
+                                return "0px";
+                            } else {
+                                return "100%";
+                            }
+                        });
+
+                    d3.select(".row-fluid #thumbnails-btm_container")
+                        .transition().duration(500)
+                        .style("height", function() {
+                            if (isLeftChartFullScreenToggled) {
+                                return "auto";
+                            } else {
+                                return d3.select("#zoomedArea").style("height") == "0px"? "auto":"0px";
+                            }
+                        });
+
+
+
+                    // change the chart size;
+                    var highlightedData = graph.highlighted().length !== 0?graph.highlighted():0;
+
+                    if (isLeftChartFullScreenToggled) {
+
+                        graph.width(newpcWidth).height(newpcHeight);
+                        if (highlightedData !== 0) graph.highlight(highlightedData);
+
+                    } else {
+                        //back to normal size mode
+
+                        graph.width(oldpcWidth).height(oldpcHeight);
+                        if (graph.highlighted().length !== 0) {
+                            graph.highlight(highlightedData);
+                        }
+
+                        //show left side thumbnails FIXME: when fullscreen size back to normal size, zoomed area not showing properly
+                        d3.select("#thumbnails-side_container")
+                            .transition().duration(1500)
+                            .style("height", (newpcHeight*2) - oldpcHeight + "px");
+                    }
+
+                    updateLabels();
+
+                });
+
+
+        }
     </script>
 
     <!-- import data  //  onload functions to close intro window and read input data -->
     <script>
-
-        function loadDataToDesignExplorer(data)
-            {
+        function loadDataToDesignExplorer(data) {
             // analyze data and separate them as input/output and general data
             analyzeInputData(data);
 
@@ -1446,7 +1809,15 @@
             drawParallelCoordinates();
 
             //draw radar chart
-            updateRadarChart();
+            //updateRadarChart();                //-----TODO:here needs a switch for different charts-------
+
+            //draw scatter chart
+            addScatterChart();
+
+            // set color change
+            // set the initial coloring based on the 3rd column
+            pcIsColoredBy = d3.keys(graph.dimensions())[0];
+            update_colors(pcIsColoredBy);
 
             // draw legend in side bar
             drawLegend();
@@ -1462,68 +1833,109 @@
 
             // set up events between graphs
             setupEvents();
-            }
+        }
+
 
         window.onload = function() {
+            if (window.location.href.toUpperCase().search("GFOLDER") > 0) {
+                // this is old user with google drive files.
+                d3.select("#welcome").style("display","none");
+                var folderUrl = getUrlVars().GFOLDER;
+                var filePath;
 
-            //function to close intro window div
-            d3.select("#close")
-                .on("click", function(){d3.select("#welcome").remove();});
+                document.getElementById("folderLinkID").value = folderUrl;
 
-            var fileInput = document.getElementById('csv-file');
-            
-            fileInput.addEventListener('change', function(e) {
-
-                unloadPageContent();
-                
-                var file = fileInput.files[0];
-                var reader = new FileReader();
-                
-                var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.csv|.txt)$/;
-                    
-
-            if (regex.test(file.name.toLowerCase())) {
-                
-                // Update project name
-                var inputFileName = file.name.toUpperCase().replace(".CSV","");
-
-                d3.select("p.navbar-brand").text(inputFileName);
-
-                reader.onload = function(e) {
-                
-                    var inputString = e.target.result; 
-
-                    // I need to add some defense here
-                    // separateInputOutputs(e);
-                    
-                    var data = d3.csv.parse(inputString);
-
-                    //originalDataLength = data.length;
-
-                    if (data!=null) loadDataToDesignExplorer(data);
+                if(folderUrl.search("/")>0){
+                    //folderUrl is server link
+                    filePath = folderUrl;
+                }else{
+                    //folderUrl is google folder ID
+                    filePath = "http://www.googledrive.com/host/" + folderUrl + "/data.csv";
                 }
 
+                // remove the current selection
+                unloadPageContent();
+                d3.csv(filePath, loadDataToDesignExplorer);
 
-            }else{
+            } else {
+                // load default data
+                //parse the csv data from the design_explorer_data folder
+                d3.csv("http://tt-acm.github.io/DesignExplorer/design_explorer_data/default_onload.csv", loadDataToDesignExplorer);
+
+            }
+
+            //function to close intro window div
+            d3.selectAll("#close, #loadDataclose")
+                .on("click", function() {
+                    d3.select("#welcome")
+                    .style("display","none");
+                });
+
+            d3.select("#showLoadData")
+                .on("click", function() {
+
+                    d3.select("#welcome")
+                    .style("display","flex");
+
+                    d3.select("#welcomeContainer")
+                    .style("display","none");
+
+                    d3.select("#loadDataContainer")
+                    .style("display","block");
+
+                });
+
+            var fileInput = document.getElementById('csv-file');
+
+            fileInput.addEventListener('change', function(e) {
+                //clean whatever was added via Google
+                document.getElementById("folderLinkID").value = "";
+
+                unloadPageContent();
+
+
+                var file = fileInput.files[0];
+                var reader = new FileReader();
+
+                var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.csv|.txt)$/;
+
+
+                if (regex.test(file.name.toLowerCase())) {
+
+                    // Update project name
+                    var inputFileName = file.name.toUpperCase().replace(".CSV", "");
+
+                    d3.select("p.navbar-brand").text(inputFileName);
+
+                    reader.onload = function(e) {
+
+                        var inputString = e.target.result;
+
+                        // I need to add some defense here
+                        // separateInputOutputs(e);
+
+                        var data = d3.csv.parse(inputString);
+
+                        //originalDataLength = data.length;
+
+                        if (data !== null) loadDataToDesignExplorer(data);
+                    };
+
+
+                } else {
                     alert("Please upload a valid CSV file!");
                 }
 
                 reader.readAsText(file);
+                d3.select("#welcome").style("display","none");
             });
 
-
-        // load default data
-        //parse the csv data from the design_explorer_data folder
-        d3.csv("design_explorer_data/default_onload.csv", loadDataToDesignExplorer);
-
-        //loadDataToDesignExplorer(defaultData);
         }; // end of window.onload
     </script>
 
     <!-- Setting up sliders -->
     <script type="text/javascript">
-
-        function initiateSliders(){
+        function initiateSliders() {
             // this just runs first onload of the page
             // all the sliders should be disabled on load until the user select one of the options
             //d3.select(".sidebar-brand").text("INPUT SLIDERS");
@@ -1533,36 +1945,44 @@
                 .selectAll("div")
                 .data(slidersInfo).enter()
                 .append("div")
-                    .attr("class", "inputSlider") // full width
-                    .text(function(d){return d.name})
-                    .append("input")
-                    .attr("id", function(d){return d.namewithnospace})
-                    .attr("name", function(d){return d.name});
-            
+                .attr("class", "inputSlider") // full width
+                .text(function(d) {
+                    return d.name;
+                })
+                .append("input")
+                .attr("id", function(d) {
+                    return d.namewithnospace;
+                })
+                .attr("name", function(d) {
+                    return d.name;
+                });
+
 
             // if number of ticks is less than 7 then show the numbers under slider
-            var showGrid = function(info){return info.tickValues.length < 7;}
+            var showGrid = function(info) {
+                return info.tickValues.length < 7;
+            };
 
             // set up slider properties
             // they will be all set to disabled until user selects one option
-            slidersInfo.forEach(function(info, i){
-                
+            slidersInfo.forEach(function(info, i) {
+
                 $("#" + info.namewithnospace).ionRangeSlider({
                     grid: showGrid(info),
                     prettify_separator: ",",
-                    values:info.tickValues,
+                    values: info.tickValues,
                     disable: true,
-                    onChange: function (data) {
-                            // remove white spaces
-                            // var sliderName = data.input[0].name.replace(/\s/g, '');
-                            updateSliderValue(data.input[0].name, data.from_value);
+                    onChange: function(data) {
+                        // remove white spaces
+                        // var sliderName = data.input[0].name.replace(/\s/g, '');
+                        updateSliderValue(data.input[0].name, data.from_value);
                     }
-                
-               });
+
+                });
             });
         }
 
-        function updateSlidersTickValues(){
+        function updateSlidersTickValues() {
 
             // This function only gets called once there is a new selection
             // and for major changes in data selection (reset/exclude/zoom to selection)
@@ -1570,49 +1990,57 @@
 
 
             // I need to re-visit this
-            if (graph.brushed()==[] || graph.brushed().length == inputData.length){
+            if (graph.brushed() == [] || graph.brushed().length == inputData.length) {
                 // go back to default
                 // disable all sliders once no option is selected
-                slidersInfo.forEach(function(info){                       
+                slidersInfo.forEach(function(info) {
                     $("#" + info.namewithnospace).data("ionRangeSlider")
-                        .update({values:info.originalTickValues});
-            });
+                        .update({
+                            values: info.originalTickValues
+                        });
+                });
 
-            }else{
+            } else {
 
                 var tickValues = {};
-                
-                slidersInfo.forEach(function(info){tickValues[info.name] = []}); //create an empty list for each slider
+                var data;
 
-                if (!graph.brushed()){
+                slidersInfo.forEach(function(info) {
+                    tickValues[info.name] = [];
+                }); //create an empty list for each slider
+
+                if (!graph.brushed()) {
                     // in case graph is just rendered
-                    var data = graph.data();    
-                }else{
-                    var data = graph.brushed();
+                    data = graph.data();
+                } else {
+                    data = graph.brushed();
                 }
 
                 // find tick values
-                data.forEach(function(d){
-                    slidersInfo.forEach(function(info){
+                data.forEach(function(d) {
+                    slidersInfo.forEach(function(info) {
                         // check if the value is already in list - add it to the list if not
-                        if(tickValues[info.name].indexOf(d[info.name])==-1) tickValues[info.name].push(d[info.name]);
+                        if (tickValues[info.name].indexOf(d[info.name]) == -1) tickValues[info.name].push(d[info.name]);
                     });
                 });
 
-                
-                slidersInfo.forEach(function(sliderInfo){
+
+                slidersInfo.forEach(function(sliderInfo) {
 
                     var sliderName = sliderInfo.name;
                     // remove spaces
                     var namewithnospace = sliderName.replace(/\s/g, '');
                     var newTickValues = tickValues[sliderName].sort();
+                    //console.log(sliderName);
 
                     // update values in sliderInfo
                     sliderInfo.tickValues = newTickValues;
 
                     $("#" + namewithnospace).data("ionRangeSlider")
-                        .update({values: newTickValues});
-               });
+                        .update({
+                            values: newTickValues
+                        });
+                });
 
                 // update current values
                 updateSlidersValue(graph.highlighted()[0]);
@@ -1621,37 +2049,42 @@
         }
 
 
-        function disableAllSliders(){
+        function disableAllSliders() {
             // disable all sliders once no option is selected
-            slidersInfo.forEach(function(info){                       
+            slidersInfo.forEach(function(info) {
                 $("#" + info.namewithnospace).data("ionRangeSlider")
-                    .update({disable: true});
+                    .update({
+                        disable: true
+                    });
             });
         }
 
-        
-        function enableAllSliders(){
+
+        function enableAllSliders() {
             // enable all sliders once an option is selected
             // This will be called after selecting a new option
-            slidersInfo.forEach(function(info){                       
+            slidersInfo.forEach(function(info) {
                 $("#" + info.namewithnospace).data("ionRangeSlider")
-                    .update({disable: false});
+                    .update({
+                        disable: false
+                    });
             });
         }
 
-        function updateSlidersValue(data){
-            
+        function updateSlidersValue(data) {
+
             // clear report area
             d3.selectAll("#sliders-report").text("");
 
             // update the value of all the sliders based on an input object
             // this function will be called when a new option is selected by user
-            slidersInfo.forEach(function(info){
+            slidersInfo.forEach(function(info) {
+                var value;
 
-                if (isNaN(data[info.name])){
-                    var value = data[info.name]; // if a number
-                }else{
-                    var value = parseFloat(data[info.name]); // otherwise
+                if (isNaN(data[info.name])) {
+                    value = data[info.name]; // if a number
+                } else {
+                    value = parseFloat(data[info.name]); // otherwise
                 }
 
                 currentSliderValues[info.name] = value;
@@ -1662,76 +2095,81 @@
                     });
             });
         }
-        
 
-        function updateSliderValue(changedSliderName, newValue){
+
+        function updateSliderValue(changedSliderName, newValue) {
             // This function update the value for a single slider
             // All the sliders call this function on update
             if (!isNaN(newValue)) currentSliderValues[changedSliderName] = newValue;
 
             // create the id
             var id = getCaseId(currentSliderValues);
-            
-            if (ids.indexOf(id)!=-1){
+            var selectedData;
 
-                var selectedData = allDataCollector[id].cleanedParams;
-                
+            if (ids.indexOf(id) != -1) {
+
+                selectedData = allDataCollector[id].cleanedParams;
+                //console.log(selectedData);
+
                 // update chart
                 graph.highlight([selectedData]);
 
                 //update radar chart
-                rc.highlight([selectedData]);
+                //rc.highlight([selectedData]);
+                highlightScatterDot();      //-----TODO:here needs a switch for different charts-------
 
                 // push the image to zoomed area
+
+
                 d3.selectAll(".zoomed")
                     .select("img")
-                    .attr("src",  selectedData["img"]);
-                
-                if (currentView=="3D") loadNew3DModel();
-                
+                    .attr("src", makeUrl(selectedData.img));
+
+                if (currentView == "3D") loadNew3DModel();
+
                 d3.selectAll("#sliders-report").text("");
 
-                }else{
+            } else {
 
-                    // try to remap the values based on slider value
-                    var possibleCombinations = slidersMapping[changedSliderName][newValue];
-                    
-                    if (possibleCombinations.length==1){
-                        // there is only one combination update the values to the new combination
-                        updateSlidersValue(possibleCombinations[0]);
-                    
-                    }else{
-                        
-                        // sort them based on distance to current values
-                        possibleCombinations.sort(function(x, y){
-                            return d3.ascending(distanceFromCurrent(x), distanceFromCurrent(y));
-                        });
+                // try to remap the values based on slider value
+                var possibleCombinations = slidersMapping[changedSliderName][newValue];
 
-                                               
-                        // if it is in the seletion then change the sliders to that value
-                        var selectedData = graph.brushed();
+                if (possibleCombinations.length == 1) {
+                    // there is only one combination update the values to the new combination
+                    updateSlidersValue(possibleCombinations[0]);
 
-                        if(!selectedData) selectedData = graph.data();
+                } else {
 
-                        for (var i=0; i<possibleCombinations.length; i++){
-                            var combination = possibleCombinations[i];
-                            if (selectedData.indexOf(combination)!=-1){
-                                updateSlidersValue(combination);
-                                // console.log(i);
-                                break;
-                            }
+                    // sort them based on distance to current values
+                    possibleCombinations.sort(function(x, y) {
+                        return d3.ascending(distanceFromCurrent(x), distanceFromCurrent(y));
+                    });
+
+
+                    // if it is in the seletion then change the sliders to that value
+                    selectedData = graph.brushed();
+
+                    if (!selectedData) selectedData = graph.data();
+
+                    for (var i = 0; i < possibleCombinations.length; i++) {
+                        var combination = possibleCombinations[i];
+                        if (selectedData.indexOf(combination) != -1) {
+                            updateSlidersValue(combination);
+                            // console.log(i);
+                            break;
                         }
                     }
-                    
+                }
+
             }
         }
 
-        function distanceFromCurrent(sliderValues){
+        function distanceFromCurrent(sliderValues) {
             var distance = 0;
 
-            slidersInfo.forEach(function(info){
-                var tValues = info.originalTickValues;               
-                var d = tValues.indexOf(currentSliderValues[info.name]) - tValues.indexOf(sliderValues[info.name])
+            slidersInfo.forEach(function(info) {
+                var tValues = info.originalTickValues;
+                var d = tValues.indexOf(currentSliderValues[info.name]) - tValues.indexOf(sliderValues[info.name]);
                 distance += Math.abs(d);
             });
 
@@ -1739,7 +2177,6 @@
             return distance;
 
         }
-
     </script>
 
     <!-- 3D Viewer -->
@@ -1749,15 +2186,15 @@
         var fullscreen = false;
 
         // Initiate 3D viewer
-        function initiate3DViewer(){
-        
+        function initiate3DViewer() {
+
+            var jsonFileAddress = makeUrl(graph.highlighted()[0].threeD);
             var viewerId = "viewer3d";
-            var jsonFileAddress = graph.highlighted()[0].threeD;
-            
+
             //load JSON file
-            d3.json(jsonFileAddress, function( data ){
+            d3.json(jsonFileAddress, function(data) {
                 //Initialize a VA3C viewer
-                va3cViewer = new SPECTACLES($("#" + viewerId), data, function(app){
+                va3cViewer = new SPECTACLES($("#" + viewerId), data, function(app) {
                     //call the UI / functionality modules
                     app.setBackgroundColor(0xFFFFFF);
                 });
@@ -1765,66 +2202,71 @@
         }
 
         // load new models
-        function loadNew3DModel(){
-
-            d3.json(graph.highlighted()[0].threeD, function (data){
+        function loadNew3DModel() {
+            var jsonFileAddress = makeUrl(graph.highlighted()[0].threeD);
+            d3.json(jsonFileAddress, function(data) {
                 va3cViewer.loadNewModel(data);
             });
         }
 
 
         // toggle between 2d and 3d
-        d3.selectAll("input#toggleView")
-          .on("change", toggleView)
+        d3.selectAll("input.toggleView")
+            .on("change", toggleView);
 
         function toggleView() {
 
             currentView = this.value;
 
-            if (currentView=="3D" && initit3DViewer){
-                
-                initit3DViewer = false;
-                
-                // initiate the viewer
-                initiate3DViewer()
+            if (currentView == "3D" && initit3DViewer) {
 
-            } else if (currentView=="3D") {
+                initit3DViewer = false;
+
+                // initiate the viewer
+                initiate3DViewer();
+
+            } else if (currentView == "3D") {
 
                 // user is changing to 3D view so let's load it.
                 //$.when(loadNew3DModel()).then(va3cViewer.viewerDiv.resize());
-                loadNew3DModel();          
+                loadNew3DModel();
             }
 
-            
-            var onOff = {"2D": ["zoomed", "viewer3d"], "3D": ["viewer3d", "zoomed"]};
-            
+
+            var onOff = {
+                "2D": ["zoomed", "viewer3d"],
+                "3D": ["viewer3d", "zoomed"]
+            };
+
             d3.select("#" + onOff[currentView][0])
                 .attr("class", "zoomed");
-            
+
             d3.select("#" + onOff[currentView][1])
                 .attr("class", "zoomed hidden");
 
             // remove spectacles footer
             d3.select(".Spectacles_Footer").remove();
-            
+
             // resize the view
             va3cViewer.viewerDiv.resize();
 
-          }
+        }
 
 
         // active and de-activate full screen mode
         d3.select("button#fullscreentoggle")
             .on("click", toggleFullscreen);
-        
 
-        function toggleFullscreen(){
+
+        function toggleFullscreen() {
 
             fullscreen = !fullscreen;
 
             // select zoomed Div and change style
             d3.select("#zoomedArea")
-                .attr("class", function(){return fullscreen? "zoomed fullscreen":"zoomed"});
+                .attr("class", function() {
+                    return fullscreen ? "zoomed fullscreen" : "zoomed";
+                });
 
             //make sure width and height are 100%
 
@@ -1835,17 +2277,20 @@
             d3.select("#zoomed")
                 .style("width", "100%")
                 .style("height", "100%");
-            
+
             //change full screen icon
             d3.select("button#fullscreentoggle").select("span")
-                .attr("class", function(){
-                    return fullscreen? "glyphicon glyphicon-resize-small":"glyphicon glyphicon-fullscreen"
+                .attr("class", function() {
+                    return fullscreen ? "glyphicon glyphicon-resize-small" : "glyphicon glyphicon-fullscreen";
                 });
 
-            initit3DViewer? 0:va3cViewer.viewerDiv.resize();
+            if (initit3DViewer) {
+                return 0;
+            } else {
+                va3cViewer.viewerDiv.resize();
+            }
 
         }
-
     </script>
 
     <script type="text/javascript">
@@ -1854,89 +2299,96 @@
 
         // submit the value on change
         $('.star').rating({
-            callback: function(value, link){
-            // 'value' is the value selected
-            if (firstRating==true){
-                
-                //turn on rating rectangle
-                d3.selectAll("rect.legend")
-                    .attr("class", function(d){ 
-                        
-                        if (d.name=="Rating"){
-                            d.enabled = true;
-                            return 'legend';
-                        }
-                    });
+            callback: function(value, link) {
+                // 'value' is the value selected
+                if (firstRating === true) {
 
-                // add Rating to dimensions
-                graph.dimensions(graph.dimensions().concat("Rating"));
+                    //turn on rating rectangle
+                    d3.selectAll("rect.legend")
+                        .attr("class", function(d) {
 
-                firstRating = false;
-            }
+                            if (d.name == "Rating") {
+                                d.enabled = true;
+                                return 'legend';
+                            }
+                        });
 
-            // check if this is the first rating
+                    // add Rating to dimensions
+                    graph.dimensions(cleanedParams4pc);
+                    graph.scale("Rating",[0,5]);
+                    graph.updateAxes();
+                    firstRating = false;
+                }
 
-            // update rating value
-            graph.highlighted()[0].Rating = value;
+                // check if this is the first rating
 
-            // this method is not really optimized. I couldn't find a solution just to change
-            // extent of dimensions for just rating axis            
-            graph.data(graph.data()).render().interactive().reorderable();
+                // update rating value
+                graph.highlighted()[0].Rating = value;
 
-            // highlight selected option
-            graph.highlight(graph.highlighted());
+                // this method is not really optimized. I couldn't find a solution just to change          //I agree
+                // extent of dimensions for just rating axis
+
+                graph.update().interactive().reorderable();
+                //if(graph.brushed()) graph.clear("foreground");
+
+                // highlight selected option
+                graph.highlight(graph.highlighted());
 
             }
         });
 
 
         // set the value for rating based on the current value
-        function setStarValue(value){
+        function setStarValue(value) {
 
             // remove any current value
-            $('.star').data('rating').current=undefined; // set current value to undefined
-            
-            // set current value to undefined            
+            $('.star').data('rating').current = undefined; // set current value to undefined
+
+            // set current value to undefined
             var offClass = "star-rating rater-0 star star-rating-applied star-rating-live";
             var onClass = offClass + " star-rating-on";
 
             //select rating divs
             d3.selectAll("div.star-rating")
-                .attr("class", function(d, i){return i<value? onClass:offClass;});
+                .attr("class", function(d, i) {
+                    return i < value ? onClass : offClass;
+                });
 
-            }
+        }
     </script>
 
-
+    <!-- saveToCSV -->
     <script type="text/javascript">
+        function saveToCSV() {
 
-        function saveToCSV(){
-            
             // modified from http://stackoverflow.com/questions/14964035/how-to-export-javascript-array-info-to-csv-on-client-side
-            var data = graph.brushed()==false? graph.data(): graph.brushed();
-            
+            var data = graph.brushed() === false ? graph.data() : graph.brushed();
+            var csvTitle = d3.keys(data[0]);
 
             var csvContent = "data:attachment/csv;charset=utf-8,";
-            
-            csvContent += d3.keys(data[0]).join(",") + "\n" //add first row
-            
-            data.forEach(function(infoArray, index){
-                dataString = d3.values(infoArray).join(",");
-                csvContent += index < data.length ? dataString+ "\n" : dataString;
+            var scidIndex = csvTitle.indexOf("scid");
+            csvTitle.splice(scidIndex,1);
 
-            }); 
-            
+            csvContent += csvTitle.join(",") + "\n"; //add first row
+
+            data.forEach(function(infoArray, index) {
+                dataString = d3.values(infoArray);
+                dataString.splice(scidIndex,1);
+                dataString = dataString.join(",");
+                csvContent += index < data.length ? dataString + "\n" : dataString;
+
+            });
+
             csvContent = encodeURI(csvContent);
 
             var a = d3.select("body")
-                    .append("a")
-                    .attr("href", csvContent)
-                    .attr("target", '_blank')
-                    .attr("download",'DesignExplorer_SelectedResults.csv');
+                .append("a")
+                .attr("href", csvContent)
+                .attr("target", '_blank')
+                .attr("download", 'DesignExplorer_SelectedResults.csv');
 
             a[0][0].click();
         }
-
     </script>
 
 </body>
