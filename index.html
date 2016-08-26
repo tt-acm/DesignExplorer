@@ -43,7 +43,7 @@
     <script src="./d3/d3.v3.min.js" charset="utf-8"></script>
 
     <!-- jQuery -->
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
     <!-- Sliders script and css -->
     <script src="./rangeslider_files/js/ion.rangeSlider.js"></script>
@@ -126,7 +126,11 @@
 
             link  = serverFolderLink.split("/");
             link = link[link.length - 1];
-            filePath = "http://www.googledrive.com/host/" + link + "/data.csv";
+            filePath = "https://www.googledrive.com/host/" + link + "/data.csv";
+
+            if (window.location.href.toUpperCase().search("www.googledrive.com") == -1) {
+                location.replace("https://www.googledrive.com/host/0B8secD5h7wUFSlYwRHBoQTR1Ums/?GFOLDER="+link);
+            }
 
         }else {
 
@@ -166,7 +170,7 @@
                 link = folderLinkID + "/" + file;
             }else{
                 //folderUrl is google folder ID
-                link = "http://www.googledrive.com/host/" + folderLinkID + "/" + file;
+                link = "https://www.googledrive.com/host/" + folderLinkID + "/" + file;
             }
         } else {
             // file is the valid Url path
@@ -1843,6 +1847,10 @@
                 var folderUrl = getUrlVars().GFOLDER;
                 var filePath;
 
+                if (window.location.href.toUpperCase().search("www.googledrive.com") == -1) {
+                    location.replace("https://www.googledrive.com/host/0B8secD5h7wUFSlYwRHBoQTR1Ums/?GFOLDER="+folderUrl);
+                }
+
                 document.getElementById("folderLinkID").value = folderUrl;
 
                 if(folderUrl.search("/")>0){
@@ -1850,7 +1858,7 @@
                     filePath = folderUrl;
                 }else{
                     //folderUrl is google folder ID
-                    filePath = "http://www.googledrive.com/host/" + folderUrl + "/data.csv";
+                    filePath = "https://www.googledrive.com/host/" + folderUrl + "/data.csv";
                 }
 
                 // remove the current selection
@@ -1860,7 +1868,7 @@
             } else {
                 // load default data
                 //parse the csv data from the design_explorer_data folder
-                d3.csv("http://tt-acm.github.io/DesignExplorer/design_explorer_data/default_onload.csv", loadDataToDesignExplorer);
+                d3.csv("https://tt-acm.github.io/DesignExplorer/design_explorer_data/default_onload.csv", loadDataToDesignExplorer);
 
             }
 
