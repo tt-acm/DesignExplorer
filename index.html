@@ -1847,18 +1847,21 @@
                 var folderUrl = getUrlVars().GFOLDER;
                 var filePath;
 
-                if (window.location.href.toUpperCase().search("www.googledrive.com") == -1) {
-                    location.replace("https://www.googledrive.com/host/0B8secD5h7wUFSlYwRHBoQTR1Ums/?GFOLDER="+folderUrl);
-                }
+
 
                 document.getElementById("folderLinkID").value = folderUrl;
 
                 if(folderUrl.search("/")>0){
                     //folderUrl is server link
-                    filePath = folderUrl;
+                    filePath = folderUrl + "/data.csv";
                 }else{
                     //folderUrl is google folder ID
                     filePath = "https://www.googledrive.com/host/" + folderUrl + "/data.csv";
+
+                    if (window.location.href.toUpperCase().search("www.googledrive.com") == -1) {
+                        location.replace("https://www.googledrive.com/host/0B8secD5h7wUFSlYwRHBoQTR1Ums/?GFOLDER="+folderUrl);
+                    }
+
                 }
 
                 // remove the current selection
