@@ -75,14 +75,6 @@
     <link href="bootstrap_side_bar/css/simple-sidebar.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
-
     <!-- Various libraries that vA3C depends upon -->
     <script type="text/javascript" src="va3c_source_files/js/libs/dat.gui.js"></script>
     <link rel="stylesheet" type="text/css" href="va3c_source_files/css/datgui_styleOverride.css">
@@ -114,42 +106,89 @@
 </head>
 
 <script>
-    function MP_getGoogleIDandLoad() {
-        // if(isGoodForLoading ==0) return;
-        document.getElementById('csv-file').value = "";
-        var serverFolderLink = document.getElementById("folderLink").value;
-        var link;
-        var filePath;
+    //load FolderInfo ,Json data_ Mingbo Peng Modified--------------------------------------------------------------------
 
+    var GID = [];
+    var GName = [];
+    var csvID="";
+    var key = "AIzaSyCSrF08UMawxKIb0m4JsA1mYE5NMmP36bY";
+    function prepareGFolder(GFolderLink){
 
-        if (serverFolderLink.search("google.com")>0){
+        d3.json(GFolderLink, function(data){
+            data.files.forEach(function(item){
+                GID.push(item.id);
+                GName.push(item.name);
+            });
+            if (data.nextPageToken){
+                if(GFolderLink.search("&pageToken=")>0){
+                    GFolderLink = GFolderLink.split("&pageToken=",1)[0];
+                }
+                prepareGFolder(GFolderLink+"&pageToken="+data.nextPageToken);
 
-            link  = serverFolderLink.split("/");
-            link = link[link.length - 1];
-            filePath = "https://www.googledrive.com/host/" + link + "/data.csv";
-
-            if (window.location.href.toUpperCase().search("www.googledrive.com") == -1) {
-                location.replace("https://www.googledrive.com/host/0B8secD5h7wUFSlYwRHBoQTR1Ums/?GFOLDER="+link);
+            }else{
+                csvID = GID[GName.findIndex(function (d){return d === "data.csv";})];
+                if (csvID === undefined ){
+                    alert("Could not find the data.csv file in this folder, please double check!");
+                }else {
+                    readyToLoad("https://www.googleapis.com/drive/v3/files/"+csvID+"?alt=media&key="+key);
+                }
             }
 
-        }else {
+        });
+    }
 
-            link = serverFolderLink;
-            filePath = serverFolderLink + "/data.csv";
+    function MP_getGoogleIDandLoad(dataMethod) {
+        var serverFolderLink;
+        // if(isGoodForLoading ==0) return;
+        document.getElementById('csv-file').value = "";
 
+        if(dataMethod === "URL"){
+            var GfolderORUrl = getUrlVars().GFOLDER;
+            document.getElementById("folderLink").value ="";
+            if(GfolderORUrl.search("/") == -1){
+                //GfolderORUrl is google folder ID
+                serverFolderLink = "https://drive.google.com/drive/folders/" + GfolderORUrl;
+            }else{
+                serverFolderLink = GfolderORUrl;
+            }
+
+        }else{
+            serverFolderLink = document.getElementById("folderLink").value;
         }
 
-        if (link.length > 0) {
-            document.getElementById("folderLinkID").value = link;
+        if (serverFolderLink.search("google.com")>0){
+            var GFolderID;
+            GID = [];
+            GName = [];
+            csvID="";
+            GFolderID  = serverFolderLink.split("/");
+            GFolderID = GFolderID[GFolderID.length - 1];
+            serverFolderLink = "https://www.googleapis.com/drive/v3/files?q=%27" + GFolderID  + "%27+in+parents&key="+ key;
+            document.getElementById("folderLinkID").value = GFolderID;
+
+            prepareGFolder(serverFolderLink);
+        }else {
+            document.getElementById("folderLinkID").value = serverFolderLink;
+            readyToLoad(serverFolderLink,serverFolderLink + "/data.csv");
+        }
+
+    }
+
+    function readyToLoad(csvFilePathLink) {
+        if (document.getElementById("folderLinkID").value.length > 0) {
             // remove the current selection
             unloadPageContent();
-            d3.csv(filePath, loadDataToDesignExplorer);
-            getStillLink();
+            d3.csv(csvFilePathLink, loadDataToDesignExplorer);
+            //window.prompt only if user input data, not from URL
+            if(document.getElementById("folderLink").value){
+                getStillLink();
+            }
+
             d3.select("#welcome").style("display","none");
         } else {
             alert("You have to put Google Drive Folder information first!");
         }
-        //alert(googleImgFolderLinkID);
+
     }
 
     function getUrlVars() {
@@ -170,7 +209,14 @@
                 link = folderLinkID + "/" + file;
             }else{
                 //folderUrl is google folder ID
-                link = "https://www.googledrive.com/host/" + folderLinkID + "/" + file;
+                var nameIndex = GName.findIndex(function (d){return d === file;});
+                if(file.search(".json")>0){
+                    link = "https://www.googleapis.com/drive/v3/files/"+GID[nameIndex]+"?alt=media&key="+key;
+                }else{
+                    link = "https://docs.google.com/uc?id="+GID[nameIndex]+"&export=download";
+                }
+
+
             }
         } else {
             // file is the valid Url path
@@ -395,20 +441,19 @@
             </div>
             <!-- /#Welcome content -->
             <div class="row-fluid col-lg-12 row-centered vertical-center fullscreen" id="welcome">
-                <div class="col-sm-12 col-centered" id="welcomeContainer">
+                <div class="col-sm-12 col-centered" id="welcomeContainer" style="max-height: 700px; min-height: 620px;">
                     <button id="close" class="btn btn-default btn-sm pull-right">
                         <span class="glyphicon glyphicon-remove"></span>
                     </button>
-                    <h1 class="text-center"> Welcome to Design Explorer!</h1>
                     <br>
+                    <h1 class="text-center"> Welcome to Design Explorer!</h1>
                     <h4 class="text-center">
-                            Design Explorer is an open source web interface for exploring multi-dimensional design spaces!
+                            Design Explorer is an open source tool for exploring multi-dimensional parametric studies!
                     </h4>
                     <br>
 
                     <h3 class="text-center">Try one of sample design sets</h3>
                     <h5 class="text-center"><a href="http://www.mpendesign.com/category/tutorial/" target="_blank" >Tutorial</a></h5>
-                    <br>
                     <div class="row">
                         <div class="col-sm-4">
                             <img src="img/RedBox.gif" class="sampleImage image-rounded" id="sample1">
@@ -423,14 +468,14 @@
                         <br>
                     </div>
                     <div class="col-lg-12">
-                        <h2 class="text-center"> Happy Exploring! </h2>
-                        <h5 class="text-center" >v2.2</h5>
+                        <h3 class="text-center"> Happy Exploring! </h3>
+                        <h5 class="text-center" >v2.3 (10/09/2016)</h5>
                         <br>
                         <h5 class="text-center">
-                                Design Explorer &copy; Copyright 2015 CORE studio | Thornton Tomasetti |
+                                Design Explorer &copy; Copyright CORE studio | Thornton Tomasetti |
                                 <a href="http://core.thorntontomasetti.com/about" target="_blank"> About</a> |
                                 <a href="http://core.thorntontomasetti.com/about/services" target="_blank">Services</a> |
-                                <a href="http://core.thorntontomasetti.com/about/contact" target="_blank">Contact</a> |
+                                <a href="http://core.thorntontomasetti.com/about/contact" target="_blank">Contact</a>
                             </h5>
                         <h5 class="text-center">
                                 Updated by
@@ -444,15 +489,15 @@
                     </button>
 
                     <h4 class="text-center" style="margin: 100px 0 30px 0;">
-                            Load data from Google Drive or your server:
+                            From Google Drive or server:
                     </h4>
                     <p class="text-center">
                         <input type="text" id="folderLink" class="btn btn-default btn-sm toggled" name="imgfolder" placeholder="Google Drive or server link" />
                         <input type="text" id="folderLinkID" class="btn btn-default btn-hd" name="imgfolder" placeholder="FolderID" />
                         <button id="loadData" onclick="MP_getGoogleIDandLoad()" class="file-upload" style="border-radius:0 20px 20px 0;">Load Data</button>
                     </p>
-                    <h5 class="text-center" style="color: #9d9d9d;">Please put data.csv, images, and 3D-json files into the same folder.(Example:<a href="design_explorer_data/example/online/data.csv" target="_blank">data.csv</a>)</h5>
-                    <h4 class="text-center" style="margin: 80px 0 60px 0;">
+                    <h5 class="text-center" style="color: #9d9d9d;">Please put data.csv, images, and 3D-json files into the same folder.(<a href="design_explorer_data/example/online/example.zip" target="_blank">example.zip</a>)</h5>
+                    <h4 class="text-center" style="margin: 60px 0 60px 0;">
                             Or
                     </h4>
                     <p class="text-center">
@@ -1033,8 +1078,7 @@
             allDataCollector = {},
             slidersMapping = {}, // I collect the data for all the input sliders here so I can use it to remap the sliders later
             ids = [], // Here I collect all data based on a unique ID from inputs
-            cleanedParams4pc = {},
-            googleFolderLink;
+            cleanedParams4pc = {};
 
 
         function analyzeInputData(originalData) {
@@ -1097,60 +1141,6 @@
                 });
             }
 
-        }
-
-
-        //load GoogleSheet ,Json data_ Mingbo Peng Modified--------------------------------------------------------------------
-        function cleanAndLoadForDE(data) {
-            loadDataToDesignExplorer(mapEntries(data));
-        }
-
-        //add heaters ,Json _ Mingbo Peng Modified------------------------------------------------------------------------------
-        function loopHeaders(headers, data) {
-            var obj = {};
-            for (var i = 0; i < headers.length; i++) {
-
-                obj[headers[i]] = data[i];
-            }
-            return obj;
-        }
-
-        //reMap ,Json from GoogleSheet_ Mingbo Peng Modified--------------------------------------------------------------------
-        function mapEntries(json, realrowlength, skip) {
-            if (!skip) skip = 1;
-            var dataframe = [];
-            var row = [];
-            for (var i = 0; i < json.feed.entry.length; i++) {
-
-                var entry = json.feed.entry[i];
-
-                if (entry.gs$cell.col == '1') {
-                    if (row !== null) {
-
-                        if ((!realrowlength || row.length === realrowlength) && (skip === 0)) {
-                            dataframe.push(row);
-                        } else {
-                            if (skip > 0) skip--;
-                        }
-                    }
-
-                    row = [];
-                }
-                row.push(entry.content.$t);
-            }
-
-            dataframe.push(row);
-
-            //console.log(dataframe[0]);
-            var headers = dataframe[0];
-            var obj;
-            var objs = [];
-            for (var j = 1; j < dataframe.length; j++) {
-                obj = loopHeaders(headers, dataframe[j]);
-                objs.push(obj);
-            }
-
-            return objs;
         }
 
 
@@ -1844,29 +1834,20 @@
             if (window.location.href.toUpperCase().search("GFOLDER") > 0) {
                 // this is old user with google drive files.
                 d3.select("#welcome").style("display","none");
-                var folderUrl = getUrlVars().GFOLDER;
-                var filePath;
-
-
-
-                document.getElementById("folderLinkID").value = folderUrl;
-
-                if(folderUrl.search("/")>0){
-                    //folderUrl is server link
-                    filePath = folderUrl + "/data.csv";
-                }else{
-                    //folderUrl is google folder ID
-                    filePath = "https://www.googledrive.com/host/" + folderUrl + "/data.csv";
-
-                    if (window.location.href.toUpperCase().search("www.googledrive.com") == -1) {
-                        location.replace("https://www.googledrive.com/host/0B8secD5h7wUFSlYwRHBoQTR1Ums/?GFOLDER="+folderUrl);
-                    }
-
-                }
-
-                // remove the current selection
-                unloadPageContent();
-                d3.csv(filePath, loadDataToDesignExplorer);
+                MP_getGoogleIDandLoad("URL");
+                // if(GfolderORUrl.search("/")>0){
+                //     //GfolderORUrl is server link
+                //     filePath = GfolderORUrl + "/data.csv";
+                // }else{
+                //     //GfolderORUrl is google folder ID
+                //     filePath = "https://www.googleapis.com/drive/v3/files?q=%27" + GfolderORUrl  + "%27+in+parents&key="+ key;
+                //     console.log("110:"+filePath);
+                //     prepareGFolder(filePath, function(d){
+                //         console.log("111:"+d);
+                //         readyToLoad(GfolderORUrl,d);
+                //         // d3.csv(d, loadDataToDesignExplorer);
+                //     });
+                // }
 
             } else {
                 // load default data
