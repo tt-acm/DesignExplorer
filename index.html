@@ -156,13 +156,14 @@
             serverFolderLink = document.getElementById("folderLink").value;
         }
 
-        if (serverFolderLink.search("google.com")>0){
-            var GFolderID;
+        var GFolderID=getGFolderID(serverFolderLink);
+
+        if (GFolderID.length ==28){
             GID = [];
             GName = [];
             csvID="";
-            GFolderID  = serverFolderLink.split("/");
-            GFolderID = GFolderID[GFolderID.length - 1];
+            //GFolderID  = getGFolderID(serverFolderLink);
+            //GFolderID = GFolderID[GFolderID.length - 1];
             serverFolderLink = "https://www.googleapis.com/drive/v3/files?q=%27" + GFolderID  + "%27+in+parents&key="+ key;
             document.getElementById("folderLinkID").value = GFolderID;
 
@@ -172,6 +173,31 @@
             readyToLoad(serverFolderLink + "/data.csv");
         }
 
+    }
+    function getGFolderID(link) {
+        var GoogleID;
+
+        var isGoogleFolderLink;
+        if (link.includes("google.com")){
+            isGoogleFolderLink = true;
+        }
+
+        if (isGoogleFolderLink) {
+            if (link.includes("?usp=sharing")) {
+                GoogleID= link.replace("?usp=sharing","");
+            }else if (link.includes("open?id=")) {
+                GoogleID= link.replace("open?id=","");
+            }else{
+                GoogleID = link;
+            }
+
+        }
+
+
+        GoogleID=GoogleID.split("/");
+        GoogleID = GoogleID[GoogleID.length - 1];
+
+        return GoogleID;
     }
 
     function readyToLoad(csvFilePathLink) {
@@ -191,9 +217,12 @@
 
     }
 
-    function getUrlVars() {
+    function getUrlVars(url) {
         var vars = {};
-        var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m, key, value) {
+        if(url === null){
+            url =window.location.href;
+        }
+        var parts = url.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m, key, value) {
             vars[key] = value;
         });
         return vars;
@@ -228,7 +257,12 @@
 
     function getStillLink() {
         if (document.getElementById("folderLinkID").value.length > 0) {
-            var msg = window.location.href + "?GFOLDER=" + document.getElementById("folderLinkID").value;
+            var msg;
+            if (window.location.href.includes("GFOLDER")) {
+                msg = window.location.href;
+            }else{
+                msg = window.location.href + "?GFOLDER=" + document.getElementById("folderLinkID").value;
+            }
             window.prompt("This is the link that you can access next time without loading!", msg);
         } else {
             alert("You have to put online folder information first!");
