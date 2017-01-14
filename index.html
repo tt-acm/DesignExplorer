@@ -217,12 +217,9 @@
 
     }
 
-    function getUrlVars(url) {
+    function getUrlVars() {
         var vars = {};
-        if(url === null){
-            url =window.location.href;
-        }
-        var parts = url.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m, key, value) {
+        var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m, key, value) {
             vars[key] = value;
         });
         return vars;
