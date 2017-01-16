@@ -190,12 +190,17 @@
             }else{
                 GoogleID = link;
             }
+		
+	    GoogleID=GoogleID.split("/");
+            GoogleID = GoogleID[GoogleID.length - 1];
 
-        }
+        }else{
+		//server link
+		GoogleID = link;
+	}
 
 
-        GoogleID=GoogleID.split("/");
-        GoogleID = GoogleID[GoogleID.length - 1];
+        
 
         return GoogleID;
     }
