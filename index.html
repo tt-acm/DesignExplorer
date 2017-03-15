@@ -106,6 +106,10 @@
 </head>
 
 <script>
+	
+		window.onresize = function(event) {
+	    console.log("resized");
+		};	
     //load FolderInfo ,Json data_ Mingbo Peng Modified--------------------------------------------------------------------
 
     var GID = [];
@@ -505,7 +509,7 @@
                     </div>
                     <div class="col-lg-12">
                         <h3 class="text-center"> Happy Exploring! </h3>
-                        <h5 class="text-center" >v2.31 (01/13/2017)</h5>
+                        <h5 class="text-center" >v2 (03/15/2017)</h5>
                         <br>
                         <h5 class="text-center">
                                 Design Explorer &copy; Copyright CORE studio | Thornton Tomasetti |
@@ -1895,7 +1899,7 @@
             } else {
                 // load default data
                 //parse the csv data from the design_explorer_data folder
-                d3.csv("https://tt-acm.github.io/DesignExplorer/design_explorer_data/default_onload.csv", loadDataToDesignExplorer);
+                d3.csv("design_explorer_data/default_onload.csv", loadDataToDesignExplorer);
 
             }
 
