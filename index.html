@@ -1243,9 +1243,16 @@
 
             // take care of whitespace in slider names! oh people...
             slidersInfo.forEach(function(d) {
-                d.namewithnospace = d.name.replace(/\s/g, '');
+                d.namewithnospace = string_as_unicode_escape(d.name);
             });
         }
+        
+        function string_as_unicode_escape(input) {
+				    var output = '';
+				    for (var i = 0, l = input.length; i < l; i++)
+				        output +=  input.charCodeAt(i).toString(16);
+				    return output;
+				}
     </script>
 
     <!-- NOTE:  draw parallel coordinates graph -->
