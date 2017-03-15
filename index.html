@@ -1905,6 +1905,11 @@
 
                     d3.select("#loadDataContainer")
                     .style("display","block");
+                    
+                    //clean previous inputs
+                    document.getElementById('csv-file').value = "";
+            				document.getElementById("folderLink").value ="";
+            				document.getElementById("folderLinkID").value ="";
 
                 });
 
