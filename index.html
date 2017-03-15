@@ -107,9 +107,6 @@
 
 <script>
 	
-		window.onresize = function(event) {
-	    console.log("resized");
-		};	
     //load FolderInfo ,Json data_ Mingbo Peng Modified--------------------------------------------------------------------
 
     var GID = [];
@@ -1300,7 +1297,7 @@
                     bottom: 10,
                     right: 20
                 })
-                .alpha(0.2)
+                .alpha(0.25)
                 .mode("queue")
                 .rate(20)
                 .dimensions(cleanedParams4pc)
@@ -1899,7 +1896,7 @@
             } else {
                 // load default data
                 //parse the csv data from the design_explorer_data folder
-                d3.csv("design_explorer_data/default_onload.csv", loadDataToDesignExplorer);
+                d3.csv("https://tt-acm.github.io/DesignExplorer/design_explorer_data/default_onload.csv", loadDataToDesignExplorer);
 
             }
 
@@ -2073,7 +2070,7 @@
 
                     var sliderName = sliderInfo.name;
                     // remove spaces
-                    var namewithnospace = sliderName.replace(/\s/g, '');
+                    var namewithnospace = string_as_unicode_escape(sliderName);
                     var newTickValues = tickValues[sliderName].sort();
                     //console.log(sliderName);
 
