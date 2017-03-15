@@ -1372,9 +1372,8 @@
                 return parseFloat(d[dim]);
 
             });
-
+            
             colorDomain = color.domain(d3.extent(values));
-
             // change colors for each line
             graph.color(function(d) {
                 return color([d[dim]]);
@@ -1725,15 +1724,16 @@
             d3.selectAll("rect.legend")
                 .attr("class", function(d) {
 
-                    if (d.name == "Rating") {
+                    if (d.name == "Rating" || d.name == "Description") {
                         d.enabled = false;
                         return 'legend disabled';
                     }
                 });
 
             // remove Rating for on page load
-            var activeDimensions = dimensions.filter(function(d) {
-                return d.name != "Rating";
+            var activeDimensions = dimensions.filter(function(d)
+            {
+                return (d.name != "Rating") && (d.name != "Description");
             }).map(function(d) {
                 return d.name;
             });
@@ -1854,7 +1854,7 @@
 
             // set color change
             // set the initial coloring based on the 3rd column
-            pcIsColoredBy = d3.keys(graph.dimensions())[0];
+            pcIsColoredBy = d3.keys(inputData[0])[0];;
             update_colors(pcIsColoredBy);
 
             // draw legend in side bar

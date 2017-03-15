@@ -1,4 +1,4 @@
-name,in:width,in:length,in:height,out:surfaceArea,out:volume,out:edgeLength,img,threeD
+Description,in:width,in:length,in:height,out:surfaceArea,out:volume,out:edgeLength,img,threeD
 1_1_1,1,1,1,24,8,24,https://tt-acm.github.io/DesignExplorer/design_explorer_data/RedBox/1_1_1_Perspective.png,https://tt-acm.github.io/DesignExplorer/design_explorer_data/RedBox/1_1_1.json
 2_1_1,2,1,1,40,16,32,https://tt-acm.github.io/DesignExplorer/design_explorer_data/RedBox/2_1_1_Perspective.png,https://tt-acm.github.io/DesignExplorer/design_explorer_data/RedBox/2_1_1.json
 3_1_1,3,1,1,56,24,40,https://tt-acm.github.io/DesignExplorer/design_explorer_data/RedBox/3_1_1_Perspective.png,https://tt-acm.github.io/DesignExplorer/design_explorer_data/RedBox/3_1_1.json
