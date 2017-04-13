@@ -43,7 +43,7 @@
     <script src="./d3/d3.v3.min.js" charset="utf-8"></script>
 
     <!-- jQuery -->
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
 
     <!-- Sliders script and css -->
     <script src="./rangeslider_files/js/ion.rangeSlider.js"></script>
@@ -78,18 +78,15 @@
     <!-- Various libraries that vA3C depends upon -->
     <script type="text/javascript" src="va3c_source_files/js/libs/dat.gui.js"></script>
     <link rel="stylesheet" type="text/css" href="va3c_source_files/css/datgui_styleOverride.css">
+	<link rel="stylesheet" type="text/css" href="va3c_source_files/css/SPECTACLES.css">
     <script type="text/javascript" src="va3c_source_files/js/libs/three.js"></script>
     <script type="text/javascript" src="va3c_source_files/js/libs/OrbitControls.js"></script>
     <script type="text/javascript" src="va3c_source_files/js/libs/Projector.js"></script>
     <script type="text/javascript" src="va3c_source_files/js/libs/stats.js"></script>
     <script type="text/javascript" src="va3c_source_files/js/libs/jquery-ui.js"></script>
+	<script type="text/javascript" src="va3c_source_files/js/libs/SPECTACLES.js"></script>
 
-    <!-- Application Files -->
-    <link rel="stylesheet" type="text/css" href="https://rawgit.com/tt-acm/Spectacles.WebViewer/gh-pages/css/SPECTACLES.css" />
-    <!-- the vA3C stylesheet -->
-    <script type="text/javascript" src="https://rawgit.com/tt-acm/Spectacles.WebViewer/gh-pages/js/SPECTACLES.js"></script>
-    <!-- the vA3C library -->
-
+    
     <!-- Pace for loading bar-->
     <link rel="stylesheet" type="text/css" href="pace/pace.css" />
     <script type="text/javascript" src="pace/pace.min.js"></script>
@@ -852,7 +849,17 @@
         function updateLayoutOnSelect() {
 
             var selectedImage = d3.select(this);
-            
+            <!-- var currentDataCount = graph.brushed().length; -->
+			<!-- var brushedOpacity = 0.3; -->
+			<!-- if(currentDataCount<=20){ -->
+				<!-- //currentDataCount = 200; -->
+				<!-- brushedOpacity = 0.9; -->
+			<!-- }else{ -->
+			<!-- brushedOpacity = 0.3; -->
+			
+			<!-- } -->
+			<!-- d3.select("#graph canvas.faded").style("opacity", brushedOpacity) -->
+			
 
             // highlight the line graph
             graph.highlight(selectedImage.data());
@@ -1286,7 +1293,7 @@
             cleanWidth = windowWidth - 100,
             graphHeight = cleanHeight / 3,
             zoomedHeight = cleanHeight - graphHeight,
-            opacity = 0.7;
+            opacity = 0.4;
 
         var pcIsColoredBy;
 
@@ -1311,18 +1318,14 @@
                     bottom: 10,
                     right: 20
                 })
-                .alpha(0.25)
+                .alpha(opacity)
                 .mode("queue")
-                .rate(20)
+                .rate(40)
                 .dimensions(cleanedParams4pc)
                 .render()
                 .brushMode("1D-axes") // enable brushing
                 .interactive()
                 .reorderable();
-                //.scale("Rating", [0, 5]).updateAxes(); // set initial domain for rating
-
-            // graph.scale("Rating", [0,5]).updateAxes();
-            //graph.toTypeCoerceNumbers();
 
             updateLabels();
 

@@ -308,16 +308,16 @@ d3.parcoords = function(config) {
 
         // default styles, needs to be set when canvas width changes
         ctx.foreground.strokeStyle = __.color;
-        ctx.foreground.lineWidth = 1.4;
+        ctx.foreground.lineWidth = 1.2;
         ctx.foreground.globalCompositeOperation = __.composite;
         ctx.foreground.globalAlpha = __.alpha;
         ctx.foreground.scale(devicePixelRatio, devicePixelRatio);
         ctx.brushed.strokeStyle = __.brushedColor;
-        ctx.brushed.lineWidth = 1.4;
+        ctx.brushed.lineWidth = 1.2;
         ctx.brushed.globalCompositeOperation = __.composite;
         ctx.brushed.globalAlpha = __.alpha;
         ctx.brushed.scale(devicePixelRatio, devicePixelRatio);
-        ctx.highlight.lineWidth = 3;
+        ctx.highlight.lineWidth = 4;
         ctx.highlight.scale(devicePixelRatio, devicePixelRatio);
 
         return this;
@@ -2477,7 +2477,7 @@ d3.parcoords = function(config) {
         __.highlighted = data;
         pc.clear("highlight");
         if(__.brushed){
-            console.log("brushed");
+            //console.log("brushed");
             d3.select(canvas.brushed).classed("faded", true);
             pc.clear("foreground");
         }else {

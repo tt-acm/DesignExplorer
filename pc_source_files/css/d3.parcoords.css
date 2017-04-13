@@ -30,5 +30,5 @@
   -o-transition: opacity 0.3s;
 }
 .parcoords canvas.faded {
-  opacity: 0.25;
+  opacity: 0.5;
 }
