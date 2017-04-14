@@ -801,16 +801,7 @@
                     }
                 });
 
-            // d3.selectAll(".col-lg-3 .row, #rightTopButtonGroup")
-            //     .transition().delay(100)
-            //     .transition().duration(1000)
-            //     .style("width", function() {
-            //         if (isRightChartFullScreenToggled) {
-            //             return windowWidth - 50 + "px";
-            //         } else {
-            //             return;
-            //         }
-            //     });
+            
 
             d3.selectAll(".col-lg-9,#thumbnails-btm_container") // hide left side
                 .transition().delay(200)
@@ -849,16 +840,16 @@
         function updateLayoutOnSelect() {
 
             var selectedImage = d3.select(this);
-            <!-- var currentDataCount = graph.brushed().length; -->
-			<!-- var brushedOpacity = 0.3; -->
-			<!-- if(currentDataCount<=20){ -->
-				<!-- //currentDataCount = 200; -->
-				<!-- brushedOpacity = 0.9; -->
-			<!-- }else{ -->
-			<!-- brushedOpacity = 0.3; -->
+            //<!-- var currentDataCount = graph.brushed().length; -->
+			//<!-- var brushedOpacity = 0.3; -->
+			//<!-- if(currentDataCount<=20){ -->
+			//	<!-- //currentDataCount = 200; -->
+			//	<!-- brushedOpacity = 0.9; -->
+			//<!-- }else{ -->
+			//<!-- brushedOpacity = 0.3; -->
 			
-			<!-- } -->
-			<!-- d3.select("#graph canvas.faded").style("opacity", brushedOpacity) -->
+			//<!-- } -->
+			//<!-- d3.select("#graph canvas.faded").style("opacity", brushedOpacity) -->
 			
 
             // highlight the line graph
@@ -894,11 +885,7 @@
                 .attr("src", makeUrl(selectedImage.datum().img))
                 .attr("title", getTitle);
 
-            d3.select("#IterationData")
-                .style("display", "block")
-                .data(selectedImage.data())
-                .select('p')
-                .html(getIterationData);
+            updateIterationData(selectedImage.data());
 
 
             // load 3d geometry if the view is set to 3D
@@ -1129,6 +1116,7 @@
         // such as separating inputs, outputs, images, etc.
         var originalData, //csv as it is imported
             cleanedData = [], //all the columns to be used for parallel coordinates
+            numericalData = [],
             inputData = [], // columns with input values - to be used for sliders
             outputData = [], // columns with output values - to be used for radar graph
             slidersInfo = [], // {name:'inputName', tickValues : [sorted set of values]},
@@ -1137,6 +1125,7 @@
             slidersMapping = {}, // I collect the data for all the input sliders here so I can use it to remap the sliders later
             ids = [], // Here I collect all data based on a unique ID from inputs
             cleanedParams4pc = {};
+            
 
 
         function analyzeInputData(originalData) {
@@ -1300,7 +1289,18 @@
         var color = d3.scale.linear()
             .range(["#3182bd", "#f33"]);
 
+        
         function drawParallelCoordinates() {
+
+            // remove Rating for on page load
+            var iniDimensions = d3.keys(cleanedParams4pc).filter(function (d) {
+                return (d != "Rating") && (d != "Description");
+            }).reduce(function (acc, cur) {
+                acc[cur] = {};
+                return acc;
+            }, {});
+            
+
             // set the height for graph div - this is critical otherwise
             // parallel coordinates graph will be drawn by height of 0px
             d3.select("#graph").style("height", graphHeight + "px");
@@ -1321,7 +1321,7 @@
                 .alpha(opacity)
                 .mode("queue")
                 .rate(40)
-                .dimensions(cleanedParams4pc)
+                .dimensions(iniDimensions)
                 .render()
                 .brushMode("1D-axes") // enable brushing
                 .interactive()
@@ -1378,47 +1378,46 @@
                     update_colors(d);
                 });
         }
+        function getYScales() {
 
-        function convertTextToNumber() {
+        }
 
+        function valueToNumber(value, dim) {
+            if (graph.dimensions()[dim] !== undefined) {
+                return graph.dimensions()[dim].yscale(value);
+            } else {
+                return 1;
+            }
+            
         }
 
         // update color and font weight of chart based on axis selection
         function update_colors(dim,chart) {
             pcIsColoredBy = dim;
 
+            //console.log(dim);
+            
             // change color of lines
             // set domain of color scale
-            var valueIsNaN = isNaN(parseFloat(graph.data()[0][dim]));
-            var values;
-
-            if (valueIsNaN) {
-                //var unique = graph.data()[dim].filter(function (elem, index, self) {
-                //    return index == self.indexOf(elem);
-                //});
-
-                values = [0, graph.data().length];
-            } else {
-                values = graph.data().map(function (d) {
-                    return parseFloat(d[dim]);
+            var values = graph.data().map(function (d) {
+                return parseFloat(valueToNumber(d[dim],dim));
                 });
-            }
-            
             
             colorDomain = color.domain(d3.extent(values));
+
             // change colors for each line
             graph.color(function(d) {
-                return color([d[dim]]);
+                return color([valueToNumber(d[dim],dim)]);
             }).render();
 
             // change border color for images
-            d3.selectAll("img#thumbnails-btm").style("border-color", function(d) {
-                //console.log(color(d[dim]));
-                return color(d[dim]);
+            d3.selectAll("img#thumbnails-btm, img#thumbnails-side").style("border-color", function (d) {
+                //console.log(color(yscale(d[dim])));
+                return color(valueToNumber(d[dim],dim));
             });
-            d3.selectAll("img#thumbnails-side").style("border-color", function(d) {
-                return color(d[dim]);
-            });
+            //d3.selectAll("img#thumbnails-side").style("border-color", function(d) {
+            //    return color(yscale(d[dim]));
+            //});
 
             // change ScatterMatrix dots color
             update_sc_colorsOnly();
@@ -1447,7 +1446,7 @@
 
             // legend boxes are diminsions of the graph
             //console.log(Object.keys(graph.dimensions()));
-            dimensions = d3.keys(graph.dimensions()).map(function(d) {
+            dimensions = d3.keys(cleanedParams4pc).map(function (d) {
                 return {
                     name: d,
                     enabled: true
@@ -1456,7 +1455,7 @@
 
             // find size of the square based on the height
             //var legendSquareSize = 16;
-            var legendSquareSize = Math.max(legendHeight / (d3.keys(graph.dimensions()).length + 4), 12);
+            var legendSquareSize = Math.max(legendHeight / (d3.keys(cleanedParams4pc).length + 4), 12);
 
             // create one group for each rect and text
             var legend = d3.select("#legend").append("svg")
@@ -1567,22 +1566,27 @@
             return title.join("\n");
         }
 
-        function getIterationData(data) {
+
+
+        function updateIterationData(dataObj) {
 
             // get title for each image
             var title = [];
-
+            var data = dataObj[0];
             d3.keys(data).forEach(
                 function (key) {
                     if (!String(key).startsWith("img") && !String(key).startsWith("threeD") && !String(key).startsWith("scid")) {
                         var info = '<strong>' + key + '</strong>' + " : " + data[key];
                         title.push(info);
                     }
-                    
+
                 }
              );
-
-            return title.join('<br>');
+            
+            d3.select("#IterationData")
+                .style("display", "block")
+                .select('p')
+                .html(title.join('<br>'));
         }
 
         function updateImageGrid(data, resizeImageDiv) {
@@ -1593,15 +1597,16 @@
             var fgridSize = 1; //gridSizes[gridSize];
 
             if (!data) data = graph.data(); //if data is false then use graph data
-
+            //var xFloat = parseFloat(valueToNumber(, sortBy));
+            //var yFloat = parseFloat(valueToNumber(y[sortBy], sortBy));
             // sort data based on dropdown selecion
             if (ascending) {
                 data.sort(function(x, y) {
-                    return d3.ascending(parseFloat(x[sortBy]), parseFloat(y[sortBy]));
+                    return d3.ascending(x[sortBy],y[sortBy]);
                 });
             } else {
                 data.sort(function(x, y) {
-                    return d3.descending(parseFloat(x[sortBy]), parseFloat(y[sortBy]));
+                    return d3.descending(x[sortBy], y[sortBy]);
                 });
             }
 
@@ -1637,7 +1642,7 @@
                 .on("click", updateLayoutOnSelect)
                 .attr("title", getTitle)
                 .style("border-color", function(d) {
-                    return color(d[pcIsColoredBy]);
+                    return color(valueToNumber(d[pcIsColoredBy], pcIsColoredBy));
                 });
 
             d3.select("#thumbnails-side")
@@ -1652,7 +1657,7 @@
                 .on("click", updateLayoutOnSelect)
                 .attr("title", getTitle)
                 .style("border-color", function(d) {
-                    return color(d[pcIsColoredBy]);
+                    return color(valueToNumber(d[pcIsColoredBy], pcIsColoredBy));
                 });
         }
 
@@ -1678,13 +1683,19 @@
                 updateImageGrid(d, false);
             });
 
-            graph.on("brushend", function(d) {
+            graph.on("brushend", function (d) {
 
                 // if nothing is highlighted return
-                if (graph.highlight().length === 0) return;
+                if (typeof (graph.highlight()[0]) == "undefined") return;
 
+
+                if (graph.brushed() == false) {
+                    updateLayoutOnDeselect();
+                    return;
+                }
                 // in case highlighted data not in brused then deselect
                 if (graph.brushed().length == inputData.length || graph.brushed().indexOf(graph.highlight()[0]) == -1) {
+                    
                     updateLayoutOnDeselect();
                 }
             });
@@ -1758,14 +1769,35 @@
 
                 // get active dimensios to update parallel coordinate charts
                 var activeDimensions = dimensions.filter(function(d) {
-                    return (d.enabled) ? 1 : 0;
-                }).map(function(d) {
+                    return d.enabled;
+                }).map(function (d) {
                     return d.name;
                 });
+                
+                //var activeDimensions = _.data(cleanedParams4pc, function (key, data) {
+
+                //})
+
+                //var activeDimensions = dimensions.filter(function (d) {
+                //    return d.enabled;
+                //}).reduce(function (acc, cur) {
+                //    acc[cur] = cleanedParams4pc[cur];
+                //    return acc;
+                //}, {});
+
+
+
                 //console.log(activeDimensions);
                 graph.dimensions(activeDimensions);
 
+                //if removed the pcIsColoredBy's dim, then update color by the first 
+                if (activeDimensions.lastIndexOf(pcIsColoredBy)==-1) {
+                    update_colors(activeDimensions[0]);
+                }
+                
+
                 if (graph.highlighted().length !== 0) graph.highlight(graph.highlighted());
+                updateLabels();
             });
 
 
@@ -1779,17 +1811,6 @@
                         return 'legend disabled';
                     }
                 });
-
-            // remove Rating for on page load
-            var activeDimensions = dimensions.filter(function(d)
-            {
-                return (d.name != "Rating") && (d.name != "Description");
-            }).map(function(d) {
-                return d.name;
-            });
-            graph.dimensions(activeDimensions);
-
-
 
             // set left chart full screen
             var oldpcHeight = d3.select("#graph").style("height").replace("px", "");
@@ -1904,7 +1925,7 @@
 
             // set color change
             // set the initial coloring based on the 3rd column
-            pcIsColoredBy = d3.keys(inputData[0])[0];;
+            pcIsColoredBy = d3.keys(inputData[0])[0];
             update_colors(pcIsColoredBy);
 
             // draw legend in side bar
@@ -1915,6 +1936,8 @@
 
             // add thumbnails
             updateImageGrid(graph.data(), true); // true will set the size of btm div
+
+            
 
             // add place holder image to zoomed area
             addPlaceHolderImage();
@@ -2179,7 +2202,7 @@
                 }
 
                 currentSliderValues[info.name] = value;
-
+                //console.log(info.tickValues.indexOf(value));
                 $("#" + info.namewithnospace).data("ionRangeSlider")
                     .update({
                         from: info.tickValues.indexOf(value), //update the value
@@ -2191,8 +2214,14 @@
         function updateSliderValue(changedSliderName, newValue) {
             // This function update the value for a single slider
             // All the sliders call this function on update
-            if (!isNaN(newValue)) currentSliderValues[changedSliderName] = newValue;
+            if (!isNaN(newValue) || typeof (newValue) == "string") {
 
+                currentSliderValues[changedSliderName] = newValue;
+            } else {
+                console.log(newValue);
+                return;
+            }
+            
             // create the id
             var id = getCaseId(currentSliderValues);
             var selectedData;
@@ -2209,9 +2238,11 @@
                 //rc.highlight([selectedData]);
                 highlightScatterDot();      //-----TODO:here needs a switch for different charts-------
 
+                //updat iterationData
+                updateIterationData([selectedData]);
+
+
                 // push the image to zoomed area
-
-
                 d3.selectAll(".zoomed")
                     .select("img")
                     .attr("src", makeUrl(selectedData.img));
@@ -2424,6 +2455,8 @@
 
                 // highlight selected option
                 graph.highlight(graph.highlighted());
+
+                
 
             }
         });
