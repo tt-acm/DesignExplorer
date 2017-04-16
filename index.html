@@ -24,6 +24,7 @@
 -->
 
 
+
 <html lang="en">
 
 <head>
@@ -57,10 +58,12 @@
     <!-- D3 Parallel Coordinates CSS -->
     <link rel="stylesheet" type="text/css" href="./pc_source_files/css/d3.parcoords.css">
 
-    <!-- Radar Chart --> <!-- TODO: add a switch for picking different charts to present -->
+    <!-- Radar Chart -->
+    <!-- TODO: add a switch for picking different charts to present -->
     <script type="text/javascript" src="./radar_source_files/radar-chart.js"></script>
 
-    <!-- Radar Chart CSS --><!-- TODO: add a switch for picking different charts to present -->
+    <!-- Radar Chart CSS -->
+    <!-- TODO: add a switch for picking different charts to present -->
     <!-- <link rel="stylesheet" type="text/css" href="./radar_source_files/radar-chart.css" /> -->
 
     <!-- Scatter-matrix -->
@@ -78,15 +81,15 @@
     <!-- Various libraries that vA3C depends upon -->
     <script type="text/javascript" src="va3c_source_files/js/libs/dat.gui.js"></script>
     <link rel="stylesheet" type="text/css" href="va3c_source_files/css/datgui_styleOverride.css">
-	<link rel="stylesheet" type="text/css" href="va3c_source_files/css/SPECTACLES.css">
+    <link rel="stylesheet" type="text/css" href="va3c_source_files/css/SPECTACLES.css">
     <script type="text/javascript" src="va3c_source_files/js/libs/three.js"></script>
     <script type="text/javascript" src="va3c_source_files/js/libs/OrbitControls.js"></script>
     <script type="text/javascript" src="va3c_source_files/js/libs/Projector.js"></script>
     <script type="text/javascript" src="va3c_source_files/js/libs/stats.js"></script>
     <script type="text/javascript" src="va3c_source_files/js/libs/jquery-ui.js"></script>
-	<script type="text/javascript" src="va3c_source_files/js/libs/SPECTACLES.js"></script>
+    <script type="text/javascript" src="va3c_source_files/js/libs/SPECTACLES.js"></script>
 
-    
+
     <!-- Pace for loading bar-->
     <link rel="stylesheet" type="text/css" href="pace/pace.css" />
     <script type="text/javascript" src="pace/pace.min.js"></script>
@@ -103,32 +106,34 @@
 </head>
 
 <script>
-	
     //load FolderInfo ,Json data_ Mingbo Peng Modified--------------------------------------------------------------------
 
     var GID = [];
     var GName = [];
-    var csvID="";
+    var csvID = "";
     var key = "AIzaSyCSrF08UMawxKIb0m4JsA1mYE5NMmP36bY";
-    function prepareGFolder(GFolderLink){
 
-        d3.json(GFolderLink, function(data){
-            data.files.forEach(function(item){
+    function prepareGFolder(GFolderLink) {
+
+        d3.json(GFolderLink, function (data) {
+            data.files.forEach(function (item) {
                 GID.push(item.id);
                 GName.push(item.name);
             });
-            if (data.nextPageToken){
-                if(GFolderLink.search("&pageToken=")>0){
-                    GFolderLink = GFolderLink.split("&pageToken=",1)[0];
+            if (data.nextPageToken) {
+                if (GFolderLink.search("&pageToken=") > 0) {
+                    GFolderLink = GFolderLink.split("&pageToken=", 1)[0];
                 }
-                prepareGFolder(GFolderLink+"&pageToken="+data.nextPageToken);
+                prepareGFolder(GFolderLink + "&pageToken=" + data.nextPageToken);
 
-            }else{
-                csvID = GID[GName.findIndex(function (d){return d === "data.csv";})];
-                if (csvID === undefined ){
+            } else {
+                csvID = GID[GName.findIndex(function (d) {
+                    return d === "data.csv";
+                })];
+                if (csvID === undefined) {
                     alert("Could not find the data.csv file in this folder, please double check!");
-                }else {
-                    readyToLoad("https://www.googleapis.com/drive/v3/files/"+csvID+"?alt=media&key="+key);
+                } else {
+                    readyToLoad("https://www.googleapis.com/drive/v3/files/" + csvID + "?alt=media&key=" + key);
                 }
             }
 
@@ -140,65 +145,67 @@
         // if(isGoodForLoading ==0) return;
         document.getElementById('csv-file').value = "";
 
-        if(dataMethod === "URL"){
+        if (dataMethod === "URL") {
             var GfolderORUrl = getUrlVars().GFOLDER;
-            document.getElementById("folderLink").value ="";
-            if(GfolderORUrl.search("/") == -1){
+            document.getElementById("folderLink").value = "";
+            if (GfolderORUrl.search("/") == -1) {
                 //GfolderORUrl is google folder ID
                 serverFolderLink = "https://drive.google.com/drive/folders/" + GfolderORUrl;
-            }else{
+            } else {
                 serverFolderLink = GfolderORUrl;
             }
 
-        }else{
+        } else {
             serverFolderLink = document.getElementById("folderLink").value;
         }
 
-        var GFolderID=getGFolderID(serverFolderLink);
+        var GFolderID = getGFolderID(serverFolderLink);
 
-        if (GFolderID.length ==28){
+        if (GFolderID.length == 28) {
             GID = [];
             GName = [];
-            csvID="";
+            csvID = "";
             //GFolderID  = getGFolderID(serverFolderLink);
             //GFolderID = GFolderID[GFolderID.length - 1];
-            serverFolderLink = "https://www.googleapis.com/drive/v3/files?q=%27" + GFolderID  + "%27+in+parents&key="+ key;
+            serverFolderLink = "https://www.googleapis.com/drive/v3/files?q=%27" + GFolderID + "%27+in+parents&key=" +
+                key;
             document.getElementById("folderLinkID").value = GFolderID;
 
             prepareGFolder(serverFolderLink);
-        }else {
+        } else {
             document.getElementById("folderLinkID").value = serverFolderLink;
             readyToLoad(serverFolderLink + "/data.csv");
         }
 
     }
+
     function getGFolderID(link) {
         var GoogleID;
 
         var isGoogleFolderLink;
-        if (link.includes("google.com")){
+        if (link.includes("google.com")) {
             isGoogleFolderLink = true;
         }
 
         if (isGoogleFolderLink) {
             if (link.includes("?usp=sharing")) {
-                GoogleID= link.replace("?usp=sharing","");
-            }else if (link.includes("open?id=")) {
-                GoogleID= link.replace("open?id=","");
-            }else{
+                GoogleID = link.replace("?usp=sharing", "");
+            } else if (link.includes("open?id=")) {
+                GoogleID = link.replace("open?id=", "");
+            } else {
                 GoogleID = link;
             }
-		
-	    GoogleID=GoogleID.split("/");
+
+            GoogleID = GoogleID.split("/");
             GoogleID = GoogleID[GoogleID.length - 1];
 
-        }else{
-		//server link
-		GoogleID = link;
-	}
+        } else {
+            //server link
+            GoogleID = link;
+        }
 
 
-        
+
 
         return GoogleID;
     }
@@ -209,11 +216,11 @@
             unloadPageContent();
             d3.csv(csvFilePathLink, loadDataToDesignExplorer);
             //window.prompt only if user input data, not from URL
-            if(document.getElementById("folderLink").value){
+            if (document.getElementById("folderLink").value) {
                 getStillLink();
             }
 
-            d3.select("#welcome").style("display","none");
+            d3.select("#welcome").style("display", "none");
         } else {
             alert("You have to put Google Drive Folder information first!");
         }
@@ -222,27 +229,30 @@
 
     function getUrlVars() {
         var vars = {};
-        var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m, key, value) {
+        var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
             vars[key] = value;
         });
         return vars;
     }
-    function makeUrl(file){
+
+    function makeUrl(file) {
         var link;
         var folderLinkID = document.getElementById("folderLinkID").value;
 
         if (folderLinkID.length > 0) {
             //loadImgfrom inputs
-            if(folderLinkID.search("/")>0){
+            if (folderLinkID.search("/") > 0) {
                 //folderUrl is server link
                 link = folderLinkID + "/" + file;
-            }else{
+            } else {
                 //folderUrl is google folder ID
-                var nameIndex = GName.findIndex(function (d){return d === file;});
-                if(file.search(".json")>0){
-                    link = "https://www.googleapis.com/drive/v3/files/"+GID[nameIndex]+"?alt=media&key="+key;
-                }else{
-                    link = "https://docs.google.com/uc?id="+GID[nameIndex]+"&export=download";
+                var nameIndex = GName.findIndex(function (d) {
+                    return d === file;
+                });
+                if (file.search(".json") > 0) {
+                    link = "https://www.googleapis.com/drive/v3/files/" + GID[nameIndex] + "?alt=media&key=" + key;
+                } else {
+                    link = "https://docs.google.com/uc?id=" + GID[nameIndex] + "&export=download";
                 }
 
 
@@ -260,7 +270,7 @@
             var msg;
             if (window.location.href.includes("GFOLDER")) {
                 msg = window.location.href;
-            }else{
+            } else {
                 msg = window.location.href + "?GFOLDER=" + document.getElementById("folderLinkID").value;
             }
             window.prompt("This is the link that you can access next time without loading!", msg);
@@ -281,7 +291,6 @@
                 .style("font-size", "75%");
         }
     }
-
 
 </script>
 
@@ -343,31 +352,33 @@
         <!-- Page Content -->
         <div id="page-content-wrapper">
             <div class="container-fluid">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="row">
-                            <div class="col-lg-9">
+                <!--Here starts the Charts row-->
+                <div class="col-lg-12">
+                    <div class="row">
 
-                                <div class="row">
-                                    <div class="btn-group col-xs-12" style=" width: auto;">
-                                        <button type="button" class="btn btn-default btn-xs" id="menu-toggle" title="Show sliders">
-                                            <span class="glyphicon glyphicon-triangle-left" aria-hidden="true"></span>
-                                        </button>
-                                        <button type="button" class="btn btn-default btn-xs" id="pcgraph" data-toggle="collapse">
-                                            <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
-                                        </button>
-                                        <button id="reset" class="btn btn-default btn-xs">Reset Selection</button>
-                                        <button id="remove" class="btn btn-default btn-xs">Exclude Selection</button>
-                                        <button id="keep" class="btn btn-default btn-xs">Zoom to Selection</button>
-                                        <button id="savecsv" class="btn btn-default btn-xs" onclick="saveToCSV()">Save Selection to File</button>
-                                        <button id="stilllink" class="btn btn-default btn-xs" onclick="getStillLink()">My Static Link</button>
-                                        <a class="btn btn-default btn-xs" href="http://www.mpendesign.com/category/tutorial/" target="_blank">Tutorial</a>
-                                        <a href="https://github.com/tt-acm/DesignExplorer/wiki" class="btn btn-default btn-xs" target="_blank">
-                                            Info <span class="glyphicon glyphicon-new-window"></span>
-                                        </a>
-                                    </div>
+                        <!--here starts the parallel coordinates row-->
+                        <div id="PcChartWrapper" class="col-lg-9">
+                            <div class="row">
+                                <!-- parallel coordiantes' buttons (reset,remove... ) -->
+                                <div class="btn-group col-xs-12" >
+                                    <button type="button" class="btn btn-default btn-xs" id="menu-toggle" title="Show sliders">
+                                        <span class="glyphicon glyphicon-triangle-left" aria-hidden="true"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-default btn-xs" id="pcgraph" data-toggle="collapse">
+                                        <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+                                    </button>
+                                    <button id="reset" class="btn btn-default btn-xs">Reset Selection</button>
+                                    <button id="remove" class="btn btn-default btn-xs">Exclude Selection</button>
+                                    <button id="keep" class="btn btn-default btn-xs">Zoom to Selection</button>
+                                    <button id="savecsv" class="btn btn-default btn-xs" onclick="saveToCSV()">Save Selection to File</button>
+                                    <button id="stilllink" class="btn btn-default btn-xs" onclick="getStillLink()">My Static Link</button>
+                                    <a class="btn btn-default btn-xs" href="http://www.mpendesign.com/category/tutorial/" target="_blank">Tutorial</a>
+                                    <a href="https://github.com/tt-acm/DesignExplorer/wiki" class="btn btn-default btn-xs" target="_blank">
+                                        Info <span class="glyphicon glyphicon-new-window"></span>
+                                    </a>
+
                                     <!-- Change label size -->
-                                    <div class="btn-group col-xs-12" style="width: auto;float: right;right: 60px;">
+                                    <div class="btn-group col-xs-3" style="width: auto;float: right;">
                                         <button id="LL" class="btn btn-default btn-xs" onclick="changeLabelSize('largeLabel')" title="Large Label">L</button>
                                         <button id="MM" class="btn btn-default btn-xs" onclick="changeLabelSize('mediumLabel')" title="Medium Label">M</button>
                                         <button id="SS" class="btn btn-default btn-xs" onclick="changeLabelSize('smallLabel')" title="Small Label">S</button>
@@ -376,104 +387,116 @@
                                         </button>
                                     </div>
                                 </div>
-                                <!-- parallel coordinates -->
-                                <div class="row-fluid">
-                                    <div id="graph" class="parcoords collapse in">
-                                        <!-- <h1>Parallel coordinates graph</h1> -->
-                                    </div>
-                                </div>
-
-                                <!-- Zoomed div for zoomed in areas -->
-                                <div class="row-fluid">
-                                    <div class="zoomed" id="zoomedArea" style="height:0px">
-                                        <div id="IterationData" class="Spectacles_attributeList" style="display: none;right: auto;bottom: 1%;height: auto; width: auto;min-width: 280px;"">
-                                            <h4>Attributes</h4>
-                                            <p>data</p>
-                                        </div>
-                                        <div class="pull-right" id="vis">
-                                            <form>
-
-                                                <label>
-                                                    <input type="radio" class="toggleView" name="visMode" value="2D" checked> 2D</label>
-                                                <!-- show 2D image on load-->
-                                                <label>
-                                                    <input type="radio" class="toggleView" name="visMode" value="3D"> 3D</label>
-
-                                                <button type="button" class="btn btn-default btn-xs" id="toggleComments" style="margin-right:10px; margin-left:5px; margin-top: 2px;" title="Add Comments">
-                                                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-                                                </button>
-                                                <button type="button" class="btn btn-default btn-xs" id="fullscreentoggle" style="margin-right:10px; margin-left:5px; margin-top: 2px;" title="Full Screen Toggle">
-                                                    <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
-                                                </button>
-
-                                            </form>
-                                            <form>
-                                                <!--rating div-->
-                                                <input class="star" type="radio" name="rating" value="1" />
-                                                <input class="star" type="radio" name="rating" value="2" />
-                                                <input class="star" type="radio" name="rating" value="3" />
-                                                <input class="star" type="radio" name="rating" value="4" />
-                                                <input class="star" type="radio" name="rating" value="5" />
-
-                                            </form>
-                                        </div>
-                                        <div id="viewer3d" style="width:100%; height:100%" class="hidden">
-                                            <!-- place holder for the viewer -->
-                                        </div>
-                                        <div class="zoomed" id="zoomed" style="width:100%; height:100%">
-                                            <!-- place holder for the image -->
-                                        </div>
-                                    </div>
+                                
+                            </div>
+                            <!-- parallel coordinates -->
+                            <div class="row-fluid">
+                                <div id="graph" class="parcoords collapse in">
+                                    <!-- <h1>Parallel coordinates graph</h1> -->
                                 </div>
                             </div>
-                            <!-- end of left side charts-->
 
-                            <!-- start of right side charts-->
-                            <div class="col-lg-3" style="padding-left: 0;">
+                            
+                        </div>
+                        <!-- end of left side charts-->
 
-                                <div class="row-fluid">
-                                    <div id="rightTopButtonGroup" class="btn-group col-xs-12">
-                                        <button type="button" class="btn btn-default btn-xs" id="scatter-fullscreen-toggle" title="Full Screen">
-                                            <span class="glyphicon glyphicon-triangle-left" aria-hidden="true"></span>
-                                        </button>
-                                        <a id="copyRightButton" href="http://core.thorntontomasetti.com/" class="btn btn-default btn-xs" target="_blank" style="width: 70%;">
-                                            &copy; Copyright 2015 Thornton Tomasetti
-                                        </a>
-                                        <button type="button" class="btn btn-default btn-xs" id="rcgraph" data-toggle="collapse" data-target="#radarChart">
-                                            <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
-                                        </button>
-                                        <button type="button" class="btn btn-default btn-xs" id="scatter-menu-toggle" title="Show sliders">
-                                            <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
-                                        </button>
-                                    </div>
-                                </div>
+                        <!-- start of right side charts-->
+                        <div id="ScChartWrapper" class="col-lg-3">
 
-                                <div class="row chartSide">
-
-                                    <div id="radarChart" class="col-lg-12 collaps in center-block" style="font-size:14px; font-weight:bold">
-                                        <!-- // <h5>Radar Chart Place Holder</h5> -->
-                                    </div>
-                                    <!--<div id="scatterChart" class="col-lg-12 collaps in center-block">
-										 place holder for the scatterChart
-									</div>-->
-                                </div>
-                                <div class="row thumbnailSide">
-                                    <div class="col-lg-12" id="thumbnails-side_container" style="height:0px">
-                                        <div class="col-lg-12 sorting" style="float:right; margin-top: 2px;"></div>
-                                        <div id="thumbnails-side" class="col-lg-12">
-                                            <!-- <p>Thumbnails on load</p> -->
-                                        </div>
-                                    </div>
+                            <div class="row-fluid">
+                                <div id="rightTopButtonGroup" class="btn-group col-xs-12">
+                                    <button type="button" class="btn btn-default btn-xs" id="scatter-fullscreen-toggle" title="Full Screen">
+                                        <span class="glyphicon glyphicon-triangle-left" aria-hidden="true"></span>
+                                    </button>
+                                    <a id="copyRightButton" href="http://core.thorntontomasetti.com/" class="btn btn-default btn-xs" target="_blank" style="width: calc(100% - 46px);">
+                                        &copy; Copyright 2015-17 Thornton Tomasetti
+                                    </a>
+                                    <!--<button type="button" class="btn btn-default btn-xs" id="rcgraph" data-toggle="collapse" data-target="#radarChart">
+                                        <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+                                    </button>-->
+                                    <button type="button" class="btn btn-default btn-xs" id="scatter-menu-toggle" title="Show sliders">
+                                        <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
+                                    </button>
                                 </div>
                             </div>
+
+                            <div class="row chartSide">
+
+                                <div id="radarChart" class="col-lg-12 collaps in center-block" style="font-size:14px; font-weight:bold">
+                                    <!-- // <h5>Radar Chart Place Holder</h5> -->
+                                </div>
+                                <!--<div id="scatterChart" class="col-lg-12 collaps in center-block">
+                                        place holder for the scatterChart
+                                </div>-->
+                            </div>
+
+                            <!--<div class="row thumbnailSide">
+                                <div class="col-lg-12" id="thumbnails-side_container" style="height:0px">
+                                    <div class="col-lg-12 sorting"></div>
+                                    <div id="thumbnails-side" class="col-lg-12">-->
+                                        <!-- <p>Thumbnails on load</p> -->
+                                    <!--</div>
+                                </div>
+                            </div>-->
+                            
                         </div>
                     </div>
-                    <div class="row-fluid col-lg-12">
-                        <div class="col-lg-12" id="thumbnails-btm_container">
-                            <div class="col-lg-12 sorting" style="float:right; margin-top: 2px;"></div>
-                            <div class="col-lg-12" id="thumbnails-btm"></div>
+                </div>
+                <div class="row-fluid col-lg-12">
+
+
+                    <!-- Zoomed div for zoomed in areas -->
+                    <div class="col-lg-9" id="zoomedArea" style="height:0px">
+                        <div id="IterationData" class="Spectacles_attributeList" style="display: none;right: auto;bottom: 1%;height: auto; width: auto;min-width: 280px;">
+                            <h4>Attributes</h4>
+                            <p>data</p>
+                        </div>
+                        <div class="pull-right" id="vis">
+                            <form>
+
+                                <label>
+                                    <input type="radio" class="toggleView" name="visMode" value="2D" checked> 2D</label>
+                                <!-- show 2D image on load-->
+                                <label>
+                                    <input type="radio" class="toggleView" name="visMode" value="3D"> 3D</label>
+
+                                <button type="button" class="btn btn-default btn-xs" id="toggleComments" style="margin-right:10px; margin-left:5px; margin-top: 2px;"
+                                    title="Add Comments">
+                                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                                </button>
+                                <button type="button" class="btn btn-default btn-xs" id="fullscreentoggle" style="margin-right:10px; margin-left:5px; margin-top: 2px;"
+                                    title="Full Screen Toggle">
+                                    <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
+                                </button>
+
+                            </form>
+                            <form>
+                                <!--rating div-->
+                                <input class="star" type="radio" name="rating" value="1" />
+                                <input class="star" type="radio" name="rating" value="2" />
+                                <input class="star" type="radio" name="rating" value="3" />
+                                <input class="star" type="radio" name="rating" value="4" />
+                                <input class="star" type="radio" name="rating" value="5" />
+
+                            </form>
+                        </div>
+                        <div id="viewer3d" style="width:100%; height:100%" class="hidden">
+                            <!-- place holder for the viewer -->
+                        </div>
+                        <div id="viewer2d" style="width:100%; height:100%">
+                            <!-- place holder for the image -->
+                            <img>
                         </div>
                     </div>
+                    
+
+                    <!--Here starts the thumbnails-btm_container-->
+                    <div class="col-lg-12" id="thumbnails-btm_container">
+                        <div class="col-lg-12 sorting"></div>
+                        <div class="col-lg-12" id="thumbnails-btm"></div>
+                    </div>
+
+
                 </div>
             </div>
             <!-- /#Welcome content -->
@@ -485,12 +508,12 @@
                     <br>
                     <h1 class="text-center"> Welcome to Design Explorer!</h1>
                     <h4 class="text-center">
-                            Design Explorer is an open source tool for exploring multi-dimensional parametric studies!
+                        Design Explorer is an open source tool for exploring multi-dimensional parametric studies!
                     </h4>
                     <br>
 
                     <h3 class="text-center">Try one of sample design sets</h3>
-                    <h5 class="text-center"><a href="http://www.mpendesign.com/category/tutorial/" target="_blank" >Tutorial</a></h5>
+                    <h5 class="text-center"><a href="http://www.mpendesign.com/category/tutorial/" target="_blank">Tutorial</a></h5>
                     <div class="row">
                         <div class="col-sm-4">
                             <img src="img/RedBox.gif" class="sampleImage image-rounded" id="sample1">
@@ -506,41 +529,44 @@
                     </div>
                     <div class="col-lg-12">
                         <h3 class="text-center"> Happy Exploring! </h3>
-                        <h5 class="text-center" >v2 (03/15/2017)</h5>
+                        <h5 class="text-center">v2 (03/15/2017)</h5>
                         <br>
                         <h5 class="text-center">
-                                Design Explorer &copy; Copyright CORE studio | Thornton Tomasetti |
-                                <a href="http://core.thorntontomasetti.com/about" target="_blank"> About</a> |
-                                <a href="http://core.thorntontomasetti.com/about/services" target="_blank">Services</a> |
-                                <a href="http://core.thorntontomasetti.com/about/contact" target="_blank">Contact</a>
-                            </h5>
+                            Design Explorer &copy; Copyright CORE studio | Thornton Tomasetti |
+                            <a href="http://core.thorntontomasetti.com/about" target="_blank"> About</a> |
+                            <a href="http://core.thorntontomasetti.com/about/services" target="_blank">Services</a> |
+                            <a href="http://core.thorntontomasetti.com/about/contact" target="_blank">Contact</a>
+                        </h5>
                         <h5 class="text-center">
-                                Updated by
-                                <a href="http://www.mpendesign.com" target="_blank">Mingbo Peng</a>
-                            </h5>
+                            Updated by
+                            <a href="http://www.mpendesign.com" target="_blank">Mingbo Peng</a>
+                        </h5>
                     </div>
                 </div>
-                <div class="col-sm-12 col-centered" id="loadDataContainer" style=" display:none;width: 700px;height: 500px" >
+                <div class="col-sm-12 col-centered" id="loadDataContainer" style=" display:none;width: 700px;height: 500px">
                     <button id="loadDataclose" class="btn btn-default btn-sm pull-right">
                         <span class="glyphicon glyphicon-remove"></span>
                     </button>
 
                     <h4 class="text-center" style="margin: 100px 0 30px 0;">
-                            From Google Drive or server:
+                        From Google Drive or server:
                     </h4>
                     <p class="text-center">
-                        <input type="text" id="folderLink" class="btn btn-default btn-sm toggled" name="imgfolder" placeholder="Google Drive or server link" />
+                        <input type="text" id="folderLink" class="btn btn-default btn-sm toggled" name="imgfolder" placeholder="Google Drive or server link"
+                        />
                         <input type="text" id="folderLinkID" class="btn btn-default btn-hd" name="imgfolder" placeholder="FolderID" />
                         <button id="loadData" onclick="MP_getGoogleIDandLoad()" class="file-upload" style="border-radius:0 20px 20px 0;">Load Data</button>
                     </p>
-                    <h5 class="text-center" style="color: #9d9d9d;">Please put data.csv, images, and 3D-json files into the same folder.(<a href="design_explorer_data/example/online/example.zip" target="_blank">example.zip</a>)</h5>
+                    <h5 class="text-center" style="color: #9d9d9d;">Please put data.csv, images, and 3D-json files into the same folder.(<a href="design_explorer_data/example/online/example.zip"
+                            target="_blank">example.zip</a>)</h5>
                     <h4 class="text-center" style="margin: 60px 0 60px 0;">
-                            Or
+                        Or
                     </h4>
                     <p class="text-center">
                         <input type="file" id="csv-file" class="btn btn-default btn-sm" name="files">
                     </p>
-                    <h5 class="text-center" style="color: #9d9d9d;">Please put valid images and 3D-json files URL. (Example:<a href="design_explorer_data/example/LocalCSV_example.csv" target="_blank">data.csv</a>)</h5>
+                    <h5 class="text-center" style="color: #9d9d9d;">Please put valid images and 3D-json files URL. (Example:<a href="design_explorer_data/example/LocalCSV_example.csv"
+                            target="_blank">data.csv</a>)</h5>
 
                 </div>
             </div>
@@ -565,7 +591,7 @@
         function parseUri() {
             var pars = window.location.search.replace("?", "").split("&");
             if (pars[0] === "") return null;
-            pars.forEach(function(d) {
+            pars.forEach(function (d) {
                 keyValue = d.split("=");
                 inputParameters[keyValue[0].toLowerCase()] = keyValue[1].toLowerCase();
             });
@@ -578,6 +604,7 @@
             // remove the button so sliders are hidden
             d3.selectAll("button#menu-toggle").remove();
         }
+
     </script>
 
     <!-- welcome div  -->
@@ -589,7 +616,7 @@
         };
 
         d3.selectAll(".sampleImage")
-            .on("click", function() {
+            .on("click", function () {
                 var selSample = d3.select(this);
                 var id = selSample[0][0].id.replace("sample", "");
 
@@ -598,16 +625,18 @@
                 // remove the current selection
                 unloadPageContent();
 
-                d3.select("div#welcome").style("display","none");
+                d3.select("div#welcome").style("display", "none");
 
                 // load the new file
                 d3.csv(filePath, loadDataToDesignExplorer);
             });
+
     </script>
 
     <!-- right side chart -->
     <script type="text/javascript">
         // update radar chart
+        var scatterChart;
         function updateRadarChart() {
             //format data for radar chart
             var selectedData;
@@ -623,7 +652,7 @@
             selectedDataFormatted = [];
             radarChartColors = [];
 
-            selectedData.forEach(function(d) {
+            selectedData.forEach(function (d) {
                 selectedDataFormatted.push(formatData(d));
                 //debugger;
                 radarChartColors.push(color(d[pcIsColoredBy]));
@@ -644,7 +673,7 @@
             cfg = ({
                 w: rcDimension,
                 h: rcDimension,
-                color: function() {
+                color: function () {
                     return radarGrey;
                 },
                 radius: 4,
@@ -694,31 +723,33 @@
 
             d3.select(".scatter-matrix-control")
                 .style("height", pcHeight - 30 + "px");
+            
+            scatterChart = sm;
 
             //return sm;
 
         }
 
-        // //unique id for each Circle
-        // function getCircleID(d) {
-        //     var id;
-        //     var keys = d3.keys(graph.data()[0]);
-        //
-        //     keys.forEach(function(key) {
-        //         id = "scatter_" + cleanString(d[key].toString());
-        //     });
-        //
-        //     return id;
-        // }
+        //unique id for each Circle
+        function getCircleID(d) {
+            var id;
+            var keys = d3.keys(graph.data()[0]);
+        
+            keys.forEach(function(key) {
+                id = "scatter_" + cleanString(d[key].toString());
+            });
+        
+            return id;
+        }
 
         function updateScatterChart() {
-            var data = graph.brushed().length > 0 ? graph.brushed():graph.data();
+            var data = graph.brushed().length > 0 ? graph.brushed() : graph.data();
 
             d3.selectAll(".cell circle")
-                .classed("faded",false)
+                .classed("faded", false)
                 .attr("visibility", "hidden");
 
-            data.forEach(function(d) {
+            data.forEach(function (d) {
                 d3.selectAll("#" + getCircleID(d)).attr("visibility", "shown");
             });
 
@@ -733,7 +764,7 @@
 
                 unlighlightScatter();
 
-                data.forEach(function(d) {
+                data.forEach(function (d) {
                     d3.selectAll("#" + getCircleID(d))
                         .classed("highlighted", true);
                 });
@@ -747,6 +778,7 @@
                 .classed("highlighted", false);
 
         }
+
     </script>
 
     <!-- Dynamic Divs script -->
@@ -756,11 +788,10 @@
         var isScatterToggled = true;
         var isLeftChartFullScreenToggled = false;
         var isRightChartFullScreenToggled = false;
-        var windowWidth = window.innerWidth,
-            windowHeight = window.innerHeight;
+
 
         // side bar for sliders
-        $("#menu-toggle").click(function(e) {
+        $("#menu-toggle").click(function (e) {
             e.preventDefault();
 
             //$("#wrapper").toggleClass("toggled");
@@ -772,7 +803,7 @@
         });
 
 
-        $("#scatter-menu-toggle, .scatter-matrix-control").click(function(e) {
+        $("#scatter-menu-toggle, .scatter-matrix-control").click(function (e) {
 
             isScatterToggled = !isScatterToggled;
             d3.select(".scatter-matrix-control")
@@ -782,57 +813,57 @@
 
         //--------------------------------------------------set right side chart full screen -----------------------------------//
 
-        var divWidth = d3.select(".col-lg-3").style("width").replace("px", "");
+        var divWidth = d3.select("#ScChartWrapper").style("width").replace("px", "");
 
-        $("#scatter-fullscreen-toggle").click(function(e) {
+        $("#scatter-fullscreen-toggle").click(function (e) {
             isRightChartFullScreenToggled = !isRightChartFullScreenToggled;
 
-            d3.selectAll(".col-lg-3,.chartSide,.col-lg-3 .row-fluid,.thumbnailSide,#copyRightButton, .scatter-matrix-container circle")
+            d3.selectAll(
+                    "#ScChartWrapper,.chartSide,.col-lg-3 .row-fluid,.thumbnailSide,#copyRightButton, .scatter-matrix-container circle, #PcChartWrapper, #thumbnails-btm_container, #thumbnails-btm_container #thumbnails-btm,  #zoomedArea"
+                )
                 .classed("rightChartFullScreenToggled", isRightChartFullScreenToggled);
-                // .transition().duration(100);
 
-            d3.select("#thumbnails-side_container")
-                // .transition().duration(100)
-                .style("height", function() {
-                    if (isRightChartFullScreenToggled) {
-                        return windowHeight - 220 + "px";
-                    } else {
-                        return d3.select("#zoomedArea").style("height").replace("px", "");
-                    }
-                });
+            // d3.select("#thumbnails-btm_container")
+            //     .classed("col-lg-3", isRightChartFullScreenToggled)
+            //     .classed("col-lg-12", !isRightChartFullScreenToggled);
+
+            // d3.select("#thumbnails-btm_container #thumbnails-btm")
+            //     .classed("onRight", isRightChartFullScreenToggled)
+
+
+
+            // d3.selectAll(".col-lg-9,#thumbnails-btm_container") // hide left side
+            //     .transition().delay(200)
+            //     .style("display", function () {
+            //         if (isRightChartFullScreenToggled) {
+            //             return "none";
+            //         } else {
+            //             return "block";
+            //         }
+            //     });
+
+            if (isRightChartFullScreenToggled) {
+                var newDim =  windowHeight - 200;
+                
+            } else {
+                var newDim =  d3.select("#graph").style("height").replace("px", "") - 20;
+            }
+            // resizeScChart(newDim, newDim);
+
 
             
 
-            d3.selectAll(".col-lg-9,#thumbnails-btm_container") // hide left side
-                .transition().delay(200)
-                .style("display", function() {
-                    if (isRightChartFullScreenToggled) {
-                        return "none";
-                    } else {
-                        return "block";
-                    }
-                });
+        });
+
+        function resizeScChart(newWidth, newHeight) {
 
 
             d3.select(".scatter-matrix-svg") // for centering the chart
-                .style("width", function() {
-                    if (isRightChartFullScreenToggled) {
-                        return windowHeight -200 + "px";
-                    } else {
-                        return d3.select("#graph").style("height").replace("px", "") - 20 + "px";
-                    }
-                });
+                .style("width", newWidth + "px");
 
             d3.select(".scatter-matrix-control")
-                .style("height", function() {
-                    if (isRightChartFullScreenToggled) {
-                        return windowHeight - 200 + "px";
-                    } else {
-                        return d3.select("#graph").style("height").replace("px", "") - 20 + "px";
-                    }
-                });
-
-        });
+                .style("height", newHeight + "px");
+        }
 
 
 
@@ -841,16 +872,16 @@
 
             var selectedImage = d3.select(this);
             //<!-- var currentDataCount = graph.brushed().length; -->
-			//<!-- var brushedOpacity = 0.3; -->
-			//<!-- if(currentDataCount<=20){ -->
-			//	<!-- //currentDataCount = 200; -->
-			//	<!-- brushedOpacity = 0.9; -->
-			//<!-- }else{ -->
-			//<!-- brushedOpacity = 0.3; -->
-			
-			//<!-- } -->
-			//<!-- d3.select("#graph canvas.faded").style("opacity", brushedOpacity) -->
-			
+            //<!-- var brushedOpacity = 0.3; -->
+            //<!-- if(currentDataCount<=20){ -->
+            //	<!-- //currentDataCount = 200; -->
+            //	<!-- brushedOpacity = 0.9; -->
+            //<!-- }else{ -->
+            //<!-- brushedOpacity = 0.3; -->
+
+            //<!-- } -->
+            //<!-- d3.select("#graph canvas.faded").style("opacity", brushedOpacity) -->
+
 
             // highlight the line graph
             graph.highlight(selectedImage.data());
@@ -861,25 +892,23 @@
 
             // find height of parallel coordinate
             // to find the height for zoomed div
-            var pcHeight = d3.select("#graph")
-                .style("height").replace("px", "");
+            // var pcHeight = d3.select("#graph")
+            //     .style("height").replace("px", "");
 
             // show zoomed area
-            d3.selectAll(".zoomed")
-                .transition().duration(1500)
-                .style("height", (cleanHeight - pcHeight) + "px");
+            d3.select("#zoomedArea")
+                .transition().duration(500)
+                .style("height", zoomedHeight + "px");
+            
 
-            // hide btm thumbnail
+            // move btm thumbnail to right
             d3.select("#thumbnails-btm_container")
-                .transition().duration(1000)
-                .style("height", function(){
+                // .attr("class","col-lg-3")
+                    // .select("#thumbnails-btm")
+                    .classed("onRight",true);
 
-                    return isLeftChartFullScreenToggled?"auto":"0px";
-                });
-
-            // push the image to zoomed area
-
-            d3.selectAll(".zoomed")
+            // push the image to zoomed viewer2d area
+            d3.select("#viewer2d")
                 .select("img")
                 .data(selectedImage.data())
                 .attr("src", makeUrl(selectedImage.datum().img))
@@ -914,12 +943,12 @@
             // let's side thumbnail show up
             d3.select("#thumbnails-side_container")
                 .transition().duration(1500)
-                .style("height", function(){
+                .style("height", function () {
 
-                    if(isRightChartFullScreenToggled){
-                        return d3.select(".scatter-matrix-svg").style("width").replace("px", "")-20 + "px";
-                    }else {
-                        return (cleanHeight - pcHeight) + "px";
+                    if (isRightChartFullScreenToggled) {
+                        return d3.select(".scatter-matrix-svg").style("width").replace("px", "") - 20 + "px";
+                    } else {
+                        return zoomedHeight + "px";
                     }
                     //console.log(isRightChartFullScreenToggled);
 
@@ -939,23 +968,24 @@
                 .style("height").replace("px", "");
 
             // hide zoomed area
-            d3.selectAll(".zoomed")
-                .transition().duration(1500)
+            d3.selectAll("#zoomedArea")
+                .transition().duration(500)
                 .style("height", "0px");
 
             // show btm thumbnail
             d3.select("#thumbnails-btm_container")
-                .transition().duration(1000)
-                .style("height", (cleanHeight - pcHeight) + "px");
+                // .attr("class","col-lg-12")
+                    // .select("#thumbnails-btm")
+                    .classed("onRight",false);
 
-            // hide side thumbnail
-            d3.select("#thumbnails-side_container")
-                .transition().duration(1500)
-                .style("height", "0px");
+            // // hide side thumbnail
+            // d3.select("#thumbnails-side_container")
+            //     .transition().duration(1500)
+            //     .style("height", "0px");
 
 
             d3.select("#IterationData")
-                .style("display","none");
+                .style("display", "none");
 
             // unhighlight the line graph
             graph.unhighlight();
@@ -974,12 +1004,12 @@
         }
 
         // hide/show parallel coordinates
-        d3.select("#pcgraph").on("click", function() {
+        d3.select("#pcgraph").on("click", function () {
             if (cleanedData.length === 0) return; // don't let the user change the size before loading the file
 
             var height = d3.select("#graph").style("height").replace("px", "");
 
-            if (height >1) { //for some reasons, height ! == 0 doesn't work at here
+            if (height > 1) { //for some reasons, height ! == 0 doesn't work at here
                 // collapse
                 d3.select("#graph")
                     .attr("class", "parcoords collapse 2s")
@@ -994,10 +1024,10 @@
 
                 if (graph.highlight().length !== 0) {
 
-                    d3.selectAll(".zoomed")
-                        .transition().duration(1)
+                    d3.selectAll("#zoomedArea")
+                        .transition().duration(500)
                         .style("height", cleanHeight + "px")
-                        .each("end", function() {
+                        .each("end", function () {
                             // resize view
                             if (currentView == "3D") {
                                 va3cViewer.viewerDiv.resize();
@@ -1028,8 +1058,8 @@
 
                 // if there is a selecion let it in
                 if (graph.highlight().length !== 0) {
-                    d3.selectAll(".zoomed")
-                        .transition().duration(2000).style("height", zoomedHeight + "px");
+                    d3.selectAll("#zoomedArea")
+                        .transition().duration(1000).style("height", zoomedHeight + "px");
                 } else {
 
                     //mirror collapse behavior with radar chart
@@ -1042,72 +1072,73 @@
         });
 
         //hide/show radar chart
-        d3.select("#rcgraph").on("click", function() {
+        // d3.select("#rcgraph").on("click", function () {
 
-            if (cleanedData.length === 0) return; // don't let the user change the size before loading the file
+        //     if (cleanedData.length === 0) return; // don't let the user change the size before loading the file
 
-            var height = d3.select("#radarChart").style("height").replace("px", "");
+        //     var height = d3.select("#radarChart").style("height").replace("px", "");
 
-            if (height > 1) {
+        //     if (height > 1) {
 
-                if (!isAnyItemSelected) {
-                    //collapse parcoords if there is nothing selected
-                    d3.select("#graph")
-                        .attr("class", "parcoords collapse 2s")
-                        .transition().duration(200)
-                        .style("height", "0px");
+        //         if (!isAnyItemSelected) {
+        //             //collapse parcoords if there is nothing selected
+        //             d3.select("#graph")
+        //                 .attr("class", "parcoords collapse 2s")
+        //                 .transition().duration(200)
+        //                 .style("height", "0px");
 
-                    //disable buttons
-                    d3.select("#reset").classed("disabled", true);
-                    d3.select("#remove").classed("disabled", true);
-                    d3.select("#keep").classed("disabled", true);
+        //             //disable buttons
+        //             d3.select("#reset").classed("disabled", true);
+        //             d3.select("#remove").classed("disabled", true);
+        //             d3.select("#keep").classed("disabled", true);
 
-                    d3.select("#thumbnails-btm_container")
-                        .transition().duration(1000).style("height", cleanHeight + "px");
-                }
+        //             d3.select("#thumbnails-btm_container")
+        //                 .transition().duration(1000).style("height", cleanHeight + "px");
+        //         }
 
-                //collapse radar chart
-                $("#radarChart").collapse("hide");
+        //         //collapse radar chart
+        //         $("#radarChart").collapse("hide");
 
-                // set height for thumbnails-side_container
-                d3.select("#thumbnails-side_container")
-                    .transition().duration(1500)
-                    .style("height", cleanHeight + "px");
+        //         // set height for thumbnails-side_container
+        //         // d3.select("#thumbnails-side_container")
+        //         //     .transition().duration(1500)
+        //         //     .style("height", cleanHeight + "px");
 
-            } else {
-                if (!isAnyItemSelected) {
-                    //expand parcoords
-                    d3.select("#graph")
-                        .transition("ease out").attr("class", "parcoords collapse in")
-                        .transition().duration(350)
-                        //.transition().duration(2000)
-                        .style("height", graphHeight + "px");
+        //     } else {
+        //         if (!isAnyItemSelected) {
+        //             //expand parcoords
+        //             d3.select("#graph")
+        //                 .transition("ease out").attr("class", "parcoords collapse in")
+        //                 .transition().duration(350)
+        //                 //.transition().duration(2000)
+        //                 .style("height", graphHeight + "px");
 
-                    //enable buttons
-                    d3.select("#reset").classed("disabled", false);
-                    d3.select("#remove").classed("disabled", false);
-                    d3.select("#keep").classed("disabled", false);
+        //             //enable buttons
+        //             d3.select("#reset").classed("disabled", false);
+        //             d3.select("#remove").classed("disabled", false);
+        //             d3.select("#keep").classed("disabled", false);
 
-                    d3.select("#thumbnails-btm_container")
-                        .transition().duration(1000).style("height", zoomedHeight + "px");
-                }
+        //             d3.select("#thumbnails-btm_container")
+        //                 .transition().duration(1000).style("height", zoomedHeight + "px");
+        //         }
 
-                //expand radar chart
-                $("#radarChart").collapse("show");
+        //         //expand radar chart
+        //         $("#radarChart").collapse("show");
 
-                // not the best practice - I should get it to work in a cleaner way
-                setTimeout(function() {
+        //         // not the best practice - I should get it to work in a cleaner way
+        //         // setTimeout(function () {
 
-                    var rcheight = d3.select("#radarChart").style("height").replace("px", "");
+        //         //     // var rcheight = d3.select("#radarChart").style("height").replace("px", "");
 
-                    // set height for thumbnails-side_container
-                    d3.select("#thumbnails-side_container")
-                        .transition().duration(1000)
-                        .style("height", (cleanHeight - rcheight) + "px");
-                }, 500);
+        //         //     // set height for thumbnails-side_container
+        //         //     // d3.select("#thumbnails-side_container")
+        //         //     //     .transition().duration(1000)
+        //         //     //     .style("height", zoomedHeight + "px");
+        //         // }, 500);
 
-            }
-        });
+        //     }
+        // });
+
     </script>
 
     <!-- process input data -->
@@ -1125,20 +1156,20 @@
             slidersMapping = {}, // I collect the data for all the input sliders here so I can use it to remap the sliders later
             ids = [], // Here I collect all data based on a unique ID from inputs
             cleanedParams4pc = {};
-            
+
 
 
         function analyzeInputData(originalData) {
             var keys = d3.keys(originalData[0]);
             // var id = 0;
 
-            originalData.forEach(function(row, rowCount) {
+            originalData.forEach(function (row, rowCount) {
 
                 var inputParams = {},
                     outputParams = {},
                     cleanedParams = {};
 
-                keys.forEach(function(key, i) {
+                keys.forEach(function (key, i) {
 
                     // if (key.trim().startsWith("in:") !== true) {console.log("there is no inputs");}
                     if (key.trim().startsWith("in:")) {
@@ -1183,7 +1214,7 @@
             // add rating of 0 to all the options if not already there
             if (keys.indexOf("Rating") == -1) {
                 cleanedParams4pc.Rating = {};
-                cleanedData.forEach(function(d) {
+                cleanedData.forEach(function (d) {
                     d.Rating = 0;
                 });
             }
@@ -1194,7 +1225,7 @@
         function getCaseId(inputParams) {
             // create the id based on inputs
             var params = [];
-            d3.keys(inputParams).forEach(function(key) {
+            d3.keys(inputParams).forEach(function (key) {
                 // remove spaces
                 //var k = key.replace(/\s/g, '');
                 // convert to numbers and back to string
@@ -1222,15 +1253,15 @@
             var originalTickValues = {}; // keep track of original values
 
             // create an object with place holder for tickValues
-            sliderNames.forEach(function(name) {
+            sliderNames.forEach(function (name) {
                 originalTickValues[name] = [];
                 tickValues[name] = [];
                 slidersMapping[name] = {};
             });
 
             // find tick values
-            inputData.forEach(function(d, i) {
-                sliderNames.forEach(function(name) {
+            inputData.forEach(function (d, i) {
+                sliderNames.forEach(function (name) {
                     // check if the value is already in list - add it to the list if not
                     if (tickValues[name].indexOf(d[name]) == -1) {
                         slidersMapping[name][d[name]] = []; // create an empty list for this value
@@ -1245,7 +1276,7 @@
 
 
             // sort values and collect them
-            sliderNames.forEach(function(name) {
+            sliderNames.forEach(function (name) {
                 //var tValues = tickValues[name].sort();
                 var tValues = Object.keys(slidersMapping[name]);
                 var oValues = tValues; //it is equal at the beginning
@@ -1258,38 +1289,84 @@
             });
 
             // take care of whitespace in slider names! oh people...
-            slidersInfo.forEach(function(d) {
+            slidersInfo.forEach(function (d) {
                 d.namewithnospace = string_as_unicode_escape(d.name);
             });
         }
-        
+
         function string_as_unicode_escape(input) {
-				    var output = '';
-				    for (var i = 0, l = input.length; i < l; i++)
-				        output +=  input.charCodeAt(i).toString(16);
-				    return output;
-				}
+            var output = '';
+            for (var i = 0, l = input.length; i < l; i++)
+                output += input.charCodeAt(i).toString(16);
+            return output;
+        }
+
     </script>
 
     <!-- NOTE:  draw parallel coordinates graph -->
     <script type="text/javascript">
         var graph;
-
         //set up heights of divs
-        var windowWidth = window.innerWidth,
-            windowHeight = window.innerHeight,
-            cleanHeight = windowHeight - 85 - 24, // 2
-            cleanWidth = windowWidth - 100,
-            graphHeight = cleanHeight / 3,
-            zoomedHeight = cleanHeight - graphHeight,
+        var windowWidth = 0,
+            windowHeight = 0,
+            cleanHeight = 0, 
+            cleanWidth = 0,
+            graphHeight = 0, 
+            zoomedHeight = 0, 
             opacity = 0.4;
+
 
         var pcIsColoredBy;
 
         var color = d3.scale.linear()
             .range(["#3182bd", "#f33"]);
 
-        
+        function calWidthAndHeight() {
+            windowWidth = window.innerWidth,
+            windowHeight = window.innerHeight,
+            cleanHeight = windowHeight - 85, // 2
+            cleanWidth = windowWidth - 100,
+            graphHeight = (cleanHeight / 3)-24, //remove 22+2 top tool button
+            zoomedHeight = (cleanHeight*2 / 3)-24; //remove 22+2 top tool button
+        }
+
+        calWidthAndHeight();
+
+        var scatterHeight = d3.select("#ScChartWrapper").style("height").replace("px", "");
+
+        //redraw the charts when window size changes
+        $(window).resize(function () { 
+            calWidthAndHeight();
+
+            var newGraphWidth = windowWidth*0.75-30; // (col-lg-9 x0.73) - (boside padding 15*2)
+            // var newGraphWidth = windowWidth-scatterWidth-90;
+            var newGraphHeight = graphHeight;
+
+            if (newGraphHeight< scatterHeight) {
+                newGraphHeight = newGraphHeight;
+            }
+
+            if (isLeftChartFullScreenToggled) {
+                newGraphHeight = (windowHeight - 85) * 0.5-50;
+                newGraphWidth = windowWidth - 30;  
+
+            }
+
+            resizePcChart(newGraphWidth,newGraphHeight);
+
+            var zoomedAreaHeight = d3.select("#zoomedArea").style("height").replace("px", "");
+            if(zoomedAreaHeight >1){
+                d3.selectAll("#thumbnails-btm_container, #zoomedArea")
+                    .style("height", zoomedHeight + "px");
+            }else{
+                d3.select("#thumbnails-btm_container")
+                    .style("height", zoomedHeight  + "px");
+            }            
+            //console.log(graphHeight+"x"+zoomedHeight);
+
+        });
+
+
         function drawParallelCoordinates() {
 
             // remove Rating for on page load
@@ -1299,7 +1376,7 @@
                 acc[cur] = {};
                 return acc;
             }, {});
-            
+
 
             // set the height for graph div - this is critical otherwise
             // parallel coordinates graph will be drawn by height of 0px
@@ -1341,7 +1418,7 @@
                 colorset = []; //color set for lables
 
             d3.selectAll("text.label")
-                .style("fill", function(d) {
+                .style("fill", function (d) {
                     // change colors for inputs vs outputs
                     if (inputLabels.indexOf(d) != -1) {
                         colorset.push(inputLabelColor);
@@ -1361,7 +1438,7 @@
 
             //modify axes
             d3.selectAll("path.domain")
-                .style("stroke", function(d, i) {
+                .style("stroke", function (d, i) {
                     return colorset[i];
                 });
 
@@ -1371,16 +1448,14 @@
         }
 
         // click label to activate coloring
-        function setupPcLabelEvent(){
+        function setupPcLabelEvent() {
             d3.selectAll(".dimension")
-                .on("click", function(d){
+                .on("click", function (d) {
                     pcIsColoredBy = d;
                     update_colors(d);
                 });
         }
-        function getYScales() {
 
-        }
 
         function valueToNumber(value, dim) {
             if (graph.dimensions()[dim] !== undefined) {
@@ -1388,32 +1463,32 @@
             } else {
                 return 1;
             }
-            
+
         }
 
         // update color and font weight of chart based on axis selection
-        function update_colors(dim,chart) {
+        function update_colors(dim, chart) {
             pcIsColoredBy = dim;
 
             //console.log(dim);
-            
+
             // change color of lines
             // set domain of color scale
             var values = graph.data().map(function (d) {
-                return parseFloat(valueToNumber(d[dim],dim));
-                });
-            
+                return parseFloat(valueToNumber(d[dim], dim));
+            });
+
             colorDomain = color.domain(d3.extent(values));
 
             // change colors for each line
-            graph.color(function(d) {
-                return color([valueToNumber(d[dim],dim)]);
+            graph.color(function (d) {
+                return color([valueToNumber(d[dim], dim)]);
             }).render();
 
             // change border color for images
             d3.selectAll("img#thumbnails-btm, img#thumbnails-side").style("border-color", function (d) {
                 //console.log(color(yscale(d[dim])));
-                return color(valueToNumber(d[dim],dim));
+                return color(valueToNumber(d[dim], dim));
             });
             //d3.selectAll("img#thumbnails-side").style("border-color", function(d) {
             //    return color(yscale(d[dim]));
@@ -1426,11 +1501,14 @@
 
         //update_sc_colorsOnly
         function update_sc_colorsOnly() {
-            d3.selectAll(".cell circle").style("fill", function(d) {
-                return color(d[pcIsColoredBy]);
+
+            d3.selectAll(".cell circle").style("fill", function (d) {
+
+                return color(valueToNumber(d[pcIsColoredBy], pcIsColoredBy));
             });
 
         }
+
     </script>
 
     <!-- draw legend -->
@@ -1464,7 +1542,7 @@
                 .selectAll("g")
                 .data(dimensions)
                 .enter().append("g")
-                .attr("transform", function(d, i) {
+                .attr("transform", function (d, i) {
                     return "translate(10," + ((legendSquareSize + 3) * i) + ")";
                 });
 
@@ -1481,10 +1559,11 @@
                 .attr("x", legendSquareSize + 6)
                 .attr("y", legendSquareSize / 2)
                 .attr("dy", ".35em")
-                .text(function(d) {
+                .text(function (d) {
                     return d.name;
                 });
         }
+
     </script>
 
     <!-- add sorting dropdowns -->
@@ -1504,19 +1583,19 @@
                 .data(d3.keys(graph.dimensions()))
                 .enter()
                 .append("option")
-                .attr("value", function(d) {
+                .attr("value", function (d) {
                     return d;
                 })
-                .text(function(d) {
+                .text(function (d) {
                     return d;
                 });
 
             // add change event to resort images
-            select.on("change", function(d) {
+            select.on("change", function (d) {
                 sortBy = d3.select(this).property("value");
 
                 // update the value in other dropdown menu
-                d3.selectAll("select option").filter(function(d) {
+                d3.selectAll("select option").filter(function (d) {
                     return d == sortBy;
                 }).attr("selected", "true");
 
@@ -1536,17 +1615,19 @@
                 .attr("class", "glyphicon glyphicon-circle-arrow-up")
                 .attr("aria-hidden", "true");
 
-            sortingBtn.on("click", function() {
+            sortingBtn.on("click", function () {
                 ascending = !ascending;
 
                 sortingBtn.selectAll("span")
-                    .attr("class", function() {
-                        return ascending ? "glyphicon glyphicon-circle-arrow-up" : "glyphicon glyphicon-circle-arrow-down";
+                    .attr("class", function () {
+                        return ascending ? "glyphicon glyphicon-circle-arrow-up" :
+                            "glyphicon glyphicon-circle-arrow-down";
                     });
 
                 updateImageGrid(graph.brushed(), false);
             });
         }
+
     </script>
 
     <!-- add thumbnail images to both thumbnail divs-->
@@ -1561,7 +1642,7 @@
                     var info = String(key) + ":" + data[key];
                     title.push(info);
                 }
-             );
+            );
 
             return title.join("\n");
         }
@@ -1575,14 +1656,15 @@
             var data = dataObj[0];
             d3.keys(data).forEach(
                 function (key) {
-                    if (!String(key).startsWith("img") && !String(key).startsWith("threeD") && !String(key).startsWith("scid")) {
+                    if (!String(key).startsWith("img") && !String(key).startsWith("threeD") && !String(key).startsWith(
+                            "scid")) {
                         var info = '<strong>' + key + '</strong>' + " : " + data[key];
                         title.push(info);
                     }
 
                 }
-             );
-            
+            );
+
             d3.select("#IterationData")
                 .style("display", "block")
                 .select('p')
@@ -1601,11 +1683,11 @@
             //var yFloat = parseFloat(valueToNumber(y[sortBy], sortBy));
             // sort data based on dropdown selecion
             if (ascending) {
-                data.sort(function(x, y) {
-                    return d3.ascending(x[sortBy],y[sortBy]);
+                data.sort(function (x, y) {
+                    return d3.ascending(x[sortBy], y[sortBy]);
                 });
             } else {
-                data.sort(function(x, y) {
+                data.sort(function (x, y) {
                     return d3.descending(x[sortBy], y[sortBy]);
                 });
             }
@@ -1613,20 +1695,20 @@
             // remove all the current divs
             // I think eventually I will change this to a filter function
             d3.select("#thumbnails-btm").selectAll("div").remove();
-            d3.select("#thumbnails-side").selectAll("div").remove();
+            //d3.select("#thumbnails-side").selectAll("div").remove();
 
-            var pcHeight = d3.select("#graph")
-                .style("height").replace("px", "");
+            // var pcHeight = d3.select("#graph")
+            //     .style("height").replace("px", "");
 
             if (resizeImageDiv) {
                 d3.select("#thumbnails-btm_container")
-                    .style("height", (cleanHeight - pcHeight) + "px");
+                    .style("height", zoomedHeight + "px");
             }
 
             // attach images ---------------------------------------------------------------------------------------------------
-            var imgLink = function(d) {
-                    return makeUrl(d.img);
-                };
+            var imgLink = function (d) {
+                return makeUrl(d.img);
+            };
 
 
             d3.select("#thumbnails-btm")
@@ -1641,24 +1723,24 @@
                 .attr("src", imgLink)
                 .on("click", updateLayoutOnSelect)
                 .attr("title", getTitle)
-                .style("border-color", function(d) {
+                .style("border-color", function (d) {
                     return color(valueToNumber(d[pcIsColoredBy], pcIsColoredBy));
                 });
 
-            d3.select("#thumbnails-side")
-                .selectAll("div")
-                .data(data).enter()
-                .append("div")
-                .attr("class", "col-xs-3")
-                .style("cursor", "pointer")
-                .append("img")
-                .attr("id", "thumbnails-side")
-                .attr("src", imgLink)
-                .on("click", updateLayoutOnSelect)
-                .attr("title", getTitle)
-                .style("border-color", function(d) {
-                    return color(valueToNumber(d[pcIsColoredBy], pcIsColoredBy));
-                });
+            // d3.select("#thumbnails-side")
+            //     .selectAll("div")
+            //     .data(data).enter()
+            //     .append("div")
+            //     .attr("class", "col-xs-3")
+            //     .style("cursor", "pointer")
+            //     .append("img")
+            //     .attr("id", "thumbnails-side")
+            //     .attr("src", imgLink)
+            //     .on("click", updateLayoutOnSelect)
+            //     .attr("title", getTitle)
+            //     .style("border-color", function (d) {
+            //         return color(valueToNumber(d[pcIsColoredBy], pcIsColoredBy));
+            //     });
         }
 
 
@@ -1670,14 +1752,32 @@
                 .append("img");
             //.attr("src", "https://raw.githubusercontent.com/tt-acm/DesignExplorer/gh-pages/design_explorer_data/img/placeholder/placeholder.png?token=ACx89Xl7jGRusi88wWHKH97INGjRifH5ks5Vy6YGwA%3D%3D");
         }
+
     </script>
 
     <!-- set up events between charts and graphs -->
     <script type="text/javascript">
+            
+        // change the chart size;
+        function resizePcChart(newWidth, newHeight) {
+
+            //resize #graph
+            d3.select("#graph.parcoords")
+                    .transition().duration(500)
+                    .style("height", newHeight + "px")
+                    .style("width", newWidth + "px");
+
+            //redraw pcChart
+            var highlightedData = graph.highlighted().length !== 0 ? graph.highlighted() : 0;
+            graph.width(newWidth).height(newHeight);
+            if (highlightedData !== 0) graph.highlight(highlightedData);
+            updateLabels();
+
+        }
 
         function setupEvents() {
             // brushing events for parallel coordinates graph
-            graph.on("brush", function(d) {
+            graph.on("brush", function (d) {
                 //rc.updateData(graph.brushed());   //-----TODO:here needs a switch for different charts-------
                 updateScatterChart();
                 updateImageGrid(d, false);
@@ -1694,8 +1794,9 @@
                     return;
                 }
                 // in case highlighted data not in brused then deselect
-                if (graph.brushed().length == inputData.length || graph.brushed().indexOf(graph.highlight()[0]) == -1) {
-                    
+                if (graph.brushed().length == inputData.length || graph.brushed().indexOf(graph.highlight()[0]) ==
+                    -1) {
+
                     updateLayoutOnDeselect();
                 }
             });
@@ -1703,7 +1804,7 @@
             // assign buttons
             // Keep brushed (zoom to selection)
             d3.select("#keep")
-                .on("click", function() {
+                .on("click", function () {
 
                     var newData = graph.brushed();
                     if (newData === false || newData.length === 0) {
@@ -1716,7 +1817,7 @@
                 });
 
             d3.select("#remove")
-                .on("click", function() {
+                .on("click", function () {
 
                     var selectedData = graph.brushed();
 
@@ -1724,7 +1825,7 @@
                         alert("You need to select some data to be removed!");
                     } else {
                         // update graph with new data
-                        var newData = graph.data().filter(function(d) {
+                        var newData = graph.data().filter(function (d) {
                             return selectedData.indexOf(d) == -1;
                         });
                         updateGraph(newData);
@@ -1733,7 +1834,7 @@
 
             // go back to original
             d3.select("#reset")
-                .on("click", function() {
+                .on("click", function () {
                     updateGraph(cleanedData);
 
                 });
@@ -1748,12 +1849,11 @@
                 updateSlidersTickValues();
             }
 
-
-            d3.selectAll("rect.legend").on('click', function(d) {
+            //events for legend click
+            d3.selectAll("rect.legend").on('click', function (d) {
                 var rect = d3.select(this);
                 var name = d.name;
                 var enabled = true;
-
 
                 if (rect.attr('class') === 'legend disabled') {
                     rect.attr('class', 'legend');
@@ -1763,38 +1863,25 @@
                 }
 
                 // update dimensions
-                dimensions.forEach(function(dim) {
+                dimensions.forEach(function (dim) {
                     if (d.name === name) d.enabled = enabled;
                 });
 
                 // get active dimensios to update parallel coordinate charts
-                var activeDimensions = dimensions.filter(function(d) {
+                var activeDimensions = dimensions.filter(function (d) {
                     return d.enabled;
                 }).map(function (d) {
                     return d.name;
                 });
-                
-                //var activeDimensions = _.data(cleanedParams4pc, function (key, data) {
-
-                //})
-
-                //var activeDimensions = dimensions.filter(function (d) {
-                //    return d.enabled;
-                //}).reduce(function (acc, cur) {
-                //    acc[cur] = cleanedParams4pc[cur];
-                //    return acc;
-                //}, {});
-
-
 
                 //console.log(activeDimensions);
                 graph.dimensions(activeDimensions);
 
                 //if removed the pcIsColoredBy's dim, then update color by the first 
-                if (activeDimensions.lastIndexOf(pcIsColoredBy)==-1) {
+                if (activeDimensions.lastIndexOf(pcIsColoredBy) == -1) {
                     update_colors(activeDimensions[0]);
                 }
-                
+
 
                 if (graph.highlighted().length !== 0) graph.highlight(graph.highlighted());
                 updateLabels();
@@ -1803,29 +1890,23 @@
 
 
             //turn off rating rectangle
-            d3.selectAll("rect.legend")
-                .attr("class", function(d) {
+            d3.selectAll("rect.legend").attr("class", function (d) {
+                if (d.name == "Rating" || d.name == "Description") {
+                    d.enabled = false;
+                    return 'legend disabled';
+                }
+            });
 
-                    if (d.name == "Rating" || d.name == "Description") {
-                        d.enabled = false;
-                        return 'legend disabled';
-                    }
-                });
-
-            // set left chart full screen
-            var oldpcHeight = d3.select("#graph").style("height").replace("px", "");
-            var oldpcWidth = d3.select("#graph").style("width").replace("px", "");
-            var newpcHeight = (windowHeight - 109) * 0.5;
-            var newpcWidth = windowWidth - 30;
+           
 
             d3.select("#pcFullScreen-toggle")
-                .on("click", function() {
+                .on("click", function () {
 
                     isLeftChartFullScreenToggled = !isLeftChartFullScreenToggled;
 
                     d3.select(".col-lg-3") //hide right side
                         .transition().delay(200)
-                        .style("display", function() {
+                        .style("display", function () {
                             if (isLeftChartFullScreenToggled) {
                                 return "none";
                             } else {
@@ -1833,73 +1914,65 @@
                             }
                         });
 
-                    d3.select(".col-lg-9")
-                        .transition().duration(500)
-                        .style("height", function() {
-                            if (isLeftChartFullScreenToggled) {
-                                return newpcHeight + 30 + "px";
-                            } else {
-                                return "auto";
-                            }
-                        })
-                        .style("width", function() {
-                            if (isLeftChartFullScreenToggled) {
-                                return newpcWidth + "px";
-                            } else {
-                                return oldpcWidth + "px";
-                            }
-                        });
+                    
 
-                    d3.selectAll(".zoomed")
-                        .transition().duration(500)
-                        .style("width", function() {
-                            if (isLeftChartFullScreenToggled) {
-                                return "0px";
-                            } else {
-                                return "100%";
-                            }
-                        });
-
-                    d3.select(".row-fluid #thumbnails-btm_container")
-                        .transition().duration(500)
-                        .style("height", function() {
-                            if (isLeftChartFullScreenToggled) {
-                                return "auto";
-                            } else {
-                                return d3.select("#zoomedArea").style("height") == "0px"? "auto":"0px";
-                            }
-                        });
+                    d3.select("#PcChartWrapper")
+                    .classed("col-lg-9", !isLeftChartFullScreenToggled)
+                    .classed("col-lg-12", isLeftChartFullScreenToggled);
 
 
+                    // d3.selectAll(".zoomed")
+                    //     .transition().duration(500)
+                    //     .style("width", function () {
+                    //         if (isLeftChartFullScreenToggled) {
+                    //             return "0px";
+                    //         } else {
+                    //             return "100%";
+                    //         }
+                    //     });
 
-                    // change the chart size;
-                    var highlightedData = graph.highlighted().length !== 0?graph.highlighted():0;
+                    // d3.select(".row-fluid #thumbnails-btm_container")
+                    //     .transition().duration(500)
+                    //     .style("height", function () {
+                    //         if (isLeftChartFullScreenToggled) {
+                    //             return "auto";
+                    //         } else {
+                    //             return d3.select("#zoomedArea").style("height") == "0px" ? "auto" : "0px";
+                    //         }
+                    //     });
 
                     if (isLeftChartFullScreenToggled) {
+                        console.log(windowHeight);
 
-                        graph.width(newpcWidth).height(newpcHeight);
-                        if (highlightedData !== 0) graph.highlight(highlightedData);
+                        var newpcHeight = (windowHeight - 109) * 0.5-50;
+                        var newpcWidth = windowWidth - 30;  
+                        console.log(newpcHeight);
+                        resizePcChart(newpcWidth,newpcHeight);
+
+                        // graph.width(newpcWidth).height(newpcHeight);
+                        // if (highlightedData !== 0) graph.highlight(highlightedData);
 
                     } else {
+                        // set left chart full screen
+                        var oldpcHeight = graphHeight;
+                        // var oldpcWidth = d3.select("#graph").style("width").replace("px", "");
+                        var oldpcWidth = windowWidth*0.75 - 30;
+            
                         //back to normal size mode
-
-                        graph.width(oldpcWidth).height(oldpcHeight);
-                        if (graph.highlighted().length !== 0) {
-                            graph.highlight(highlightedData);
-                        }
+                        resizePcChart(oldpcWidth,oldpcHeight);
 
                         //show left side thumbnails FIXME: when fullscreen size back to normal size, zoomed area not showing properly
                         d3.select("#thumbnails-side_container")
                             .transition().duration(1500)
-                            .style("height", (newpcHeight*2) - oldpcHeight + "px");
+                            .style("height", (newpcHeight * 2) - oldpcHeight + "px");
                     }
-
-                    updateLabels();
 
                 });
 
 
+
         }
+
     </script>
 
     <!-- import data  //  onload functions to close intro window and read input data -->
@@ -1937,7 +2010,7 @@
             // add thumbnails
             updateImageGrid(graph.data(), true); // true will set the size of btm div
 
-            
+
 
             // add place holder image to zoomed area
             addPlaceHolderImage();
@@ -1947,10 +2020,10 @@
         }
 
 
-        window.onload = function() {
+        window.onload = function () {
             if (window.location.href.toUpperCase().search("GFOLDER") > 0) {
                 // this is old user with google drive files.
-                d3.select("#welcome").style("display","none");
+                d3.select("#welcome").style("display", "none");
                 MP_getGoogleIDandLoad("URL");
                 // if(GfolderORUrl.search("/")>0){
                 //     //GfolderORUrl is server link
@@ -1969,39 +2042,40 @@
             } else {
                 // load default data
                 //parse the csv data from the design_explorer_data folder
-                d3.csv("https://tt-acm.github.io/DesignExplorer/design_explorer_data/default_onload.csv", loadDataToDesignExplorer);
+                d3.csv("https://tt-acm.github.io/DesignExplorer/design_explorer_data/default_onload.csv",
+                    loadDataToDesignExplorer);
 
             }
 
             //function to close intro window div
             d3.selectAll("#close, #loadDataclose")
-                .on("click", function() {
+                .on("click", function () {
                     d3.select("#welcome")
-                    .style("display","none");
+                        .style("display", "none");
                 });
 
             d3.select("#showLoadData")
-                .on("click", function() {
+                .on("click", function () {
 
                     d3.select("#welcome")
-                    .style("display","flex");
+                        .style("display", "flex");
 
                     d3.select("#welcomeContainer")
-                    .style("display","none");
+                        .style("display", "none");
 
                     d3.select("#loadDataContainer")
-                    .style("display","block");
-                    
+                        .style("display", "block");
+
                     //clean previous inputs
                     document.getElementById('csv-file').value = "";
-            				document.getElementById("folderLink").value ="";
-            				document.getElementById("folderLinkID").value ="";
+                    document.getElementById("folderLink").value = "";
+                    document.getElementById("folderLinkID").value = "";
 
                 });
 
             var fileInput = document.getElementById('csv-file');
 
-            fileInput.addEventListener('change', function(e) {
+            fileInput.addEventListener('change', function (e) {
                 //clean whatever was added via Google
                 document.getElementById("folderLinkID").value = "";
 
@@ -2021,7 +2095,7 @@
 
                     d3.select("p.navbar-brand").text(inputFileName);
 
-                    reader.onload = function(e) {
+                    reader.onload = function (e) {
 
                         var inputString = e.target.result;
 
@@ -2041,10 +2115,11 @@
                 }
 
                 reader.readAsText(file);
-                d3.select("#welcome").style("display","none");
+                d3.select("#welcome").style("display", "none");
             });
 
         }; // end of window.onload
+
     </script>
 
     <!-- Setting up sliders -->
@@ -2060,33 +2135,33 @@
                 .data(slidersInfo).enter()
                 .append("div")
                 .attr("class", "inputSlider") // full width
-                .text(function(d) {
+                .text(function (d) {
                     return d.name;
                 })
                 .append("input")
-                .attr("id", function(d) {
+                .attr("id", function (d) {
                     return d.namewithnospace;
                 })
-                .attr("name", function(d) {
+                .attr("name", function (d) {
                     return d.name;
                 });
 
 
             // if number of ticks is less than 7 then show the numbers under slider
-            var showGrid = function(info) {
+            var showGrid = function (info) {
                 return info.tickValues.length < 7;
             };
 
             // set up slider properties
             // they will be all set to disabled until user selects one option
-            slidersInfo.forEach(function(info, i) {
+            slidersInfo.forEach(function (info, i) {
 
                 $("#" + info.namewithnospace).ionRangeSlider({
                     grid: showGrid(info),
                     prettify_separator: ",",
                     values: info.tickValues,
                     disable: true,
-                    onChange: function(data) {
+                    onChange: function (data) {
                         // remove white spaces
                         // var sliderName = data.input[0].name.replace(/\s/g, '');
                         updateSliderValue(data.input[0].name, data.from_value);
@@ -2107,7 +2182,7 @@
             if (graph.brushed() == [] || graph.brushed().length == inputData.length) {
                 // go back to default
                 // disable all sliders once no option is selected
-                slidersInfo.forEach(function(info) {
+                slidersInfo.forEach(function (info) {
                     $("#" + info.namewithnospace).data("ionRangeSlider")
                         .update({
                             values: info.originalTickValues
@@ -2119,7 +2194,7 @@
                 var tickValues = {};
                 var data;
 
-                slidersInfo.forEach(function(info) {
+                slidersInfo.forEach(function (info) {
                     tickValues[info.name] = [];
                 }); //create an empty list for each slider
 
@@ -2131,15 +2206,16 @@
                 }
 
                 // find tick values
-                data.forEach(function(d) {
-                    slidersInfo.forEach(function(info) {
+                data.forEach(function (d) {
+                    slidersInfo.forEach(function (info) {
                         // check if the value is already in list - add it to the list if not
-                        if (tickValues[info.name].indexOf(d[info.name]) == -1) tickValues[info.name].push(d[info.name]);
+                        if (tickValues[info.name].indexOf(d[info.name]) == -1) tickValues[info.name].push(
+                            d[info.name]);
                     });
                 });
 
 
-                slidersInfo.forEach(function(sliderInfo) {
+                slidersInfo.forEach(function (sliderInfo) {
 
                     var sliderName = sliderInfo.name;
                     // remove spaces
@@ -2165,7 +2241,7 @@
 
         function disableAllSliders() {
             // disable all sliders once no option is selected
-            slidersInfo.forEach(function(info) {
+            slidersInfo.forEach(function (info) {
                 $("#" + info.namewithnospace).data("ionRangeSlider")
                     .update({
                         disable: true
@@ -2177,7 +2253,7 @@
         function enableAllSliders() {
             // enable all sliders once an option is selected
             // This will be called after selecting a new option
-            slidersInfo.forEach(function(info) {
+            slidersInfo.forEach(function (info) {
                 $("#" + info.namewithnospace).data("ionRangeSlider")
                     .update({
                         disable: false
@@ -2192,7 +2268,7 @@
 
             // update the value of all the sliders based on an input object
             // this function will be called when a new option is selected by user
-            slidersInfo.forEach(function(info) {
+            slidersInfo.forEach(function (info) {
                 var value;
 
                 if (isNaN(data[info.name])) {
@@ -2221,7 +2297,7 @@
                 console.log(newValue);
                 return;
             }
-            
+
             // create the id
             var id = getCaseId(currentSliderValues);
             var selectedData;
@@ -2236,14 +2312,14 @@
 
                 //update radar chart
                 //rc.highlight([selectedData]);
-                highlightScatterDot();      //-----TODO:here needs a switch for different charts-------
+                highlightScatterDot(); //-----TODO:here needs a switch for different charts-------
 
                 //updat iterationData
                 updateIterationData([selectedData]);
 
 
                 // push the image to zoomed area
-                d3.selectAll(".zoomed")
+                d3.select("#viewer2d")
                     .select("img")
                     .attr("src", makeUrl(selectedData.img));
 
@@ -2263,7 +2339,7 @@
                 } else {
 
                     // sort them based on distance to current values
-                    possibleCombinations.sort(function(x, y) {
+                    possibleCombinations.sort(function (x, y) {
                         return d3.ascending(distanceFromCurrent(x), distanceFromCurrent(y));
                     });
 
@@ -2289,7 +2365,7 @@
         function distanceFromCurrent(sliderValues) {
             var distance = 0;
 
-            slidersInfo.forEach(function(info) {
+            slidersInfo.forEach(function (info) {
                 var tValues = info.originalTickValues;
                 var d = tValues.indexOf(currentSliderValues[info.name]) - tValues.indexOf(sliderValues[info.name]);
                 distance += Math.abs(d);
@@ -2299,6 +2375,7 @@
             return distance;
 
         }
+
     </script>
 
     <!-- 3D Viewer -->
@@ -2314,9 +2391,9 @@
             var viewerId = "viewer3d";
 
             //load JSON file
-            d3.json(jsonFileAddress, function(data) {
+            d3.json(jsonFileAddress, function (data) {
                 //Initialize a VA3C viewer
-                va3cViewer = new SPECTACLES($("#" + viewerId), data, function(app) {
+                va3cViewer = new SPECTACLES($("#" + viewerId), data, function (app) {
                     //call the UI / functionality modules
                     app.setBackgroundColor(0xFFFFFF);
                 });
@@ -2326,7 +2403,7 @@
         // load new models
         function loadNew3DModel() {
             var jsonFileAddress = makeUrl(graph.highlighted()[0].threeD);
-            d3.json(jsonFileAddress, function(data) {
+            d3.json(jsonFileAddress, function (data) {
                 va3cViewer.loadNewModel(data);
             });
         }
@@ -2386,8 +2463,8 @@
 
             // select zoomed Div and change style
             d3.select("#zoomedArea")
-                .attr("class", function() {
-                    return fullscreen ? "zoomed fullscreen" : "zoomed";
+                .attr("class", function () {
+                    return fullscreen ? "zoomed fullscreen" : "col-lg-9";
                 });
 
             //make sure width and height are 100%
@@ -2402,7 +2479,7 @@
 
             //change full screen icon
             d3.select("button#fullscreentoggle").select("span")
-                .attr("class", function() {
+                .attr("class", function () {
                     return fullscreen ? "glyphicon glyphicon-resize-small" : "glyphicon glyphicon-fullscreen";
                 });
 
@@ -2413,6 +2490,7 @@
             }
 
         }
+
     </script>
 
     <script type="text/javascript">
@@ -2421,13 +2499,13 @@
 
         // submit the value on change
         $('.star').rating({
-            callback: function(value, link) {
+            callback: function (value, link) {
                 // 'value' is the value selected
                 if (firstRating === true) {
 
                     //turn on rating rectangle
                     d3.selectAll("rect.legend")
-                        .attr("class", function(d) {
+                        .attr("class", function (d) {
 
                             if (d.name == "Rating") {
                                 d.enabled = true;
@@ -2437,7 +2515,7 @@
 
                     // add Rating to dimensions
                     graph.dimensions(cleanedParams4pc);
-                    graph.scale("Rating",[0,5]);
+                    graph.scale("Rating", [0, 5]);
                     graph.updateAxes();
                     firstRating = false;
                 }
@@ -2456,7 +2534,7 @@
                 // highlight selected option
                 graph.highlight(graph.highlighted());
 
-                
+
 
             }
         });
@@ -2474,11 +2552,12 @@
 
             //select rating divs
             d3.selectAll("div.star-rating")
-                .attr("class", function(d, i) {
+                .attr("class", function (d, i) {
                     return i < value ? onClass : offClass;
                 });
 
         }
+
     </script>
 
     <!-- saveToCSV -->
@@ -2491,13 +2570,13 @@
 
             var csvContent = "data:attachment/csv;charset=utf-8,";
             var scidIndex = csvTitle.indexOf("scid");
-            csvTitle.splice(scidIndex,1);
+            csvTitle.splice(scidIndex, 1);
 
             csvContent += csvTitle.join(",") + "\n"; //add first row
 
-            data.forEach(function(infoArray, index) {
+            data.forEach(function (infoArray, index) {
                 dataString = d3.values(infoArray);
-                dataString.splice(scidIndex,1);
+                dataString.splice(scidIndex, 1);
                 dataString = dataString.join(",");
                 csvContent += index < data.length ? dataString + "\n" : dataString;
 
@@ -2513,6 +2592,7 @@
 
             a[0][0].click();
         }
+
     </script>
 
 </body>

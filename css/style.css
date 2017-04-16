@@ -67,20 +67,34 @@ output {
     overflow: auto;
 }
 
-#thumbnails-side img,
+#thumbnails-btm .col-xs-1:before,
+#thumbnails-btm .col-xs-3:before {
+    content: "";
+    display: block;
+    margin-top: 100%;
+}
+
+#thumbnails-btm .col-xs-1,
+#thumbnails-btm .col-xs-3 {
+    padding: 0px;
+    -ms-transform: scale(0.9, 0.9); /* IE 9 */
+    -webkit-transform: scale(0.9, 0.9); /* Safari */
+    transform: scale(0.9, 0.9);
+}
+
 #thumbnails-btm img {
     width: 100%;
-    margin-top: 1em;
+    height: 100%;
     border-radius: 50%;
-}
-
-#thumbnails-side img {
-    border: .3em solid;
-}
-
-#thumbnails-btm img {
     border: .5em solid;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    position: absolute;
+    overflow: hidden;
 }
+
 
 #zoomed img,
 #zoomedArea img {
@@ -91,11 +105,37 @@ output {
     margin-left: auto;
     margin-right: auto;
 }
+div#thumbnails-btm_container.onRight, 
+div#thumbnails-btm_container.rightChartFullScreenToggled
+{
+    position: absolute;
+    right: 0;
+    width: 25%;
 
-#thumbnails-side,
-#thumbnails-btm {
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+    
+}
+div#thumbnails-btm_container.onRight,
+div#thumbnails-btm_container.onRight #thumbnails-btm div, 
+div#thumbnails-btm_container.rightChartFullScreenToggled #thumbnails-btm div
+{
+    width: 25%;
+}
+
+div#thumbnails-btm.col-lg-12{
+    margin-top: 20px;
     overflow: auto;
-    height: 100%;
+    /* Firefox */
+    height: -moz-calc(100% - 50px);
+    /* WebKit */
+    height: -webkit-calc(100% - 50px);
+    /* Opera */
+    height: -o-calc(100% - 50px);
+    /* Standard */
+    height: calc(100% - 50px);
 }
 
 #thumbnails-btm_container,
@@ -150,18 +190,7 @@ input#csv-file {
     height: 2.6em;
     width: 420px;
 }
-.col-lg-3 {
-    position: fixed;
-    right: 0;
-    -webkit-transition: all 0.5s ease;
-    -moz-transition: all 0.5s ease;
-    -o-transition: all 0.5s ease;
-    transition: all 0.5s ease;
-}
 
-div#thumbnails-side_container {
-    margin-top: 30px;
-}
 
 a#copyRightButton {
     overflow: hidden;
@@ -188,18 +217,29 @@ a#copyRightButton {
     
 }
 
-.col-lg-3.rightChartFullScreenToggled{
-    width: 100%;
-}
+/*#ScChartWrapper.rightChartFullScreenToggled{
+    width: 75%;
+    left: 15px;
+    z-index: 9;
+    position: absolute;
+}*/
+
 .col-lg-3 .chartSide.rightChartFullScreenToggled, .col-lg-3 .row-fluid.rightChartFullScreenToggled{
-    width: 70%;
+    width: 100%;
     float: left;
+}
+#zoomedArea.rightChartFullScreenToggled{
+    display: none;
+    z-index: 1;
+}
+#PcChartWrapper.rightChartFullScreenToggled{
+    position: absolute;
+}
+#thumbnails-btm_container.rightChartFullScreenToggled{
+    width: 25%;
+    height: calc(100% - 70px);
 }
 
-.col-lg-3 .thumbnailSide.rightChartFullScreenToggled{
-    width: 30%;
-    float: left;
-}
 .col-lg-3 #copyRightButton.rightChartFullScreenToggled{
     width: 85% !important;
 }
