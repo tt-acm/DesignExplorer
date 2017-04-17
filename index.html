@@ -379,6 +379,7 @@
 
                                     <!-- Change label size -->
                                     <div class="btn-group col-xs-3" style="width: auto;float: right;">
+                                        <button id="dataSetting" class="btn btn-default btn-xs" onclick="dataSetting()" title="Setting">L</button>
                                         <button id="LL" class="btn btn-default btn-xs" onclick="changeLabelSize('largeLabel')" title="Large Label">L</button>
                                         <button id="MM" class="btn btn-default btn-xs" onclick="changeLabelSize('mediumLabel')" title="Medium Label">M</button>
                                         <button id="SS" class="btn btn-default btn-xs" onclick="changeLabelSize('smallLabel')" title="Small Label">S</button>
@@ -409,7 +410,7 @@
                                         <span class="glyphicon glyphicon-triangle-left" aria-hidden="true"></span>
                                     </button>
                                     <a id="copyRightButton" href="http://core.thorntontomasetti.com/" class="btn btn-default btn-xs" target="_blank" style="width: calc(100% - 46px);">
-                                        &copy; Copyright 2015-17 Thornton Tomasetti
+                                        &copy; 2015-17 Thornton Tomasetti
                                     </a>
                                     <!--<button type="button" class="btn btn-default btn-xs" id="rcgraph" data-toggle="collapse" data-target="#radarChart">
                                         <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
@@ -1920,37 +1921,10 @@
                     .classed("col-lg-9", !isLeftChartFullScreenToggled)
                     .classed("col-lg-12", isLeftChartFullScreenToggled);
 
-
-                    // d3.selectAll(".zoomed")
-                    //     .transition().duration(500)
-                    //     .style("width", function () {
-                    //         if (isLeftChartFullScreenToggled) {
-                    //             return "0px";
-                    //         } else {
-                    //             return "100%";
-                    //         }
-                    //     });
-
-                    // d3.select(".row-fluid #thumbnails-btm_container")
-                    //     .transition().duration(500)
-                    //     .style("height", function () {
-                    //         if (isLeftChartFullScreenToggled) {
-                    //             return "auto";
-                    //         } else {
-                    //             return d3.select("#zoomedArea").style("height") == "0px" ? "auto" : "0px";
-                    //         }
-                    //     });
-
                     if (isLeftChartFullScreenToggled) {
-                        console.log(windowHeight);
-
                         var newpcHeight = (windowHeight - 109) * 0.5-50;
                         var newpcWidth = windowWidth - 30;  
-                        console.log(newpcHeight);
                         resizePcChart(newpcWidth,newpcHeight);
-
-                        // graph.width(newpcWidth).height(newpcHeight);
-                        // if (highlightedData !== 0) graph.highlight(highlightedData);
 
                     } else {
                         // set left chart full screen
@@ -2593,6 +2567,13 @@
             a[0][0].click();
         }
 
+    </script>
+
+    <!--dataSetting-->
+    <script type="text/javascript">
+        // function dataSetting(){
+        //     graph.
+        // }    
     </script>
 
 </body>

@@ -162,7 +162,7 @@ d3.parcoords = function(config) {
                     //console.log(axis);
                     flipAxisAndUpdatePCP(axis);
                 });
-                pc.updateAxes(0);
+                //pc.updateAxes(0);
             }
         });
 
@@ -239,6 +239,10 @@ d3.parcoords = function(config) {
                         .domain([extent[0]])
                         .rangePoints(getRange());
                 }
+                // if (__.yscaleDomains[k] === undefined) {
+                //     __.yscaleDomains[k] = extent;
+                //     //console.log(domain);
+                // }
 
                 return d3.time.scale()
                     .domain(extent)
@@ -256,6 +260,11 @@ d3.parcoords = function(config) {
                         .domain([extent[0]])
                         .rangePoints(getRange());
                 }
+
+                // if (__.yscaleDomains[k] === undefined) {
+                //     __.yscaleDomains[k] = extent;
+                //     //console.log(domain);
+                // }
 
                 return d3.scale.linear()
                     .domain(extent)
@@ -456,6 +465,20 @@ d3.parcoords = function(config) {
             pc.detectDimensions();
         }
         pc.autoscale();
+
+        pc.render[__.mode]();
+
+        events.render.call(this);
+        return this;
+    };
+
+    pc.render4ScaleDomain = function () {
+        //console.log("rended");
+        // try to autodetect dimensions and create scales
+        if (!d3.keys(__.dimensions).length) {
+            pc.detectDimensions();
+        }
+        //pc.autoscale();
 
         pc.render[__.mode]();
 
@@ -767,7 +790,7 @@ d3.parcoords = function(config) {
     d3.rebind(pc, axis, "ticks", "orient", "tickValues", "tickSubdivide", "tickSize", "tickPadding", "tickFormat");
 
     function flipAxisAndUpdatePCP(dimension) {
-        console.log(__.dimensions[dimension].yscale.domain());
+        // console.log(__.dimensions[dimension].yscale.domain());
         var g = pc.svg.selectAll(".dimension");
         if (pc.brushMode() === "1D-axes" || pc.brushMode() === "1D-axes-multi") {
             var state = pc.brushExtents();
@@ -775,6 +798,7 @@ d3.parcoords = function(config) {
 
         if (__.dimensions[dimension].type != "string") {
             pc.flip(dimension);
+            console.log(dimension +" flipped to:"+__.dimensions[dimension].yscale.domain());
         } else {
             console.log(__.dimensions[dimension].yscale.domain());
         }
@@ -789,7 +813,9 @@ d3.parcoords = function(config) {
             pc.brushExtents(state);
         }
 
-        pc.render();
+       // pc.updateAxes();
+
+        pc.render4ScaleDomain();
     }
 
     function rotateLabels() {
