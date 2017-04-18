@@ -379,7 +379,7 @@
 
                                     <!-- Change label size -->
                                     <div class="btn-group col-xs-3" style="width: auto;float: right;">
-                                        <button id="dataSetting" class="btn btn-default btn-xs" onclick="dataSetting()" title="Setting">L</button>
+                                        <button id="dataSetting" class="btn btn-default btn-xs" onclick="dataSetting(graph)" title="Setting">Setting</button>
                                         <button id="LL" class="btn btn-default btn-xs" onclick="changeLabelSize('largeLabel')" title="Large Label">L</button>
                                         <button id="MM" class="btn btn-default btn-xs" onclick="changeLabelSize('mediumLabel')" title="Medium Label">M</button>
                                         <button id="SS" class="btn btn-default btn-xs" onclick="changeLabelSize('smallLabel')" title="Small Label">S</button>
@@ -415,7 +415,7 @@
                                     <!--<button type="button" class="btn btn-default btn-xs" id="rcgraph" data-toggle="collapse" data-target="#radarChart">
                                         <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
                                     </button>-->
-                                    <button type="button" class="btn btn-default btn-xs" id="scatter-menu-toggle" title="Show sliders">
+                                    <button type="button" class="btn btn-default btn-xs" id="scatter-menu-toggle" title="Show Dimensions">
                                         <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
                                     </button>
                                 </div>
@@ -431,15 +431,6 @@
                                 </div>-->
                             </div>
 
-                            <!--<div class="row thumbnailSide">
-                                <div class="col-lg-12" id="thumbnails-side_container" style="height:0px">
-                                    <div class="col-lg-12 sorting"></div>
-                                    <div id="thumbnails-side" class="col-lg-12">-->
-                                        <!-- <p>Thumbnails on load</p> -->
-                                    <!--</div>
-                                </div>
-                            </div>-->
-                            
                         </div>
                     </div>
                 </div>
@@ -501,20 +492,20 @@
                 </div>
             </div>
             <!-- /#Welcome content -->
-            <div class="row-fluid col-lg-12 row-centered vertical-center fullscreen" id="welcome">
-                <div class="col-sm-12 col-centered" id="welcomeContainer" style="max-height: 700px; min-height: 620px;">
-                    <button id="close" class="btn btn-default btn-sm pull-right">
+            <div class="row-fluid col-lg-12 row-centered vertical-center fullscreen popupWindow" id="welcome">
+                <div class="col-sm-12 col-centered" id="welcomeContainer">
+                    <button class="btn btn-default btn-sm pull-right popupWindowClose">
                         <span class="glyphicon glyphicon-remove"></span>
                     </button>
                     <br>
-                    <h1 class="text-center"> Welcome to Design Explorer!</h1>
+                    <h1 class="text-center" style="margin-top: 1em;"> Welcome to Design Explorer!</h1>
                     <h4 class="text-center">
                         Design Explorer is an open source tool for exploring multi-dimensional parametric studies!
                     </h4>
                     <br>
 
-                    <h3 class="text-center">Try one of sample design sets</h3>
-                    <h5 class="text-center"><a href="http://www.mpendesign.com/category/tutorial/" target="_blank">Tutorial</a></h5>
+                    <h5 class="text-center">Try one of following sample design sets or load your own data.<a href="http://www.mpendesign.com/category/tutorial/" target="_blank"> (Tutorial)</a></h5> 
+                    <h5 class="text-center"></h5>
                     <div class="row">
                         <div class="col-sm-4">
                             <img src="img/RedBox.gif" class="sampleImage image-rounded" id="sample1">
@@ -528,12 +519,12 @@
                         <br>
                         <br>
                     </div>
-                    <div class="col-lg-12">
+                    <div class="col-lg-12" style="position: absolute;bottom: 2em;width: calc(100% - 60px);">
                         <h3 class="text-center"> Happy Exploring! </h3>
                         <h5 class="text-center">v2 (03/15/2017)</h5>
                         <br>
                         <h5 class="text-center">
-                            Design Explorer &copy; Copyright CORE studio | Thornton Tomasetti |
+                            &copy; CORE studio | Thornton Tomasetti |
                             <a href="http://core.thorntontomasetti.com/about" target="_blank"> About</a> |
                             <a href="http://core.thorntontomasetti.com/about/services" target="_blank">Services</a> |
                             <a href="http://core.thorntontomasetti.com/about/contact" target="_blank">Contact</a>
@@ -544,8 +535,10 @@
                         </h5>
                     </div>
                 </div>
+
+                <!--load data div-->
                 <div class="col-sm-12 col-centered" id="loadDataContainer" style=" display:none;width: 700px;height: 500px">
-                    <button id="loadDataclose" class="btn btn-default btn-sm pull-right">
+                    <button class="btn btn-default btn-sm pull-right popupWindowClose">
                         <span class="glyphicon glyphicon-remove"></span>
                     </button>
 
@@ -568,6 +561,31 @@
                     </p>
                     <h5 class="text-center" style="color: #9d9d9d;">Please put valid images and 3D-json files URL. (Example:<a href="design_explorer_data/example/LocalCSV_example.csv"
                             target="_blank">data.csv</a>)</h5>
+
+                </div>
+
+            </div>
+
+            <!--data setting -->
+            <div class="row-fluid col-lg-12 row-centered vertical-center fullscreen popupWindow" id="showSetting" style=" display:none">
+                <div class="col-sm-12 col-centered" id="dataSetting" style="width: 700px;height: 500px">
+                    <button class="btn btn-default btn-sm pull-right popupWindowClose">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </button>
+
+                    <h4 class="text-center" style="margin: 60px 0 30px 0;">
+                        set dimension scale:
+                    </h4>
+                    <div class="text-center col-xs-11 col-md-offset-1" id="scaleList">
+                        <!--placeholder for scale setting list-->
+                    </div>
+
+                    <div class="col-xs-6 col-md-offset-3" style="margin-top: 2.5em;">
+                        <button id="setUserSetting" type="button" class="btn col-xs-4 col-md-offset-1">Set</button>
+                        <button id="saveUserSetting" type="button" class="btn col-xs-4 col-md-offset-1">Save</button>
+                    </div>
+
+                    
 
                 </div>
             </div>
@@ -1353,6 +1371,10 @@
 
             }
 
+            if(windowWidth<1200){
+                newGraphWidth = windowWidth-30;
+            }
+
             resizePcChart(newGraphWidth,newGraphHeight);
 
             var zoomedAreaHeight = d3.select("#zoomedArea").style("height").replace("px", "");
@@ -1484,7 +1506,7 @@
             // change colors for each line
             graph.color(function (d) {
                 return color([valueToNumber(d[dim], dim)]);
-            }).render();
+            }).reRender();
 
             // change border color for images
             d3.selectAll("img#thumbnails-btm, img#thumbnails-side").style("border-color", function (d) {
@@ -1770,7 +1792,9 @@
 
             //redraw pcChart
             var highlightedData = graph.highlighted().length !== 0 ? graph.highlighted() : 0;
-            graph.width(newWidth).height(newHeight);
+            //graph.width(newWidth).height(newHeight);
+            graph.chartSize([newWidth,newHeight]);
+            //graph.reRender();
             if (highlightedData !== 0) graph.highlight(highlightedData);
             updateLabels();
 
@@ -1795,8 +1819,7 @@
                     return;
                 }
                 // in case highlighted data not in brused then deselect
-                if (graph.brushed().length == inputData.length || graph.brushed().indexOf(graph.highlight()[0]) ==
-                    -1) {
+                if (graph.brushed().length == inputData.length || graph.brushed().indexOf(graph.highlight()[0]) ==-1) {
 
                     updateLayoutOnDeselect();
                 }
@@ -1836,13 +1859,17 @@
             // go back to original
             d3.select("#reset")
                 .on("click", function () {
+                    graph.reset();
                     updateGraph(cleanedData);
+                    update_colors(pcIsColoredBy);
 
                 });
 
 
             function updateGraph(newData) {
+                
                 graph.data(newData).brushReset().render().interactive().reorderable();
+                graph.updateAxes();
                 //updateRadarChart();                   //-----TODO:here needs a switch for different charts-------
                 updateScatterChart();
                 updateLayoutOnDeselect();
@@ -1929,8 +1956,14 @@
                     } else {
                         // set left chart full screen
                         var oldpcHeight = graphHeight;
+                        var oldpcWidth = 0;
                         // var oldpcWidth = d3.select("#graph").style("width").replace("px", "");
-                        var oldpcWidth = windowWidth*0.75 - 30;
+                        if (windowWidth<1200) {
+                            oldpcWidth = windowWidth -70;
+                        } else {
+                            oldpcWidth = windowWidth*0.75 - 30;
+                        }
+                        
             
                         //back to normal size mode
                         resizePcChart(oldpcWidth,oldpcHeight);
@@ -2016,15 +2049,15 @@
             } else {
                 // load default data
                 //parse the csv data from the design_explorer_data folder
-                d3.csv("https://tt-acm.github.io/DesignExplorer/design_explorer_data/default_onload.csv",
+                d3.csv("/design_explorer_data/default_onload.csv",
                     loadDataToDesignExplorer);
 
             }
 
             //function to close intro window div
-            d3.selectAll("#close, #loadDataclose")
+            d3.selectAll(".popupWindowClose")
                 .on("click", function () {
-                    d3.select("#welcome")
+                    d3.selectAll(".popupWindow")
                         .style("display", "none");
                 });
 
@@ -2571,10 +2604,119 @@
 
     <!--dataSetting-->
     <script type="text/javascript">
-        // function dataSetting(){
-        //     graph.
-        // }    
+
+
+        function dataSetting(chart) {
+            d3.select("#showSetting")
+                    .style("display", "flex");
+            
+            var dimKeys = d3.keys(graph.dimensions()); 
+            var scaleDiv = d3.select("#scaleList");
+
+            var dimScales ={};
+            var userDimScale = {};
+
+            dimKeys.forEach(function(data){
+                dimScales[data] = graph.dimensions()[data].yscale.domain();
+            });
+
+            //remove current
+            scaleDiv.selectAll("#scaleList .form-group").remove();
+
+            var selectList = scaleDiv.selectAll('#scaleList')
+                        .data(dimKeys).enter()
+                        .append("div")
+                        .attr("class", "form-group form-inline");
+                    
+            selectList.append("label")
+                        .attr("class", "control-label")
+                        .text(function(d){return d;});
+
+            selectList.append("input")
+                        .attr("class", "form-control input-sm")
+                        .attr("placeholder", function(d){return "From: " +dimScales[d][0];})
+                        .attr("type", "text")
+                        .on("change", function(d){
+                            var value = $(this).val();
+                            userDimScale[d] = OnScaleChanged(
+                                {"min":value}, dimScales[d], userDimScale[d]
+                            )
+                        });
+
+            //selectListItems.append("input").attr("class", "form-control input-sm").attr("placeholder", "max").attr("type", "text");
+            selectList.append("input")
+                        .attr("class", "form-control input-sm")
+                        .attr("placeholder", function(d){return "TO: "+dimScales[d][1];})
+                        .attr("type", "text")
+                        .on("change", function(d){
+                            var value = $(this).val();
+                            userDimScale[d] = OnScaleChanged(
+                                {"max":value}, dimScales[d] , userDimScale[d]
+                            )
+                        });
+            
+             d3.select("#dataSetting #setUserSetting").on("click",function (d) {
+                //  console.log(userDimScale);
+
+                 if (userDimScale === undefined) {
+                     return;
+                 }
+
+                 d3.keys(userDimScale).forEach( function (d) {
+                     chart.dimensions()[d].yscale.domain(userDimScale[d]);
+                     chart.yscaleDomains()[d] = userDimScale[d];
+                 })
+                 
+                //  chart.reRender();
+                 update_colors(pcIsColoredBy);
+                 
+
+                 d3.select("#showSetting")
+                    .style("display", "none");
+             })
+
+            // // add options based on input and outputs
+            // select.selectAll("option")
+            //     .data(dimKeys)
+            //     .enter()
+            //     .append("option")
+            //     .attr("value", function (d) {
+            //         return d;
+            //     })
+            //     .text(function (d) {
+            //         return d;
+            //     });
+
+            // chart.dimensions()["SHD"].yscale.domain([0, 10]);
+            // chart.render4ScaleDomain();
+            //console.log("setting clicked!"+chart.toString);
+        }
+
+        function OnScaleChanged(params,oldScale, userScale) {
+            var newScale=[0,0];
+            var preScale=[0,0];
+
+            var min =  parseFloat(params.min);
+            var max =  parseFloat(params.max);
+
+            if (userScale ===undefined) {
+                preScale = oldScale;
+            }else{
+                preScale = userScale;
+            }
+
+            newScale[0] = !isNaN(min) ? min:preScale[0];
+            newScale[1] = !isNaN(max) ? max:preScale[1];
+
+            return newScale;
+        }
+
+        function setDomains(params) {
+            
+        }
+
     </script>
+
 
 </body>
 

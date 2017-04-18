@@ -1,8 +1,8 @@
-d3.parcoords = function(config) {
+d3.parcoords = function (config) {
     var __ = {
         data: [],
         highlighted: [],
-        yscaleDomains:{},
+        yscaleDomains: {},
         dimensions: {},
         dimensionTitleRotation: 0,
         brushed: false,
@@ -37,11 +37,13 @@ d3.parcoords = function(config) {
         animationTime: 1100 // How long it takes to flip the axis when you double click
     };
 
+    __.chartSize=[__.width,__.height]; 
+
     extend(__, config);
 
     if (config && config.dimensionTitles) {
         console.warn("dimensionTitles passed in config is deprecated. Add title to dimension object.");
-        d3.entries(config.dimensionTitles).forEach(function(d) {
+        d3.entries(config.dimensionTitles).forEach(function (d) {
             if (__.dimensions[d.key]) {
                 __.dimensions[d.key].title = __.dimensions[d.key].title ? __.dimensions[d.key].title : d.value;
             } else {
@@ -51,14 +53,14 @@ d3.parcoords = function(config) {
             }
         });
     }
-    var pc = function(selection) {
+    var pc = function (selection) {
         selection = pc.selection = d3.select(selection);
 
         __.width = selection[0][0].clientWidth;
         __.height = selection[0][0].clientHeight;
 
         // canvas data layers
-        ["marks", "foreground", "brushed", "highlight"].forEach(function(layer) {
+        ["marks", "foreground", "brushed", "highlight"].forEach(function (layer) {
             canvas[layer] = selection
                 .append("canvas")
                 .attr("class", layer)[0][0];
@@ -76,10 +78,10 @@ d3.parcoords = function(config) {
         return pc;
     };
     var events = d3.dispatch.apply(this, ["render", "resize", "highlight", "brush", "brushend", "brushstart", "axesreorder"].concat(d3.keys(__))),
-        w = function() {
+        w = function () {
             return __.width - __.margin.right - __.margin.left;
         },
-        h = function() {
+        h = function () {
             return __.height - __.margin.top - __.margin.bottom;
         },
         flags = {
@@ -100,31 +102,42 @@ d3.parcoords = function(config) {
 
     // side effects for setters
     var side_effects = d3.dispatch.apply(this, d3.keys(__))
-        .on("composite", function(d) {
+        .on("composite", function (d) {
             ctx.foreground.globalCompositeOperation = d.value;
             ctx.brushed.globalCompositeOperation = d.value;
         })
-        .on("alpha", function(d) {
+        .on("alpha", function (d) {
             ctx.foreground.globalAlpha = d.value;
             ctx.brushed.globalAlpha = d.value;
         })
-        .on("brushedColor", function(d) {
+        .on("brushedColor", function (d) {
             ctx.brushed.strokeStyle = d.value;
         })
-        .on("width", function(d) {
+        .on("width", function (d) {
+            pc.resize();
+            //pc.reRender();
+        })
+        .on("height", function (d) {
+            pc.resize();
+            //pc.reRender();
+        })
+        .on("chartSize", function (d) {
+            __.width = d.value[0];
+            __.height = d.value[1];
+            // pc.resize();
+            // console.log(d.value);
+            pc.resize();
+            //pc.reRender();
+            //pc.reRender();
+        })
+        .on("margin", function (d) {
             pc.resize();
         })
-        .on("height", function(d) {
-            pc.resize();
-        })
-        .on("margin", function(d) {
-            pc.resize();
-        })
-        .on("rate", function(d) {
+        .on("rate", function (d) {
             brushedQueue.rate(d.value);
             foregroundQueue.rate(d.value);
         })
-        .on("dimensions", function(d) {
+        .on("dimensions", function (d) {
             __.dimensions = pc.applyDimensionDefaults(d3.keys(d.value));
             //console.log(__.dimensions);
             xscale.domain(pc.getOrderedDimensionKeys());
@@ -133,7 +146,7 @@ d3.parcoords = function(config) {
                 pc.render().updateAxes();
             }
         })
-        .on("bundleDimension", function(d) {
+        .on("bundleDimension", function (d) {
             if (!d3.keys(__.dimensions).length) pc.detectDimensions();
             pc.autoscale();
             if (typeof d.value === "number") {
@@ -151,12 +164,12 @@ d3.parcoords = function(config) {
                 pc.render();
             }
         })
-        .on("hideAxis", function(d) {
+        .on("hideAxis", function (d) {
             pc.dimensions(pc.applyDimensionDefaults());
             pc.dimensions(without(__.dimensions, d.value));
         })
         .on("flipAxes", function (d) {
-            
+
             if (d.value && d.value.length) {
                 d.value.forEach(function (axis) {
                     //console.log(axis);
@@ -178,8 +191,8 @@ d3.parcoords = function(config) {
 
     // getter/setter with event firing
     function getset(obj, state, events) {
-        d3.keys(state).forEach(function(key) {
-            obj[key] = function(x) {
+        d3.keys(state).forEach(function (key) {
+            obj[key] = function (x) {
                 if (!arguments.length) {
                     return state[key];
                 }
@@ -210,7 +223,7 @@ d3.parcoords = function(config) {
     }
 
     function without(arr, items) {
-        items.forEach(function(el) {
+        items.forEach(function (el) {
             delete arr[el];
         });
         return arr;
@@ -225,11 +238,11 @@ d3.parcoords = function(config) {
         return [h() + 1, 1];
     }
 
-    pc.autoscale = function() {
+    pc.autoscale = function () {
         // yscale
         var defaultScales = {
             "date": function (k) {
-                var extent = d3.extent(__.data, function(d) {
+                var extent = d3.extent(__.data, function (d) {
                     return d[k] ? d[k].getTime() : null;
                 });
 
@@ -239,20 +252,22 @@ d3.parcoords = function(config) {
                         .domain([extent[0]])
                         .rangePoints(getRange());
                 }
-                // if (__.yscaleDomains[k] === undefined) {
-                //     __.yscaleDomains[k] = extent;
-                //     //console.log(domain);
-                // }
+                
+                if (__.yscaleDomains[k] !== undefined) {
+                    extent = __.yscaleDomains[k];
+                }
 
                 return d3.time.scale()
                     .domain(extent)
                     .range(getRange());
             },
-            "number": function(k) {
-                var extent = d3.extent(__.data, function(d) {
+            "number": function (k) {
+                var extent = d3.extent(__.data, function (d) {
                     return +d[k];
                 });
-                if (k == "Rating"){extent = [0,5];}
+                if (k == "Rating") {
+                    extent = [0, 5];
+                }
 
                 // special case if single value
                 if (extent[0] === extent[1]) {
@@ -261,10 +276,10 @@ d3.parcoords = function(config) {
                         .rangePoints(getRange());
                 }
 
-                // if (__.yscaleDomains[k] === undefined) {
-                //     __.yscaleDomains[k] = extent;
-                //     //console.log(domain);
-                // }
+                if (__.yscaleDomains[k] !== undefined) {
+                    extent = __.yscaleDomains[k];
+                    //console.log(extent);
+                }
 
                 return d3.scale.linear()
                     .domain(extent)
@@ -278,7 +293,7 @@ d3.parcoords = function(config) {
 
                 // Let's get the count for each value so that we can sort the domain based
                 // on the number of items for each value.
-                __.data.map(function(p) {
+                __.data.map(function (p) {
                     if (p[k] === undefined && __.nullValueSeparator !== "undefined") {
                         return; // null values will be drawn beyond the horizontal null value separator!
                     }
@@ -300,14 +315,14 @@ d3.parcoords = function(config) {
                     .rangePoints(getRange());
             }
         };
-        
-        
-        d3.keys(__.dimensions).forEach(function(k) {
+
+
+        d3.keys(__.dimensions).forEach(function (k) {
             // if (!__.dimensions[k].yscale){
             __.dimensions[k].yscale = defaultScales[__.dimensions[k].type](k);
             // }
         });
-        
+
         // xscale
         xscale.rangePoints([0, w()], 1);
 
@@ -340,27 +355,29 @@ d3.parcoords = function(config) {
         return this;
     };
 
-    pc.scale = function(d, domain) {
+    pc.scale = function (d, domain) {
         __.dimensions[d].yscale.domain(domain);
         return this;
     };
 
-    pc.flip = function(d) {
+    pc.flip = function (d) {
         //__.dimensions[d].yscale.domain().reverse();                               // does not work
 
         if (__.dimensions[d].type != "string") {
+            var flippedDomain = __.dimensions[d].yscale.domain().reverse();
 
-            __.dimensions[d].yscale.domain(__.dimensions[d].yscale.domain().reverse()); // works
+            __.dimensions[d].yscale.domain(flippedDomain); // works
+            __.yscaleDomains[d] = flippedDomain;
 
         } else {
             console.log(__.dimensions[d].yscale.domain());
         }
 
-        
+
         return this;
     };
 
-    pc.commonScale = function(global, type) {
+    pc.commonScale = function (global, type) {
         var t = type || "number";
         if (typeof global === 'undefined') {
             global = true;
@@ -373,24 +390,24 @@ d3.parcoords = function(config) {
         pc.autoscale();
 
         // scales of the same type
-        var scales = d3.keys(__.dimensions).filter(function(p) {
+        var scales = d3.keys(__.dimensions).filter(function (p) {
             return __.dimensions[p].type == t;
         });
 
         if (global) {
-            var extent = d3.extent(scales.map(function(d, i) {
+            var extent = d3.extent(scales.map(function (d, i) {
                 return __.dimensions[d].yscale.domain();
-            }).reduce(function(a, b) {
+            }).reduce(function (a, b) {
                 return a.concat(b);
             }));
 
-            scales.forEach(function(d) {
+            scales.forEach(function (d) {
                 __.dimensions[d].yscale.domain(extent);
             });
 
         } else {
-            scales.forEach(function(d) {
-                __.dimensions[d].yscale.domain(d3.extent(__.data, function(d) {
+            scales.forEach(function (d) {
+                __.dimensions[d].yscale.domain(d3.extent(__.data, function (d) {
                     return +d[k];
                 }));
             });
@@ -403,17 +420,17 @@ d3.parcoords = function(config) {
 
         return this;
     };
-    pc.detectDimensions = function() {
+    pc.detectDimensions = function () {
         pc.dimensions(pc.applyDimensionDefaults());
         return this;
     };
 
-    pc.applyDimensionDefaults = function(dims) {
+    pc.applyDimensionDefaults = function (dims) {
         var types = pc.detectDimensionTypes(__.data);
         dims = dims ? dims : d3.keys(types);
         var newDims = {};
         var currIndex = 0;
-        dims.forEach(function(k) {
+        dims.forEach(function (k) {
             newDims[k] = __.dimensions[k] ? __.dimensions[k] : {};
             //Set up defaults
             newDims[k].orient = newDims[k].orient ? newDims[k].orient : 'left';
@@ -430,19 +447,19 @@ d3.parcoords = function(config) {
         return newDims;
     };
 
-    pc.getOrderedDimensionKeys = function() {
-        return d3.keys(__.dimensions).sort(function(x, y) {
+    pc.getOrderedDimensionKeys = function () {
+        return d3.keys(__.dimensions).sort(function (x, y) {
             return d3.ascending(__.dimensions[x].index, __.dimensions[y].index);
         });
     };
 
     // a better "typeof" from this post: http://stackoverflow.com/questions/7390426/better-way-to-get-type-of-a-javascript-variable
-    pc.toType = function(v) {
+    pc.toType = function (v) {
         return ({}).toString.call(v).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
     };
 
     // try to coerce to number before returning type
-    pc.toTypeCoerceNumbers = function(v) {
+    pc.toTypeCoerceNumbers = function (v) {
         if ((parseFloat(v) == v) && (v != null)) {
             return "number";
         }
@@ -450,10 +467,10 @@ d3.parcoords = function(config) {
     };
 
     // attempt to determine types of each dimension based on first row of data
-    pc.detectDimensionTypes = function(data) {
+    pc.detectDimensionTypes = function (data) {
         var types = {};
         d3.keys(data[0])
-            .forEach(function(col) {
+            .forEach(function (col) {
                 types[isNaN(Number(col)) ? col : parseInt(col)] = pc.toTypeCoerceNumbers(data[0][col]);
             });
         return types;
@@ -472,13 +489,15 @@ d3.parcoords = function(config) {
         return this;
     };
 
-    pc.render4ScaleDomain = function () {
+    pc.reRender = function () {
         //console.log("rended");
         // try to autodetect dimensions and create scales
         if (!d3.keys(__.dimensions).length) {
             pc.detectDimensions();
         }
+
         //pc.autoscale();
+        pc.updateAxes();
 
         pc.render[__.mode]();
 
@@ -486,7 +505,7 @@ d3.parcoords = function(config) {
         return this;
     };
 
-    pc.renderBrushed = function() {
+    pc.renderBrushed = function () {
         if (!d3.keys(__.dimensions).length) pc.detectDimensions();
 
         pc.renderBrushed[__.mode]();
@@ -509,7 +528,7 @@ d3.parcoords = function(config) {
         return false;
     }
 
-    pc.render.default = function() {
+    pc.render.default = function () {
         pc.clear('foreground');
         pc.clear('highlight');
 
@@ -520,18 +539,18 @@ d3.parcoords = function(config) {
 
     var foregroundQueue = d3.renderQueue(path_foreground)
         .rate(50)
-        .clear(function() {
+        .clear(function () {
             pc.clear('foreground');
             pc.clear('highlight');
         });
 
-    pc.render.queue = function() {
+    pc.render.queue = function () {
         pc.renderBrushed.queue();
 
         foregroundQueue(__.data);
     };
 
-    pc.renderBrushed.default = function() {
+    pc.renderBrushed.default = function () {
         pc.clear('brushed');
 
         if (isBrushed()) {
@@ -553,11 +572,11 @@ d3.parcoords = function(config) {
 
     var brushedQueue = d3.renderQueue(path_brushed)
         .rate(50)
-        .clear(function() {
+        .clear(function () {
             pc.clear('brushed');
         });
 
-    pc.renderBrushed.queue = function() {
+    pc.renderBrushed.queue = function () {
         if (isBrushed()) {
             d3.select("canvas.foreground").classed("hidden", true);
             brushedQueue(__.brushed);
@@ -567,9 +586,9 @@ d3.parcoords = function(config) {
             __.brushed = false;
         }
 
-        
 
-        if (typeof(__.highlighted[0]) == "object") {
+
+        if (typeof (__.highlighted[0]) == "object") {
             //console.log(__.highlighted.length);
             d3.select("canvas.brushed").classed("faded", true);
         } else {
@@ -584,7 +603,7 @@ d3.parcoords = function(config) {
         var clusterCentroids = d3.map();
         var clusterCounts = d3.map();
         // determine clusterCounts
-        __.data.forEach(function(row) {
+        __.data.forEach(function (row) {
             var scaled = __.dimensions[d].yscale(row[d]);
             if (!clusterCounts.has(scaled)) {
                 clusterCounts.set(scaled, 0);
@@ -593,8 +612,8 @@ d3.parcoords = function(config) {
             clusterCounts.set(scaled, count + 1);
         });
 
-        __.data.forEach(function(row) {
-            d3.keys(__.dimensions).map(function(p, i) {
+        __.data.forEach(function (row) {
+            d3.keys(__.dimensions).map(function (p, i) {
                 var scaled = __.dimensions[d].yscale(row[d]);
                 if (!clusterCentroids.has(scaled)) {
                     var map = d3.map();
@@ -666,7 +685,7 @@ d3.parcoords = function(config) {
         return cps;
 
     };
-    pc.shadows = function() {
+    pc.shadows = function () {
         flags.shadows = true;
         pc.alphaOnBrushed(0.1);
         pc.render();
@@ -674,14 +693,14 @@ d3.parcoords = function(config) {
     };
 
     // draw dots with radius r on the axis line where data intersects
-    pc.axisDots = function(r) {
+    pc.axisDots = function (r) {
         var r = r || 0.1;
         var ctx = pc.ctx.marks;
         var startAngle = 0;
         var endAngle = 2 * Math.PI;
         ctx.globalAlpha = d3.min([1 / Math.pow(__.data.length, 1 / 2), 1]);
-        __.data.forEach(function(d) {
-            d3.entries(__.dimensions).forEach(function(p, i) {
+        __.data.forEach(function (d) {
+            d3.entries(__.dimensions).forEach(function (p, i) {
                 ctx.beginPath();
                 ctx.arc(position(p), __.dimensions[p.key].yscale(d[p]), r, startAngle, endAngle);
                 ctx.stroke();
@@ -723,7 +742,7 @@ d3.parcoords = function(config) {
     function paths(data, ctx) {
         ctx.clearRect(-1, -1, w() + 2, h() + 2);
         ctx.beginPath();
-        data.forEach(function(d) {
+        data.forEach(function (d) {
             if ((__.bundleDimension !== null && __.bundlingStrength > 0) || __.smoothness > 0) {
                 single_curve(d, ctx);
             } else {
@@ -746,7 +765,7 @@ d3.parcoords = function(config) {
     };
 
     function single_path(d, ctx) {
-        d3.entries(__.dimensions).forEach(function(p, i) { //p isn't really p
+        d3.entries(__.dimensions).forEach(function (p, i) { //p isn't really p
             if (i == 0) {
                 ctx.moveTo(position(p.key), typeof d[p.key] == 'undefined' ? getNullPosition() : __.dimensions[p.key].yscale(d[p.key]));
             } else {
@@ -773,7 +792,7 @@ d3.parcoords = function(config) {
         ctx.highlight.strokeStyle = d3.functor(__.color)(d, i);
         return color_path(d, ctx.highlight);
     }
-    pc.clear = function(layer) {
+    pc.clear = function (layer) {
         ctx[layer].clearRect(0, 0, w() + 2, h() + 2);
 
         // This will make sure that the foreground items are transparent
@@ -798,13 +817,13 @@ d3.parcoords = function(config) {
 
         if (__.dimensions[dimension].type != "string") {
             pc.flip(dimension);
-            console.log(dimension +" flipped to:"+__.dimensions[dimension].yscale.domain());
+            console.log(dimension + " flipped to:" + __.dimensions[dimension].yscale.domain());
         } else {
             console.log(__.dimensions[dimension].yscale.domain());
         }
 
-        
-        
+
+
         d3.select(this.parentElement)
             .transition()
             .duration(__.animationTime)
@@ -813,9 +832,9 @@ d3.parcoords = function(config) {
             pc.brushExtents(state);
         }
 
-       // pc.updateAxes();
+        
 
-        pc.render4ScaleDomain();
+        pc.reRender();
     }
 
     function rotateLabels() {
@@ -833,17 +852,17 @@ d3.parcoords = function(config) {
         return __.dimensions[d].title ? __.dimensions[d].title : d; // dimension display names
     }
 
-    pc.createAxes = function() {
+    pc.createAxes = function () {
         if (g) pc.removeAxes();
 
         // Add a group element for each dimension.
         g = pc.svg.selectAll(".dimension")
-            .data(pc.getOrderedDimensionKeys(), function(d) {
+            .data(pc.getOrderedDimensionKeys(), function (d) {
                 return d;
             })
             .enter().append("svg:g")
             .attr("class", "dimension")
-            .attr("transform", function(d) {
+            .attr("transform", function (d) {
                 return "translate(" + xscale(d) + ")";
             });
 
@@ -851,7 +870,7 @@ d3.parcoords = function(config) {
         g.append("svg:g")
             .attr("class", "axis")
             .attr("transform", "translate(0,0)")
-            .each(function(d) {
+            .each(function (d) {
                 d3.select(this).call(pc.applyAxisConfig(axis, __.dimensions[d]))
             })
             .append("svg:text")
@@ -892,13 +911,13 @@ d3.parcoords = function(config) {
         return this;
     };
 
-    pc.removeAxes = function() {
+    pc.removeAxes = function () {
         g.remove();
         g = undefined;
         return this;
     };
 
-    pc.updateAxes = function(animationTime) {
+    pc.updateAxes = function (animationTime) {
         if (typeof animationTime === 'undefined') {
             animationTime = __.animationTime;
         }
@@ -908,14 +927,14 @@ d3.parcoords = function(config) {
         // Enter
         g_data.enter().append("svg:g")
             .attr("class", "dimension")
-            .attr("transform", function(p) {
+            .attr("transform", function (p) {
                 return "translate(" + position(p) + ")";
             })
             .style("opacity", 0)
             .append("svg:g")
             .attr("class", "axis")
             .attr("transform", "translate(0,0)")
-            .each(function(d) {
+            .each(function (d) {
                 d3.select(this).call(pc.applyAxisConfig(axis, __.dimensions[d]))
             })
             .append("svg:text")
@@ -935,7 +954,7 @@ d3.parcoords = function(config) {
         g_data.select(".axis")
             .transition()
             .duration(animationTime)
-            .each(function(d) {
+            .each(function (d) {
                 d3.select(this).call(pc.applyAxisConfig(axis, __.dimensions[d]))
             });
         g_data.select(".label")
@@ -949,7 +968,7 @@ d3.parcoords = function(config) {
 
         g = pc.svg.selectAll(".dimension");
         g.transition().duration(animationTime)
-            .attr("transform", function(p) {
+            .attr("transform", function (p) {
                 return "translate(" + position(p) + ")";
             })
             .style("opacity", 1);
@@ -972,7 +991,9 @@ d3.parcoords = function(config) {
         return this;
     };
 
-    pc.applyAxisConfig = function(axis, dimension) {
+    pc.applyAxisConfig = function (axis, dimension) {
+        //console.log(dimension.yscale.domain());
+
         return axis.scale(dimension.yscale)
             .orient(dimension.orient)
             .ticks(dimension.ticks)
@@ -984,24 +1005,24 @@ d3.parcoords = function(config) {
     };
 
     // Jason Davies, http://bl.ocks.org/1341281
-    pc.reorderable = function() {
+    pc.reorderable = function () {
         if (!g) pc.createAxes();
 
         g.style("cursor", "move")
             .call(d3.behavior.drag()
-                .on("dragstart", function(d) {
+                .on("dragstart", function (d) {
                     dragging[d] = this.__origin__ = xscale(d);
                 })
-                .on("drag", function(d) {
+                .on("drag", function (d) {
                     dragging[d] = Math.min(w(), Math.max(0, this.__origin__ += d3.event.dx));
                     pc.sortDimensions();
                     xscale.domain(pc.getOrderedDimensionKeys());
                     pc.render();
-                    g.attr("transform", function(d) {
+                    g.attr("transform", function (d) {
                         return "translate(" + position(d) + ")";
                     });
                 })
-                .on("dragend", function(d) {
+                .on("dragend", function (d) {
                     // Let's see if the order has changed and send out an event if so.
                     var i = 0,
                         j = __.dimensions[d].index,
@@ -1044,7 +1065,7 @@ d3.parcoords = function(config) {
     // Reorder dimensions, such that the highest value (visually) is on the left and
     // the lowest on the right. Visual values are determined by the data values in
     // the given row.
-    pc.reorder = function(rowdata) {
+    pc.reorder = function (rowdata) {
         var firstDim = pc.getOrderedDimensionKeys()[0];
 
         pc.sortDimensionsByRowData(rowdata);
@@ -1061,7 +1082,7 @@ d3.parcoords = function(config) {
 
             g.transition()
                 .duration(1500)
-                .attr("transform", function(d) {
+                .attr("transform", function (d) {
                     return "translate(" + xscale(d) + ")";
                 });
             pc.render();
@@ -1073,9 +1094,9 @@ d3.parcoords = function(config) {
         }
     }
 
-    pc.sortDimensionsByRowData = function(rowdata) {
+    pc.sortDimensionsByRowData = function (rowdata) {
         var copy = __.dimensions;
-        var positionSortedKeys = d3.keys(__.dimensions).sort(function(a, b) {
+        var positionSortedKeys = d3.keys(__.dimensions).sort(function (a, b) {
             var pixelDifference = __.dimensions[a].yscale(rowdata[a]) - __.dimensions[b].yscale(rowdata[b]);
 
             // Array.sort is not necessarily stable, this means that if pixelDifference is zero
@@ -1087,26 +1108,26 @@ d3.parcoords = function(config) {
             return pixelDifference;
         });
         __.dimensions = {};
-        positionSortedKeys.forEach(function(p, i) {
+        positionSortedKeys.forEach(function (p, i) {
             __.dimensions[p] = copy[p];
             __.dimensions[p].index = i;
         });
     };
 
-    pc.sortDimensions = function() {
+    pc.sortDimensions = function () {
         var copy = __.dimensions;
-        var positionSortedKeys = d3.keys(__.dimensions).sort(function(a, b) {
+        var positionSortedKeys = d3.keys(__.dimensions).sort(function (a, b) {
             return position(a) - position(b);
         });
         __.dimensions = {};
-        positionSortedKeys.forEach(function(p, i) {
+        positionSortedKeys.forEach(function (p, i) {
             __.dimensions[p] = copy[p];
             __.dimensions[p].index = i;
         });
     };
 
     // pairs of adjacent dimensions
-    pc.adjacent_pairs = function(arr) {
+    pc.adjacent_pairs = function (arr) {
         var ret = [];
         for (var i = 0; i < arr.length - 1; i++) {
             ret.push([arr[i], arr[i + 1]]);
@@ -1117,19 +1138,19 @@ d3.parcoords = function(config) {
     var brush = {
         modes: {
             "None": {
-                install: function(pc) {}, // Nothing to be done.
-                uninstall: function(pc) {}, // Nothing to be done.
-                selected: function() {
+                install: function (pc) {}, // Nothing to be done.
+                uninstall: function (pc) {}, // Nothing to be done.
+                selected: function () {
                     return [];
                 }, // Nothing to return
-                brushState: function() {
+                brushState: function () {
                     return {};
                 }
             }
         },
         mode: "None",
         predicate: "AND",
-        currentMode: function() {
+        currentMode: function () {
             return this.modes[this.mode];
         }
     };
@@ -1161,11 +1182,11 @@ d3.parcoords = function(config) {
         return pc;
     }
 
-    pc.brushModes = function() {
+    pc.brushModes = function () {
         return Object.getOwnPropertyNames(brush.modes);
     };
 
-    pc.brushMode = function(mode) {
+    pc.brushMode = function (mode) {
         if (arguments.length === 0) {
             return brush.mode;
         }
@@ -1203,7 +1224,7 @@ d3.parcoords = function(config) {
 
     // brush mode: 1D-Axes
 
-    (function() {
+    (function () {
         var brushes = {};
 
         function is_brushed(p) {
@@ -1213,7 +1234,7 @@ d3.parcoords = function(config) {
         // data within extents
         function selected() {
             var actives = d3.keys(__.dimensions).filter(is_brushed),
-                extents = actives.map(function(p) {
+                extents = actives.map(function (p) {
                     return brushes[p].extent();
                 });
 
@@ -1227,34 +1248,34 @@ d3.parcoords = function(config) {
 
             // test if within range
             var within = {
-                "date": function(d, p, dimension) {
+                "date": function (d, p, dimension) {
                     if (typeof __.dimensions[p].yscale.rangePoints === "function") { // if it is ordinal
                         return extents[dimension][0] <= __.dimensions[p].yscale(d[p]) && __.dimensions[p].yscale(d[p]) <= extents[dimension][1]
                     } else {
                         return extents[dimension][0] <= d[p] && d[p] <= extents[dimension][1]
                     }
                 },
-                "number": function(d, p, dimension) {
+                "number": function (d, p, dimension) {
                     if (typeof __.dimensions[p].yscale.rangePoints === "function") { // if it is ordinal
                         return extents[dimension][0] <= __.dimensions[p].yscale(d[p]) && __.dimensions[p].yscale(d[p]) <= extents[dimension][1]
                     } else {
                         return extents[dimension][0] <= d[p] && d[p] <= extents[dimension][1]
                     }
                 },
-                "string": function(d, p, dimension) {
+                "string": function (d, p, dimension) {
                     return extents[dimension][0] <= __.dimensions[p].yscale(d[p]) && __.dimensions[p].yscale(d[p]) <= extents[dimension][1]
                 }
             };
 
             return __.data
-                .filter(function(d) {
+                .filter(function (d) {
                     switch (brush.predicate) {
                         case "AND":
-                            return actives.every(function(p, dimension) {
+                            return actives.every(function (p, dimension) {
                                 return within[__.dimensions[p].type](d, p, dimension);
                             });
                         case "OR":
-                            return actives.some(function(p, dimension) {
+                            return actives.some(function (p, dimension) {
                                 return within[__.dimensions[p].type](d, p, dimension);
                             });
                         default:
@@ -1264,9 +1285,9 @@ d3.parcoords = function(config) {
         };
 
         function brushExtents(extents) {
-            if (typeof(extents) === 'undefined') {
+            if (typeof (extents) === 'undefined') {
                 var extents = {};
-                d3.keys(__.dimensions).forEach(function(d) {
+                d3.keys(__.dimensions).forEach(function (d) {
                     var brush = brushes[d];
                     if (brush !== undefined && !brush.empty()) {
                         var extent = brush.extent();
@@ -1279,13 +1300,13 @@ d3.parcoords = function(config) {
                 //first get all the brush selections
                 var brushSelections = {};
                 g.selectAll('.brush')
-                    .each(function(d) {
+                    .each(function (d) {
                         brushSelections[d] = d3.select(this);
 
                     });
 
                 // loop over each dimension and update appropriately (if it was passed in through extents)
-                d3.keys(__.dimensions).forEach(function(d) {
+                d3.keys(__.dimensions).forEach(function (d) {
                     if (extents[d] === undefined) {
                         return;
                     }
@@ -1318,16 +1339,16 @@ d3.parcoords = function(config) {
 
             brush
                 .y(__.dimensions[axis].yscale)
-                .on("brushstart", function() {
+                .on("brushstart", function () {
                     if (d3.event.sourceEvent !== null) {
                         events.brushstart.call(pc, __.brushed);
                         d3.event.sourceEvent.stopPropagation();
                     }
                 })
-                .on("brush", function() {
+                .on("brush", function () {
                     brushUpdated(selected());
                 })
-                .on("brushend", function() {
+                .on("brushend", function () {
                     events.brushend.call(pc, __.brushed);
                 });
 
@@ -1340,7 +1361,7 @@ d3.parcoords = function(config) {
                 __.brushed = false;
                 if (g) {
                     g.selectAll('.brush')
-                        .each(function(d) {
+                        .each(function (d) {
                             d3.select(this)
                                 .transition()
                                 .duration(0)
@@ -1351,7 +1372,7 @@ d3.parcoords = function(config) {
             } else {
                 if (g) {
                     g.selectAll('.brush')
-                        .each(function(d) {
+                        .each(function (d) {
                             if (d != dimension) return;
                             d3.select(this)
                                 .transition()
@@ -1371,7 +1392,7 @@ d3.parcoords = function(config) {
             // Add and store a brush for each axis.
             g.append("svg:g")
                 .attr("class", "brush")
-                .each(function(d) {
+                .each(function (d) {
                     d3.select(this).call(brushFor(d));
                 })
                 .selectAll("rect")
@@ -1386,7 +1407,7 @@ d3.parcoords = function(config) {
 
         brush.modes["1D-axes"] = {
             install: install,
-            uninstall: function() {
+            uninstall: function () {
                 g.selectAll(".brush").remove();
                 brushes = {};
                 delete pc.brushExtents;
@@ -1396,9 +1417,9 @@ d3.parcoords = function(config) {
             brushState: brushExtents
         }
     })();
-    
 
-    pc.interactive = function() {
+
+    pc.interactive = function () {
         flags.interactive = true;
         return this;
     };
@@ -1407,13 +1428,13 @@ d3.parcoords = function(config) {
     pc.xscale = xscale;
     pc.ctx = ctx;
     pc.canvas = canvas;
-    pc.g = function() {
+    pc.g = function () {
         return g;
     };
 
     // rescale for height, width and margins
     // TODO:210 currently assumes chart is brushable, and destroys old brushes
-    pc.resize = function() {
+    pc.resize = function () {
         // reference the current brushMode
         var currentBrushMode = pc.brushMode();
 
@@ -1429,13 +1450,15 @@ d3.parcoords = function(config) {
             .attr("height", __.height)
         pc.svg.attr("transform", "translate(" + __.margin.left + "," + __.margin.top + ")");
 
-
         // scales
-        pc.autoscale();
+        //pc.autoscale();
+        
         if (isBrushed()) {
+            pc.autoscale();
             pc.renderBrushed();
-        }else{
+        } else {
             pc.render();
+            //pc.reRender();
         }
 
         // axes, destroys old brushes.
@@ -1457,10 +1480,15 @@ d3.parcoords = function(config) {
             height: __.height,
             margin: __.margin
         });
+
         return this;
     };
 
-    pc.update = function() {
+    pc.reset = function(){
+        __.yscaleDomains = {};
+    }
+
+    pc.update = function () {
         // reference the current brushMode
         // var currentBrushMode = pc.brushMode();
         //
@@ -1472,8 +1500,8 @@ d3.parcoords = function(config) {
 
         if (isBrushed()) {
             pc.renderBrushed();
-        }else{
-            pc.render();
+        } else {
+            pc.Render();
         }
 
         // axes, destroys old brushes.
@@ -1491,18 +1519,18 @@ d3.parcoords = function(config) {
         return this;
     };
     // highlight an array of data
-    pc.highlight = function(data) {
+    pc.highlight = function (data) {
         if (arguments.length === 0) {
             return __.highlighted;
         }
 
         __.highlighted = data;
         pc.clear("highlight");
-        if(__.brushed){
+        if (__.brushed) {
             //console.log("brushed");
             d3.select(canvas.brushed).classed("faded", true);
             d3.select(canvas.foreground).classed("hidden", true);
-        }else {
+        } else {
             d3.select(canvas.foreground).classed("faded", true);
         }
 
@@ -1512,17 +1540,17 @@ d3.parcoords = function(config) {
     };
 
     // clear highlighting
-    pc.unhighlight = function() {
+    pc.unhighlight = function () {
         __.highlighted = [];
 
         pc.clear("highlight");
-        d3.selectAll([canvas.foreground,canvas.brushed]).classed("faded", false);
+        d3.selectAll([canvas.foreground, canvas.brushed]).classed("faded", false);
         return this;
     };
 
     // calculate 2d intersection of line a->b with line c->d
     // points are objects with x and y properties
-    pc.intersection = function(a, b, c, d) {
+    pc.intersection = function (a, b, c, d) {
         return {
             x: ((a.x * b.y - a.y * b.x) * (c.x - d.x) - (a.x - b.x) * (c.x * d.y - c.y * d.x)) / ((a.x - b.x) * (c.y - d.y) - (a.y - b.y) * (c.x - d.x)),
             y: ((a.x * b.y - a.y * b.x) * (c.y - d.y) - (a.y - b.y) * (c.x * d.y - c.y * d.x)) / ((a.x - b.x) * (c.y - d.y) - (a.y - b.y) * (c.x - d.x))
@@ -1538,30 +1566,30 @@ d3.parcoords = function(config) {
     }
     pc.version = "0.7.0";
     // this descriptive text should live with other introspective methods
-    pc.toString = function() {
+    pc.toString = function () {
         return "Parallel Coordinates: " + d3.keys(__.dimensions).length + " dimensions (" + d3.keys(__.data[0]).length + " total) , " + __.data.length + " rows";
     };
 
     return pc;
 };
 
-d3.renderQueue = (function(func) {
+d3.renderQueue = (function (func) {
     var _queue = [], // data to be rendered
         _rate = 10, // number of calls per frame
-        _clear = function() {}, // clearing function
+        _clear = function () {}, // clearing function
         _i = 0; // current iteration
 
-    var rq = function(data) {
+    var rq = function (data) {
         if (data) rq.data(data);
         rq.invalidate();
         _clear();
         rq.render();
     };
 
-    rq.render = function() {
+    rq.render = function () {
         _i = 0;
         var valid = true;
-        rq.invalidate = function() {
+        rq.invalidate = function () {
             valid = false;
         };
 
@@ -1582,24 +1610,24 @@ d3.renderQueue = (function(func) {
         d3.timer(doFrame);
     };
 
-    rq.data = function(data) {
+    rq.data = function (data) {
         rq.invalidate();
         _queue = data.slice(0);
         return rq;
     };
 
-    rq.rate = function(value) {
+    rq.rate = function (value) {
         if (!arguments.length) return _rate;
         _rate = value;
         return rq;
     };
 
-    rq.remaining = function() {
+    rq.remaining = function () {
         return _queue.length - _i;
     };
 
     // clear the canvas
-    rq.clear = function(func) {
+    rq.clear = function (func) {
         if (!arguments.length) {
             _clear();
             return rq;
@@ -1608,7 +1636,7 @@ d3.renderQueue = (function(func) {
         return rq;
     };
 
-    rq.invalidate = function() {};
+    rq.invalidate = function () {};
 
     return rq;
 });

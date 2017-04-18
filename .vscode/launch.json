@@ -1,0 +1,29 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Chrome against localhost",
+            "url": "http://localhost:9527",
+            "webRoot": "${workspaceRoot}"
+        },
+        {
+            //C:\Users\mpeng\AppData\Local\Google\Chrome\Application\chrome.exe --remote-debugging-port=9222
+            "type": "chrome",
+            "request": "attach",
+            "name": "Attach to Chrome 9257",
+            "port": 9257,
+            "webRoot": "${workspaceRoot}"
+        }
+        {
+            //C:\Users\mpeng\AppData\Local\Google\Chrome\Application\chrome.exe --remote-debugging-port=9222
+            "type": "chrome",
+            "request": "attach",
+            "name": "Attach to Chrome 9222",
+            "port": 9222,
+            "webRoot": "${workspaceRoot}"
+        }
+    ]
+}
