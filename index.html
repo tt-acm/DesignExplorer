@@ -108,34 +108,79 @@
 <script>
     //load FolderInfo ,Json data_ Mingbo Peng Modified--------------------------------------------------------------------
 
-    var GID = [];
-    var GName = [];
     var csvID = "";
     var key = "AIzaSyCSrF08UMawxKIb0m4JsA1mYE5NMmP36bY";
+    var googleReturnObj ={}; //{"fileName":Google Drive ID} //ready for next update 
+
 
     function prepareGFolder(GFolderLink) {
+        //clean first
+        csvID = "";
+        googleReturnObj ={ //{"fileName":Google Drive ID}
+            csvFiles:{},
+            imgFiles:{},
+            jsonFiles:{},
+            settingFiles:{}
+        };
+
 
         d3.json(GFolderLink, function (data) {
+            var csvFiles = {};
+            var imgFiles ={};
+            var jsonFiles ={};
+            var settingFiles ={};
+
             data.files.forEach(function (item) {
-                GID.push(item.id);
-                GName.push(item.name);
+                //googleReturnObj[item.name]=item.id
+
+                if(item.mimeType === "text/csv"){
+                    //this item is a data csv file
+                    csvFiles[item.name] = item.id;
+                    
+                }else if(item.mimeType.startsWith("image")){
+                    //this item is a image file
+                    imgFiles[item.name] = item.id;
+
+                }else if(item.mimeType === "application/json"){
+
+                    if (item.name.startsWith("setting")) {
+                        //this item is a Design Explore's setting file 
+                        settingFiles[item.name] = item.id;
+                    } else {
+                        //this item is a json model
+                        jsonFiles[item.name] = item.id;
+                    }
+                }
+
             });
+
+            $.extend(googleReturnObj.csvFiles, csvFiles);
+            $.extend(googleReturnObj.imgFiles, imgFiles);
+            $.extend(googleReturnObj.jsonFiles, jsonFiles);
+            $.extend(googleReturnObj.settingFiles, settingFiles);
+
             if (data.nextPageToken) {
+                
                 if (GFolderLink.search("&pageToken=") > 0) {
                     GFolderLink = GFolderLink.split("&pageToken=", 1)[0];
                 }
                 prepareGFolder(GFolderLink + "&pageToken=" + data.nextPageToken);
 
-            } else {
-                csvID = GID[GName.findIndex(function (d) {
-                    return d === "data.csv";
-                })];
+            } else { //this is the last page, so return googleReturnObj directly
+                
+                csvID = googleReturnObj.csvFiles["data.csv"];
+                
                 if (csvID === undefined) {
                     alert("Could not find the data.csv file in this folder, please double check!");
                 } else {
                     readyToLoad("https://www.googleapis.com/drive/v3/files/" + csvID + "?alt=media&key=" + key);
                 }
+
+                //return googleReturnObj;
+                        
+
             }
+
 
         });
     }
@@ -162,16 +207,12 @@
         var GFolderID = getGFolderID(serverFolderLink);
 
         if (GFolderID.length == 28) {
-            GID = [];
-            GName = [];
-            csvID = "";
-            //GFolderID  = getGFolderID(serverFolderLink);
-            //GFolderID = GFolderID[GFolderID.length - 1];
-            serverFolderLink = "https://www.googleapis.com/drive/v3/files?q=%27" + GFolderID + "%27+in+parents&key=" +
-                key;
-            document.getElementById("folderLinkID").value = GFolderID;
+            
+            serverFolderLink = "https://www.googleapis.com/drive/v3/files?q=%27" + GFolderID + "%27+in+parents&key=" +key;
 
+            document.getElementById("folderLinkID").value = GFolderID;
             prepareGFolder(serverFolderLink);
+
         } else {
             document.getElementById("folderLinkID").value = serverFolderLink;
             readyToLoad(serverFolderLink + "/data.csv");
@@ -235,7 +276,7 @@
         return vars;
     }
 
-    function makeUrl(file) {
+    function makeUrl(file,type) {
         var link;
         var folderLinkID = document.getElementById("folderLinkID").value;
 
@@ -246,19 +287,33 @@
                 link = folderLinkID + "/" + file;
             } else {
                 //folderUrl is google folder ID
-                var nameIndex = GName.findIndex(function (d) {
-                    return d === file;
-                });
-                if (file.search(".json") > 0) {
-                    link = "https://www.googleapis.com/drive/v3/files/" + GID[nameIndex] + "?alt=media&key=" + key;
+                var gid;
+                if(type =="img"){
+                    gid = googleReturnObj.imgFiles[file];
+                    
+                }else if(type =="threeD"){
+                    gid = googleReturnObj.jsonFiles[file];
+                    
+                }else if(type =="setting"){
+                    gid = googleReturnObj.settingFiles[file];
+                    
+                }else if(type =="csv"){
+                    gid = googleReturnObj.csvFiles[file];
+                    
+                }
+                
+                if (type =="img") {
+                    //image can load directly without key
+                    link = "https://docs.google.com/uc?id=" + gid + "&export=download";
+                    
                 } else {
-                    link = "https://docs.google.com/uc?id=" + GID[nameIndex] + "&export=download";
+                    link = "https://www.googleapis.com/drive/v3/files/" + gid + "?alt=media&key=" + key;
                 }
 
 
             }
         } else {
-            // file is the valid Url path
+            // file is the valid full Url path
             link = file;
         }
 
@@ -309,7 +364,7 @@
                 </button>
 
                 <div class="navbar-header" title="Design Explorer">
-                    <img style="max-width:350px; padding-top: 10px;" src="./img/DesignExplorerLogo3.png">
+                    <a href="http://tt-acm.github.io/DesignExplorer/"> <img style="max-width:350px; padding-top: 10px;" src="./img/DesignExplorerLogo3.png"></a>
                 </div>
             </div>
 
@@ -450,7 +505,7 @@
                                     <input type="radio" class="toggleView" name="visMode" value="2D" checked> 2D</label>
                                 <!-- show 2D image on load-->
                                 <label>
-                                    <input type="radio" class="toggleView" name="visMode" value="3D"> 3D</label>
+                                    <input type="radio" class="toggleView" name="visMode" value="3D" id="threeDRadio"> 3D</label>
 
                                 <button type="button" class="btn btn-default btn-xs" id="toggleComments" style="margin-right:10px; margin-left:5px; margin-top: 2px;"
                                     title="Add Comments">
@@ -817,7 +872,7 @@
             isToggled = !isToggled;
             d3.select("#wrapper")
                 .classed("toggled", isToggled)
-                .transition().duration(500); //length of toggle animation
+                .transition().duration(300); //length of toggle animation
             //.each("end", resizeRadarChart())
         });
 
@@ -890,16 +945,6 @@
         function updateLayoutOnSelect() {
 
             var selectedImage = d3.select(this);
-            //<!-- var currentDataCount = graph.brushed().length; -->
-            //<!-- var brushedOpacity = 0.3; -->
-            //<!-- if(currentDataCount<=20){ -->
-            //	<!-- //currentDataCount = 200; -->
-            //	<!-- brushedOpacity = 0.9; -->
-            //<!-- }else{ -->
-            //<!-- brushedOpacity = 0.3; -->
-
-            //<!-- } -->
-            //<!-- d3.select("#graph canvas.faded").style("opacity", brushedOpacity) -->
 
 
             // highlight the line graph
@@ -909,37 +954,30 @@
             // update rating based
             setStarValue(selectedImage.data()[0].Rating);
 
-            // find height of parallel coordinate
-            // to find the height for zoomed div
-            // var pcHeight = d3.select("#graph")
-            //     .style("height").replace("px", "");
 
             // show zoomed area
             d3.select("#zoomedArea")
-                .transition().duration(500)
                 .style("height", zoomedHeight + "px");
             
 
             // move btm thumbnail to right
             d3.select("#thumbnails-btm_container")
-                // .attr("class","col-lg-3")
-                    // .select("#thumbnails-btm")
                     .classed("onRight",true);
 
             // push the image to zoomed viewer2d area
             d3.select("#viewer2d")
                 .select("img")
                 .data(selectedImage.data())
-                .attr("src", makeUrl(selectedImage.datum().img))
+                .attr("src", makeUrl(selectedImage.datum().img,"img"))
                 .attr("title", getTitle)
-                .attr("id",selectedImage.datum().img)
+                .attr("id",imageLinkKeys[0])
                 .on("click", function (d){
-                    var currentId = d3.select(this).attr("id");
-                    var nextId = viewer2dNextImg(selectedImage.datum(),currentId);
-
+                    var currentKey = d3.select(this).attr("id");
+                    var nextKey = viewer2dNextImg(imageLinkKeys,currentKey);
+                    
                     d3.select(this)
-                        .attr("id",nextId)
-                        .attr("src", makeUrl(nextId));
+                        .attr("id",nextKey)
+                        .attr("src", makeUrl(d[nextKey],"img"));
                      
                 });
                 
@@ -974,7 +1012,7 @@
 
             // let's side thumbnail show up
             d3.select("#thumbnails-side_container")
-                .transition().duration(1500)
+                .transition().duration(300)
                 .style("height", function () {
 
                     if (isRightChartFullScreenToggled) {
@@ -990,28 +1028,24 @@
 
         }
 
-        function viewer2dNextImg(data, imgName){
-            var nextImgName = "img";
-            var imgList = [];
-            d3.keys(data).forEach(function(d){
-                if(d.startsWith("img")){
-                    imgList.push(data[d]);
-                }
-            })
+        function viewer2dNextImg(imgKeyList, currentImgKey){
 
-            if(imgList.length>1){
-                var currentImgIndex = imgList.indexOf(imgName);
+            if(imgKeyList.length>=1){
+                var currentImgIndex = imgKeyList.indexOf(currentImgKey);
                 
-                if(currentImgIndex+1<imgList.length){
-                    nextImgName = imgList[currentImgIndex+1];
+                if(currentImgIndex+1<imgKeyList.length){
+
+                    nextImgKey = imgKeyList[currentImgIndex+1];
+
                 }else{
-                    nextImgName = imgList[0];
+
+                    nextImgKey = imgKeyList[0];
                 }
 
-                console.log(nextImgName);
+                return nextImgKey;
 
-                return nextImgName;
             }
+
 
             
 
@@ -1028,7 +1062,7 @@
 
             // hide zoomed area
             d3.selectAll("#zoomedArea")
-                .transition().duration(500)
+                .transition().duration(300)
                 .style("height", "0px");
 
             // show btm thumbnail
@@ -1084,7 +1118,6 @@
                 if (graph.highlight().length !== 0) {
 
                     d3.selectAll("#zoomedArea")
-                        .transition().duration(500)
                         .style("height", cleanHeight + "px")
                         .each("end", function () {
                             // resize view
@@ -1099,7 +1132,7 @@
                     $("#radarChart").collapse("hide");
 
                     d3.select("#thumbnails-btm_container")
-                        .transition().duration(1000).style("height", cleanHeight + "px");
+                        .transition().duration(500).style("height", cleanHeight + "px");
                 }
 
             } else {
@@ -1107,7 +1140,6 @@
                 d3.select("#graph")
                     .transition("ease out").attr("class", "parcoords collapse in")
                     .transition().duration(350)
-                    //.transition().duration(2000)
                     .style("height", graphHeight + "px");
 
                 //enable buttons
@@ -1148,12 +1180,21 @@
             slidersMapping = {}, // I collect the data for all the input sliders here so I can use it to remap the sliders later
             ids = [], // Here I collect all data based on a unique ID from inputs
             cleanedParams4pc = {};
+            imageLinkKeys = [];
 
 
 
         function analyzeInputData(originalData) {
             var keys = d3.keys(originalData[0]);
             // var id = 0;
+
+            //get img keys []   
+            keys.forEach(function (key) {
+                if(key.startsWith("img")){
+                    imageLinkKeys.push(key);
+                    //console.log(imageLinkKeys);
+                }
+            })
 
             originalData.forEach(function (row, rowCount) {
 
@@ -1178,8 +1219,9 @@
                         cleanedParams4pc[key.replace("out:", "").trim()] = {};
 
                     } else {
-                        cleanedParams[key.trim()] = row[key]; // I need to add case for image and 3D here later
-                        if (!key.trim().startsWith("img") &&  key.trim() != "threeD") {
+                        
+                        cleanedParams[key.trim()] = row[key];
+                        if (!key.startsWith("img") &&  key.trim() != "threeD") {
                             cleanedParams4pc[key.trim()] = {};
                         }
                     }
@@ -1703,7 +1745,7 @@
 
             // attach images ---------------------------------------------------------------------------------------------------
             var imgLink = function (d) {
-                return makeUrl(d.img);
+                return makeUrl(d.img,"img");
             };
 
 
@@ -1942,9 +1984,9 @@
                         resizePcChart(oldpcWidth,oldpcHeight);
 
                         //show left side thumbnails FIXME: when fullscreen size back to normal size, zoomed area not showing properly
-                        d3.select("#thumbnails-side_container")
-                            .transition().duration(1500)
-                            .style("height", (newpcHeight * 2) - oldpcHeight + "px");
+                        // d3.select("#thumbnails-side_container")
+                        //     .transition().duration(1500)
+                        //     .style("height", (newpcHeight * 2) - oldpcHeight + "px");
                     }
 
                 });
@@ -2005,20 +2047,6 @@
                 // this is old user with google drive files.
                 d3.select("#welcome").style("display", "none");
                 MP_getGoogleIDandLoad("URL");
-                // if(GfolderORUrl.search("/")>0){
-                //     //GfolderORUrl is server link
-                //     filePath = GfolderORUrl + "/data.csv";
-                // }else{
-                //     //GfolderORUrl is google folder ID
-                //     filePath = "https://www.googleapis.com/drive/v3/files?q=%27" + GfolderORUrl  + "%27+in+parents&key="+ key;
-                //     console.log("110:"+filePath);
-                //     prepareGFolder(filePath, function(d){
-                //         console.log("111:"+d);
-                //         readyToLoad(GfolderORUrl,d);
-                //         // d3.csv(d, loadDataToDesignExplorer);
-                //     });
-                // }
-
             } else {
                 // load default data
                 //parse the csv data from the design_explorer_data folder
@@ -2304,7 +2332,7 @@
                 // push the image to zoomed area
                 d3.select("#viewer2d")
                     .select("img")
-                    .attr("src", makeUrl(selectedData.img));
+                    .attr("src", makeUrl(selectedData.img,"img"));
 
                 if (currentView == "3D") loadNew3DModel();
 
@@ -2370,7 +2398,7 @@
         // Initiate 3D viewer
         function initiate3DViewer() {
 
-            var jsonFileAddress = makeUrl(graph.highlighted()[0].threeD);
+            var jsonFileAddress = makeUrl(graph.highlighted()[0].threeD,"threeD");
             var viewerId = "viewer3d";
 
             //load JSON file
@@ -2385,7 +2413,7 @@
 
         // load new models
         function loadNew3DModel() {
-            var jsonFileAddress = makeUrl(graph.highlighted()[0].threeD);
+            var jsonFileAddress = makeUrl(graph.highlighted()[0].threeD,"threeD");
             d3.json(jsonFileAddress, function (data) {
                 va3cViewer.loadNewModel(data);
             });
@@ -2651,21 +2679,6 @@
                     .style("display", "none");
              })
 
-            // // add options based on input and outputs
-            // select.selectAll("option")
-            //     .data(dimKeys)
-            //     .enter()
-            //     .append("option")
-            //     .attr("value", function (d) {
-            //         return d;
-            //     })
-            //     .text(function (d) {
-            //         return d;
-            //     });
-
-            // chart.dimensions()["SHD"].yscale.domain([0, 10]);
-            // chart.render4ScaleDomain();
-            //console.log("setting clicked!"+chart.toString);
         }
 
         function OnScaleChanged(params,oldScale, userScale) {

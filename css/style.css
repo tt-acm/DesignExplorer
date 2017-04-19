@@ -112,10 +112,10 @@ div#thumbnails-btm_container.rightChartFullScreenToggled
     right: 0;
     width: 25%;
 
-    -webkit-transition: all 0.5s ease;
-    -moz-transition: all 0.5s ease;
-    -o-transition: all 0.5s ease;
-    transition: all 0.5s ease;
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all 0.3s ease;
     
 }
 div#thumbnails-btm_container.onRight,
@@ -142,6 +142,10 @@ div#thumbnails-btm.col-lg-12{
 #zoomedArea {
     overflow: hidden;
     margin-top: 10px;
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 #legend {
