@@ -3,6 +3,7 @@ d3.parcoords = function (config) {
         data: [],
         highlighted: [],
         yscaleDomains: {},
+        yscaleTicks: {},
         dimensions: {},
         dimensionTitleRotation: 0,
         brushed: false,
@@ -242,9 +243,14 @@ d3.parcoords = function (config) {
         // yscale
         var defaultScales = {
             "date": function (k) {
+                var counts = {};
                 var extent = d3.extent(__.data, function (d) {
+                    counts[d[k]] ++;
                     return d[k] ? d[k].getTime() : null;
                 });
+
+                var tickKeys = Object.keys(counts);
+                __.yscaleTicks[k] = {name:k, namewithnospace:k, originalTickValues:tickKeys, tickValues:tickKeys};
 
                 // special case if single value
                 if (extent[0] === extent[1]) {
@@ -262,9 +268,16 @@ d3.parcoords = function (config) {
                     .range(getRange());
             },
             "number": function (k) {
+                var counts = {};
+
                 var extent = d3.extent(__.data, function (d) {
+                    counts[d[k]] ++;
                     return +d[k];
                 });
+
+                var tickKeys = Object.keys(counts);
+                __.yscaleTicks[k] = {name:k, namewithnospace:k, originalTickValues:tickKeys, tickValues:tickKeys};
+
                 if (k == "Rating") {
                     extent = [0, 5];
                 }
@@ -276,7 +289,7 @@ d3.parcoords = function (config) {
                         .rangePoints(getRange());
                 }
 
-                if (__.yscaleDomains[k] !== undefined) {
+                if (__.yscaleDomains[k] !== undefined) { //yscalDomains is set by user or flipped
                     extent = __.yscaleDomains[k];
                     //console.log(extent);
                 }
@@ -309,6 +322,10 @@ d3.parcoords = function (config) {
                     __.yscaleDomains[k] = domain;
                     //console.log(domain);
                 }
+
+
+                
+                __.yscaleTicks[k] = domain;
 
                 return d3.scale.ordinal()
                     .domain(__.yscaleDomains[k])

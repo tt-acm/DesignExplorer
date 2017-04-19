@@ -931,7 +931,20 @@
                 .select("img")
                 .data(selectedImage.data())
                 .attr("src", makeUrl(selectedImage.datum().img))
-                .attr("title", getTitle);
+                .attr("title", getTitle)
+                .attr("id",selectedImage.datum().img)
+                .on("click", function (d){
+                    var currentId = d3.select(this).attr("id");
+                    var nextId = viewer2dNextImg(selectedImage.datum(),currentId);
+
+                    d3.select(this)
+                        .attr("id",nextId)
+                        .attr("src", makeUrl(nextId));
+                     
+                });
+                
+            
+                
 
             updateIterationData(selectedImage.data());
 
@@ -974,6 +987,33 @@
                 });
 
             isAnyItemSelected = true;
+
+        }
+
+        function viewer2dNextImg(data, imgName){
+            var nextImgName = "img";
+            var imgList = [];
+            d3.keys(data).forEach(function(d){
+                if(d.startsWith("img")){
+                    imgList.push(data[d]);
+                }
+            })
+
+            if(imgList.length>1){
+                var currentImgIndex = imgList.indexOf(imgName);
+                
+                if(currentImgIndex+1<imgList.length){
+                    nextImgName = imgList[currentImgIndex+1];
+                }else{
+                    nextImgName = imgList[0];
+                }
+
+                console.log(nextImgName);
+
+                return nextImgName;
+            }
+
+            
 
         }
 
@@ -1090,73 +1130,6 @@
             }
         });
 
-        //hide/show radar chart
-        // d3.select("#rcgraph").on("click", function () {
-
-        //     if (cleanedData.length === 0) return; // don't let the user change the size before loading the file
-
-        //     var height = d3.select("#radarChart").style("height").replace("px", "");
-
-        //     if (height > 1) {
-
-        //         if (!isAnyItemSelected) {
-        //             //collapse parcoords if there is nothing selected
-        //             d3.select("#graph")
-        //                 .attr("class", "parcoords collapse 2s")
-        //                 .transition().duration(200)
-        //                 .style("height", "0px");
-
-        //             //disable buttons
-        //             d3.select("#reset").classed("disabled", true);
-        //             d3.select("#remove").classed("disabled", true);
-        //             d3.select("#keep").classed("disabled", true);
-
-        //             d3.select("#thumbnails-btm_container")
-        //                 .transition().duration(1000).style("height", cleanHeight + "px");
-        //         }
-
-        //         //collapse radar chart
-        //         $("#radarChart").collapse("hide");
-
-        //         // set height for thumbnails-side_container
-        //         // d3.select("#thumbnails-side_container")
-        //         //     .transition().duration(1500)
-        //         //     .style("height", cleanHeight + "px");
-
-        //     } else {
-        //         if (!isAnyItemSelected) {
-        //             //expand parcoords
-        //             d3.select("#graph")
-        //                 .transition("ease out").attr("class", "parcoords collapse in")
-        //                 .transition().duration(350)
-        //                 //.transition().duration(2000)
-        //                 .style("height", graphHeight + "px");
-
-        //             //enable buttons
-        //             d3.select("#reset").classed("disabled", false);
-        //             d3.select("#remove").classed("disabled", false);
-        //             d3.select("#keep").classed("disabled", false);
-
-        //             d3.select("#thumbnails-btm_container")
-        //                 .transition().duration(1000).style("height", zoomedHeight + "px");
-        //         }
-
-        //         //expand radar chart
-        //         $("#radarChart").collapse("show");
-
-        //         // not the best practice - I should get it to work in a cleaner way
-        //         // setTimeout(function () {
-
-        //         //     // var rcheight = d3.select("#radarChart").style("height").replace("px", "");
-
-        //         //     // set height for thumbnails-side_container
-        //         //     // d3.select("#thumbnails-side_container")
-        //         //     //     .transition().duration(1000)
-        //         //     //     .style("height", zoomedHeight + "px");
-        //         // }, 500);
-
-        //     }
-        // });
 
     </script>
 
@@ -1206,7 +1179,7 @@
 
                     } else {
                         cleanedParams[key.trim()] = row[key]; // I need to add case for image and 3D here later
-                        if (key.trim() != "img" && key.trim() != "threeD") {
+                        if (!key.trim().startsWith("img") &&  key.trim() != "threeD") {
                             cleanedParams4pc[key.trim()] = {};
                         }
                     }
@@ -1835,7 +1808,7 @@
                         alert("You need to select some data to be kept!");
                     } else {
                         graph.data(newData).dimensions(d3.keys(graph.dimensions()));
-                        updateSlidersTickValues();
+                        updateSlidersTickValues(newData);
 
                     }
                 });
@@ -1874,7 +1847,7 @@
                 updateScatterChart();
                 updateLayoutOnDeselect();
                 updateImageGrid(newData, false);
-                updateSlidersTickValues();
+                updateSlidersTickValues(newData);
             }
 
             //events for legend click
@@ -2178,15 +2151,14 @@
             });
         }
 
-        function updateSlidersTickValues() {
+        function updateSlidersTickValues(unbrushedData) {
 
             // This function only gets called once there is a new selection
             // and for major changes in data selection (reset/exclude/zoom to selection)
             // don't call this frequently as this is a fairly expensive run
 
 
-            // I need to re-visit this
-            if (graph.brushed() == [] || graph.brushed().length == inputData.length) {
+            if (graph.brushed() == [] && graph.brushed().length == inputData.length) {
                 // go back to default
                 // disable all sliders once no option is selected
                 slidersInfo.forEach(function (info) {
@@ -2208,9 +2180,13 @@
                 if (!graph.brushed()) {
                     // in case graph is just rendered
                     data = graph.data();
+                    console.log("graph.data()"+data.length);
                 } else {
                     data = graph.brushed();
+                    console.log("graph.brushed()"+data.length);
                 }
+
+                
 
                 // find tick values
                 data.forEach(function (d) {
