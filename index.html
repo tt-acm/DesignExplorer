@@ -112,6 +112,74 @@
     var key = "AIzaSyCSrF08UMawxKIb0m4JsA1mYE5NMmP36bY";
     var googleReturnObj ={}; //{"fileName":Google Drive ID} //ready for next update 
 
+function parseMsLink(inLink){
+    //clean first
+        csvID = "";
+        googleReturnObj ={ //{"fileName":Google Drive ID}
+            csvFiles:{},
+            imgFiles:{},
+            jsonFiles:{},
+            settingFiles:{}
+        };
+
+    //https://onedrive.live.com/?authkey=!AGm4wZL8GJALBa4&id=3E4BE58D7F58F8FA!75935&cid=3E4BE58D7F58F8FA
+    //var url = "https://1drv.ms/f/s!Avr4WH-N5Us-hNEf3V-AWTUuvsVZBQ"; 
+    var url = inLink;
+    var encodedUrl ="https://api.onedrive.com/v1.0/shares/u!" + btoa(url).slice(0,-1).replace('/','_').replace('+','-')+"/root?expand=children";
+    
+    d3.json(encodedUrl, function (data) {
+            var csvFiles = {};
+            var imgFiles ={};
+            var jsonFiles ={};
+            var settingFiles ={};
+
+            data.children.forEach(function (item) {
+                //googleReturnObj[item.name]=item.id
+                var fileName = item.name;
+                var fileType = item.file.mimeType;
+                var fileLink = item["@content.downloadUrl"];
+
+                if(fileName.toLowerCase().endsWith(".csv")){
+                    //this item is a data csv file
+                    csvFiles[fileName] = fileLink;//{"fileName":"fileURL"}
+                    
+                }else if(fileType.startsWith("image")){
+                    //this item is a image file
+                    imgFiles[fileName] = fileLink;
+
+                }else if(fileType === "application/json"){
+
+                    if (fileName.startsWith("setting")) {
+                        //this item is a Design Explore's setting file 
+                        settingFiles[fileName] = fileLink;
+                    } else {
+                        //this item is a json model
+                        jsonFiles[fileName] = fileLink;
+                    }
+                }
+
+            });
+
+             $.extend(googleReturnObj.csvFiles, csvFiles);
+            $.extend(googleReturnObj.imgFiles, imgFiles);
+            $.extend(googleReturnObj.jsonFiles, jsonFiles);
+            $.extend(googleReturnObj.settingFiles, settingFiles);
+
+
+                csvID = googleReturnObj.csvFiles["data.csv"];
+                
+                if (csvID === undefined) {
+                    alert("Could not find the data.csv file in this folder, please double check!");
+                } else {
+                    readyToLoad(csvID);
+                }
+
+  
+
+            
+
+    });
+}
 
     function prepareGFolder(GFolderLink) {
         //clean first
@@ -206,12 +274,17 @@
 
         var GFolderID = getGFolderID(serverFolderLink);
 
-        if (GFolderID.length == 28) {
+        if (serverFolderLink.includes("google.com")) {
             
             serverFolderLink = "https://www.googleapis.com/drive/v3/files?q=%27" + GFolderID + "%27+in+parents&key=" +key;
 
             document.getElementById("folderLinkID").value = GFolderID;
             prepareGFolder(serverFolderLink);
+
+        }else if (serverFolderLink.includes("1drv.ms")){
+            //"https://1drv.ms/f/s!Avr4WH-N5Us-hNEf3V-AWTUuvsVZBQ"; 
+            document.getElementById("folderLinkID").value = serverFolderLink;
+            parseMsLink(serverFolderLink);
 
         } else {
             document.getElementById("folderLinkID").value = serverFolderLink;
@@ -221,34 +294,38 @@
     }
 
     function getGFolderID(link) {
-        var GoogleID;
+        var linkID;
 
-        var isGoogleFolderLink;
+        // var isGoogleFolderLink;
+        // var is1DrFolderLink;
+        // if (link.includes("google.com")) {
+        //     isGoogleFolderLink = true;
+        // }else if(link.includes("1drv.ms")){
+        //     is1DrFolderLink =true;
+        // }
+
         if (link.includes("google.com")) {
-            isGoogleFolderLink = true;
-        }
 
-        if (isGoogleFolderLink) {
             if (link.includes("?usp=sharing")) {
-                GoogleID = link.replace("?usp=sharing", "");
+                linkID = link.replace("?usp=sharing", "");
             } else if (link.includes("open?id=")) {
-                GoogleID = link.replace("open?id=", "");
+                linkID = link.replace("open?id=", "");
             } else {
-                GoogleID = link;
+                linkID = link;
             }
 
-            GoogleID = GoogleID.split("/");
-            GoogleID = GoogleID[GoogleID.length - 1];
+            linkID = linkID.split("/");
+            linkID = linkID[linkID.length - 1];
 
         } else {
-            //server link
-            GoogleID = link;
+            //server link or ms
+            linkID = link;
         }
 
 
 
 
-        return GoogleID;
+        return linkID;
     }
 
     function readyToLoad(csvFilePathLink) {

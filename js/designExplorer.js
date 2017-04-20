@@ -70,7 +70,7 @@ function overwriteInitialGlobalValues() {
     // hide side thumbnail
     d3.select("#thumbnails-side_container").transition().duration(1500).style("height", "0px");
 
-
+    
     // re-set the viewer to 2D
     currentView = "2D";
     // set view toggle to 2D
@@ -79,4 +79,48 @@ function overwriteInitialGlobalValues() {
     initit3DViewer = true;
     d3.select("#zoomed").attr("class", "zoomed");
     d3.select("#viewer3d").attr("class", "zoomed hidden");
+}
+
+function parseMsLink(inLink){
+
+    https://onedrive.live.com/?authkey=!AGm4wZL8GJALBa4&id=3E4BE58D7F58F8FA!75935&cid=3E4BE58D7F58F8FA
+    var url = "https://1drv.ms/f/s!Avr4WH-N5Us-hNEf3V-AWTUuvsVZBQ"; 
+    var encodedUrl ="https://api.onedrive.com/v1.0/shares/u!" + btoa(url).slice(0,-1).replace('/','_').replace('+','-')+"/root?expand=children";
+    
+    d3.json(encodedUrl, function (data) {
+            var csvFiles = {};
+            var imgFiles ={};
+            var jsonFiles ={};
+            var settingFiles ={};
+
+            data.children.forEach(function (item) {
+                //googleReturnObj[item.name]=item.id
+                var fileName = item.name;
+                var fileType = item.file.mimeType;
+                var fileLink = item["@content.downloadUrl"];
+
+                if(fileName.toLowerCase().endsWith(".csv")){
+                    //this item is a data csv file
+                    csvFiles[fileName] = fileLink;//{"fileName":"fileURL"}
+                    
+                }else if(fileType.startsWith("image")){
+                    //this item is a image file
+                    imgFiles[fileName] = fileLink;
+
+                }else if(fileType === "application/json"){
+
+                    if (fileName.startsWith("setting")) {
+                        //this item is a Design Explore's setting file 
+                        settingFiles[fileName] = fileLink;
+                    } else {
+                        //this item is a json model
+                        jsonFiles[fileName] = fileLink;
+                    }
+                }
+
+            });
+
+            
+
+    });
 }
