@@ -79,9 +79,9 @@
     <link href="css/style.css" rel="stylesheet">
 
     <!-- Various libraries that vA3C depends upon -->
-    <script type="text/javascript" src="va3c_source_files/js/libs/dat.gui.js"></script>
     <link rel="stylesheet" type="text/css" href="va3c_source_files/css/datgui_styleOverride.css">
     <link rel="stylesheet" type="text/css" href="va3c_source_files/css/SPECTACLES.css">
+    <script type="text/javascript" src="va3c_source_files/js/libs/dat.gui.js"></script>
     <script type="text/javascript" src="va3c_source_files/js/libs/three.js"></script>
     <script type="text/javascript" src="va3c_source_files/js/libs/OrbitControls.js"></script>
     <script type="text/javascript" src="va3c_source_files/js/libs/Projector.js"></script>
@@ -103,326 +103,98 @@
     <!-- for clean parameters before new data comes in -->
 
 
+    <!-- Google Client Scripts -->
+    <script src="./js/GoogleClient.js" type="text/javascript" language="javascript"></script>
+
 </head>
 
 <script>
     //load FolderInfo ,Json data_ Mingbo Peng Modified--------------------------------------------------------------------
 
-    var csvID = "";
-    var key = "AIzaSyCSrF08UMawxKIb0m4JsA1mYE5NMmP36bY";
     var googleReturnObj ={}; //{"fileName":Google Drive ID} //ready for next update 
-
-function parseMsLink(inLink){
-    //clean first
-        csvID = "";
-        googleReturnObj ={ //{"fileName":Google Drive ID}
-            csvFiles:{},
-            imgFiles:{},
-            jsonFiles:{},
-            settingFiles:{}
-        };
-
-    //https://onedrive.live.com/?authkey=!AGm4wZL8GJALBa4&id=3E4BE58D7F58F8FA!75935&cid=3E4BE58D7F58F8FA
-    //var url = "https://1drv.ms/f/s!Avr4WH-N5Us-hNEf3V-AWTUuvsVZBQ"; 
-    var url = inLink;
-    var encodedUrl ="https://api.onedrive.com/v1.0/shares/u!" + btoa(url).slice(0,-1).replace('/','_').replace('+','-')+"/root?expand=children";
-    
-    d3.json(encodedUrl, function (data) {
-            var csvFiles = {};
-            var imgFiles ={};
-            var jsonFiles ={};
-            var settingFiles ={};
-
-            data.children.forEach(function (item) {
-                //googleReturnObj[item.name]=item.id
-                var fileName = item.name;
-                var fileType = item.file.mimeType;
-                var fileLink = item["@content.downloadUrl"];
-
-                if(fileName.toLowerCase().endsWith(".csv")){
-                    //this item is a data csv file
-                    csvFiles[fileName] = fileLink;//{"fileName":"fileURL"}
-                    
-                }else if(fileType.startsWith("image")){
-                    //this item is a image file
-                    imgFiles[fileName] = fileLink;
-
-                }else if(fileType === "application/json"){
-
-                    if (fileName.startsWith("setting")) {
-                        //this item is a Design Explore's setting file 
-                        settingFiles[fileName] = fileLink;
-                    } else {
-                        //this item is a json model
-                        jsonFiles[fileName] = fileLink;
-                    }
-                }
-
-            });
-
-             $.extend(googleReturnObj.csvFiles, csvFiles);
-            $.extend(googleReturnObj.imgFiles, imgFiles);
-            $.extend(googleReturnObj.jsonFiles, jsonFiles);
-            $.extend(googleReturnObj.settingFiles, settingFiles);
-
-
-                csvID = googleReturnObj.csvFiles["data.csv"];
-                
-                if (csvID === undefined) {
-                    alert("Could not find the data.csv file in this folder, please double check!");
-                } else {
-                    readyToLoad(csvID);
-                }
-
-  
-
-            
-
-    });
-}
-
-    function prepareGFolder(GFolderLink) {
-        //clean first
-        csvID = "";
-        googleReturnObj ={ //{"fileName":Google Drive ID}
-            csvFiles:{},
-            imgFiles:{},
-            jsonFiles:{},
-            settingFiles:{}
-        };
-
-
-        d3.json(GFolderLink, function (data) {
-            var csvFiles = {};
-            var imgFiles ={};
-            var jsonFiles ={};
-            var settingFiles ={};
-
-            data.files.forEach(function (item) {
-                //googleReturnObj[item.name]=item.id
-
-                if(item.mimeType === "text/csv"){
-                    //this item is a data csv file
-                    csvFiles[item.name] = item.id;
-                    
-                }else if(item.mimeType.startsWith("image")){
-                    //this item is a image file
-                    imgFiles[item.name] = item.id;
-
-                }else if(item.mimeType === "application/json"){
-
-                    if (item.name.startsWith("setting")) {
-                        //this item is a Design Explore's setting file 
-                        settingFiles[item.name] = item.id;
-                    } else {
-                        //this item is a json model
-                        jsonFiles[item.name] = item.id;
-                    }
-                }
-
-            });
-
-            $.extend(googleReturnObj.csvFiles, csvFiles);
-            $.extend(googleReturnObj.imgFiles, imgFiles);
-            $.extend(googleReturnObj.jsonFiles, jsonFiles);
-            $.extend(googleReturnObj.settingFiles, settingFiles);
-
-            if (data.nextPageToken) {
-                
-                if (GFolderLink.search("&pageToken=") > 0) {
-                    GFolderLink = GFolderLink.split("&pageToken=", 1)[0];
-                }
-                prepareGFolder(GFolderLink + "&pageToken=" + data.nextPageToken);
-
-            } else { //this is the last page, so return googleReturnObj directly
-                
-                csvID = googleReturnObj.csvFiles["data.csv"];
-                
-                if (csvID === undefined) {
-                    alert("Could not find the data.csv file in this folder, please double check!");
-                } else {
-                    readyToLoad("https://www.googleapis.com/drive/v3/files/" + csvID + "?alt=media&key=" + key);
-                }
-
-                //return googleReturnObj;
-                        
-
-            }
-
-
-        });
-    }
-
-    function MP_getGoogleIDandLoad(dataMethod) {
-        var serverFolderLink;
-        // if(isGoodForLoading ==0) return;
-        document.getElementById('csv-file').value = "";
-
-        if (dataMethod === "URL") {
-            var GfolderORUrl = getUrlVars().GFOLDER;
-            document.getElementById("folderLink").value = "";
-            if (GfolderORUrl.search("/") == -1) {
-                //GfolderORUrl is google folder ID
-                serverFolderLink = "https://drive.google.com/drive/folders/" + GfolderORUrl;
-            } else {
-                serverFolderLink = GfolderORUrl;
-            }
-
-        } else {
-            serverFolderLink = document.getElementById("folderLink").value;
-        }
-
-        var GFolderID = getGFolderID(serverFolderLink);
-
-        if (serverFolderLink.includes("google.com")) {
-            
-            serverFolderLink = "https://www.googleapis.com/drive/v3/files?q=%27" + GFolderID + "%27+in+parents&key=" +key;
-
-            document.getElementById("folderLinkID").value = GFolderID;
-            prepareGFolder(serverFolderLink);
-
-        }else if (serverFolderLink.includes("1drv.ms")){
-            //"https://1drv.ms/f/s!Avr4WH-N5Us-hNEf3V-AWTUuvsVZBQ"; 
-            document.getElementById("folderLinkID").value = serverFolderLink;
-            parseMsLink(serverFolderLink);
-
-        } else {
-            document.getElementById("folderLinkID").value = serverFolderLink;
-            readyToLoad(serverFolderLink + "/data.csv");
-        }
-
-    }
-
-    function getGFolderID(link) {
-        var linkID;
-
-        // var isGoogleFolderLink;
-        // var is1DrFolderLink;
-        // if (link.includes("google.com")) {
-        //     isGoogleFolderLink = true;
-        // }else if(link.includes("1drv.ms")){
-        //     is1DrFolderLink =true;
-        // }
-
-        if (link.includes("google.com")) {
-
-            if (link.includes("?usp=sharing")) {
-                linkID = link.replace("?usp=sharing", "");
-            } else if (link.includes("open?id=")) {
-                linkID = link.replace("open?id=", "");
-            } else {
-                linkID = link;
-            }
-
-            linkID = linkID.split("/");
-            linkID = linkID[linkID.length - 1];
-
-        } else {
-            //server link or ms
-            linkID = link;
-        }
-
-
-
-
-        return linkID;
+    var _folderInfo = {
+        "DE_PW":"",
+        "inLink":"",
+        "url":"",
+        "type":""
     }
 
     function readyToLoad(csvFilePathLink) {
-        if (document.getElementById("folderLinkID").value.length > 0) {
+        if (csvFilePathLink.length > 0) {
             // remove the current selection
             unloadPageContent();
             d3.csv(csvFilePathLink, loadDataToDesignExplorer);
             //window.prompt only if user input data, not from URL
             if (document.getElementById("folderLink").value) {
-                getStillLink();
+                showStillLink();
             }
 
-            d3.select("#welcome").style("display", "none");
+            //d3.select("#welcome").style("display", "none");
         } else {
             alert("You have to put Google Drive Folder information first!");
         }
 
     }
 
-    function getUrlVars() {
-        var vars = {};
-        var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
-            vars[key] = value;
-        });
-        return vars;
-    }
-
     function makeUrl(file,type) {
         var link;
-        var folderLinkID = document.getElementById("folderLinkID").value;
 
-        if (folderLinkID.length > 0) {
+        if (file.startsWith("http")) {
+            // file is a valid full Url path
+            // file: http://abcd.com/img01.png      
+            link = file;
+            
+        } else {        
             //loadImgfrom inputs
-            if (folderLinkID.search("/") > 0) {
-                //folderUrl is server link
-                link = folderLinkID + "/" + file;
-            } else {
-                //folderUrl is google folder ID
-                var gid;
+            // file: img01.png
+
+            if (_folderInfo.type === "userServerLink" ) {  //folder is on user's server
+                
+                link = _folderInfo.url + "/" + file;
+
+            } else {                                       //folder is one GoogleDrive or OneDrive
+                
                 if(type =="img"){
-                    gid = googleReturnObj.imgFiles[file];
+                    link = googleReturnObj.imgFiles[file];
                     
                 }else if(type =="threeD"){
-                    gid = googleReturnObj.jsonFiles[file];
+                    link = googleReturnObj.jsonFiles[file];
                     
                 }else if(type =="setting"){
-                    gid = googleReturnObj.settingFiles[file];
+                    link = googleReturnObj.settingFiles[file];
                     
                 }else if(type =="csv"){
-                    gid = googleReturnObj.csvFiles[file];
+                    link = googleReturnObj.csvFiles[file];
                     
                 }
-                
-                if (type =="img") {
-                    //image can load directly without key
-                    link = "https://docs.google.com/uc?id=" + gid + "&export=download";
-                    
-                } else {
-                    link = "https://www.googleapis.com/drive/v3/files/" + gid + "?alt=media&key=" + key;
-                }
-
 
             }
-        } else {
-            // file is the valid full Url path
-            link = file;
         }
 
         return link;
     }
 
     function getStillLink() {
-        if (document.getElementById("folderLinkID").value.length > 0) {
-            var msg;
-            if (window.location.href.includes("GFOLDER")) {
-                msg = window.location.href;
-            } else {
-                msg = window.location.href + "?GFOLDER=" + document.getElementById("folderLinkID").value;
-            }
+        if (_folderInfo.DE_PW.length > 0) {
+            //var msg;
+            var msg = document.location.origin +"/DesignExplorer/"+ _folderInfo.DE_PW;
+            
             window.prompt("This is the link that you can access next time without loading!", msg);
+
         } else {
             alert("You have to put online folder information first!");
         }
     }
 
-    function changeLabelSize(size) {
-        if (size == "largeLabel") {
-            d3.selectAll(".label")
-                .style("font-size", "95%");
-        } else if (size == "mediumLabel") {
-            d3.selectAll(".label")
-                .style("font-size", "85%");
-        } else if (size == "smallLabel") {
-            d3.selectAll(".label")
-                .style("font-size", "75%");
-        }
+    function showStillLink() {
+
+        d3.select("#loadFileLocally").style("display","none");
+        d3.select("#showStaticLink").classed("Show", true)
+            .selectAll("#myStudyID").html(_folderInfo.DE_PW);
     }
+
+
+
 
 </script>
 
@@ -675,25 +447,30 @@ function parseMsLink(inLink){
                     </button>
 
                     <h4 class="text-center" style="margin: 100px 0 30px 0;">
-                        From Google Drive or server:
+                        From online folder:
                     </h4>
                     <p class="text-center">
-                        <input type="text" id="folderLink" class="btn btn-default btn-sm toggled" name="imgfolder" placeholder="Google Drive or server link"
+                        <input type="text" id="folderLink" class="btn btn-default btn-sm toggled" name="imgfolder" placeholder="GoogleDrive, OneDrive, or server link"
                         />
                         <input type="text" id="folderLinkID" class="btn btn-default btn-hd" name="imgfolder" placeholder="FolderID" />
                         <button id="loadData" onclick="MP_getGoogleIDandLoad()" class="file-upload" style="border-radius:0 20px 20px 0;">Load Data</button>
                     </p>
                     <h5 class="text-center" style="color: #9d9d9d;">Please put data.csv, images, and 3D-json files into the same folder.(<a href="design_explorer_data/example/online/example.zip"
                             target="_blank">example.zip</a>)</h5>
-                    <h4 class="text-center" style="margin: 60px 0 60px 0;">
-                        Or
-                    </h4>
-                    <p class="text-center">
-                        <input type="file" id="csv-file" class="btn btn-default btn-sm" name="files">
-                    </p>
-                    <h5 class="text-center" style="color: #9d9d9d;">Please put valid images and 3D-json files URL. (Example:<a href="design_explorer_data/example/LocalCSV_example.csv"
-                            target="_blank">data.csv</a>)</h5>
-
+                    
+                    <div id="loadFileLocally">
+                        <h4 class="text-center" style="margin: 60px 0 60px 0;">
+                            Or
+                        </h4>
+                        <p class="text-center">
+                            <input type="file" id="csv-file" class="btn btn-default btn-sm" name="files">
+                        </p>
+                        <h5 class="text-center" style="color: #9d9d9d;">Please put valid images and 3D-json files URL. (Example:<a href="design_explorer_data/example/LocalCSV_example.csv" target="_blank">data.csv</a>)</h5>
+                    </div>
+                    <div id="showStaticLink" class="text-muted">
+                        <h5 class="col-lg-2 col-md-offset-2">StudyID: </h5><h5 class="col-lg-8"><code id="myStudyID">Passcode</code></h5>
+                        <h5 class="col-lg-2 col-md-offset-2">Link For Share: </h5><h5 class="col-lg-8">http://DesignExplorer/<code id="myStudyID">Passcode</code></h5>
+                    </div>
                 </div>
 
             </div>
@@ -2120,6 +1897,10 @@ function parseMsLink(inLink){
 
 
         window.onload = function () {
+            
+            gapi.client.setApiKey(Gkey);
+            gapi.client.load('urlshortener', 'v1');
+
             if (window.location.href.toUpperCase().search("GFOLDER") > 0) {
                 // this is old user with google drive files.
                 d3.select("#welcome").style("display", "none");
@@ -2150,6 +1931,9 @@ function parseMsLink(inLink){
 
                     d3.select("#loadDataContainer")
                         .style("display", "block");
+                    
+                    d3.select("#loadFileLocally").style("display", "block");
+                    d3.select("#showStaticLink").classed("Show",false);
 
                     //clean previous inputs
                     document.getElementById('csv-file').value = "";

@@ -27,8 +27,6 @@ function unloadPageContent() {
 
 }
 
-
-
 function overwriteInitialGlobalValues() {
     /*
     	// This function initiates all the global values for the page
@@ -81,18 +79,70 @@ function overwriteInitialGlobalValues() {
     d3.select("#viewer3d").attr("class", "zoomed hidden");
 }
 
-function parseMsLink(inLink){
+function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
+        vars[key] = value;
+    });
+    return vars;
+}
 
-    https://onedrive.live.com/?authkey=!AGm4wZL8GJALBa4&id=3E4BE58D7F58F8FA!75935&cid=3E4BE58D7F58F8FA
-    var url = "https://1drv.ms/f/s!Avr4WH-N5Us-hNEf3V-AWTUuvsVZBQ"; 
-    var encodedUrl ="https://api.onedrive.com/v1.0/shares/u!" + btoa(url).slice(0,-1).replace('/','_').replace('+','-')+"/root?expand=children";
-    
-    d3.json(encodedUrl, function (data) {
-            var csvFiles = {};
-            var imgFiles ={};
-            var jsonFiles ={};
-            var settingFiles ={};
+var Gkey = "AIzaSyCSrF08UMawxKIb0m4JsA1mYE5NMmP36bY";
 
+function prepareGFolder(folderLink) {
+
+    googleReturnObj ={ //{"fileName":Google Drive ID}
+        csvFiles:{},
+        imgFiles:{},
+        jsonFiles:{},
+        settingFiles:{}
+    };
+
+    var folder = {
+        "DE_PW":"",
+        "inLink":"",
+        "url": "",
+        "type": ""
+    }
+
+    folder = folderLink;
+
+    d3.json(folder.url, function (data) {
+        var csvFiles = {};
+        var imgFiles ={};
+        var jsonFiles ={};
+        var settingFiles ={};
+
+        if (folder.type=== "GoogleDrive") { //this is google returned obj
+            data.files.forEach(function (item) {
+                var GLink = "";
+                //googleReturnObj[item.name]=item.id
+
+                if(item.mimeType === "text/csv"){
+                    GLink = "https://www.googleapis.com/drive/v3/files/" + item.id + "?alt=media&key=" + Gkey;
+                    //this item is a data csv file
+                    csvFiles[item.name] = GLink;
+                    
+                }else if(item.mimeType.startsWith("image")){
+                    GLink = "https://docs.google.com/uc?id=" + item.id + "&export=download";
+                    //this item is a image file
+                    imgFiles[item.name] = GLink;
+
+                }else if(item.mimeType === "application/json"){
+                    GLink = "https://www.googleapis.com/drive/v3/files/" + item.id + "?alt=media&key=" + Gkey;
+
+                    if (item.name.startsWith("setting")) {
+                        //this item is a Design Explore's setting file 
+                        settingFiles[item.name] = GLink;
+                    } else {
+                        //this item is a json model
+                        jsonFiles[item.name] = GLink;
+                    }
+                }
+
+            });
+
+        } else if(folder.type=== "OneDrive") { //this is OneDrive returned obj
             data.children.forEach(function (item) {
                 //googleReturnObj[item.name]=item.id
                 var fileName = item.name;
@@ -119,8 +169,182 @@ function parseMsLink(inLink){
                 }
 
             });
+        }
 
+        $.extend(googleReturnObj.csvFiles, csvFiles);
+        $.extend(googleReturnObj.imgFiles, imgFiles);
+        $.extend(googleReturnObj.jsonFiles, jsonFiles);
+        $.extend(googleReturnObj.settingFiles, settingFiles);
+
+        if (data.nextPageToken !== undefined) {
             
+            if (folderLink.search("&pageToken=") > 0) {
+                folderLink = folderLink.split("&pageToken=", 1)[0];
+            }
+            prepareGFolder(folderLink + "&pageToken=" + data.nextPageToken);
+
+        } else { //this is the last page, so return googleReturnObj directly
+            
+            var csvFile = googleReturnObj.csvFiles["data.csv"];
+            
+            if (csvFile === undefined) {
+                alert("Could not find the data.csv file in this folder, please double check!");
+            } else {
+                readyToLoad(csvFile);
+            }
+   
+        }
+
 
     });
 }
+
+function MP_getGoogleIDandLoad(dataMethod) {
+    var serverFolderLink;
+    // if(isGoodForLoading ==0) return;
+    document.getElementById('csv-file').value = "";
+
+    if (dataMethod === "URL") {
+        var GfolderORUrl = getUrlVars().GFOLDER;
+        document.getElementById("folderLink").value = "";
+        if (GfolderORUrl.search("/") == -1) {
+            //GfolderORUrl is google folder ID
+            serverFolderLink = "https://drive.google.com/drive/folders/" + GfolderORUrl;
+        } else {
+            serverFolderLink = GfolderORUrl;
+        }
+
+    } else {
+        serverFolderLink = document.getElementById("folderLink").value;
+    }
+
+    checkInputLink(serverFolderLink, function (d) {
+        _folderInfo = d; //set global foler obj
+
+        if (d.type === "userServerLink") {
+            //this is a user's server link, and load csv directly
+            readyToLoad(d.url + "/data.csv");
+        }else {
+            //this is from Google or MS
+            prepareGFolder(d);
+        }
+
+        //console.log(link);
+    })
+
+}
+
+function changeLabelSize(size) {
+    if (size == "largeLabel") {
+        d3.selectAll(".label")
+            .style("font-size", "95%");
+    } else if (size == "mediumLabel") {
+        d3.selectAll(".label")
+            .style("font-size", "85%");
+    } else if (size == "smallLabel") {
+        d3.selectAll(".label")
+            .style("font-size", "75%");
+    }
+}
+
+function checkInputLink(link, callback){
+    var folderLinkObj = {
+        "DE_PW":"",
+        "inLink":"",
+        "url":"",
+        "type":""
+    }
+
+    if (link.includes("google.com")) {
+
+        var GFolderID = getGFolderID(link);
+        folderLinkObj.DE_PW = "DE_G"; 
+        folderLinkObj.url ="https://www.googleapis.com/drive/v3/files?q=%27" + GFolderID + "%27+in+parents&key=" +Gkey;
+        folderLinkObj.type = "GoogleDrive";
+
+    }else if (link.includes("1drv.ms")){
+
+        //"https://1drv.ms/f/s!Avr4WH-N5Us-hNEf3V-AWTUuvsVZBQ"; 
+        //document.getElementById("folderLinkID").value = serverFolderLink;
+        folderLinkObj.DE_PW = "DE_O";
+        folderLinkObj.url = "https://api.onedrive.com/v1.0/shares/u!" + encodeUrl(link) +"/root?expand=children";
+        folderLinkObj.type = "OneDrive";
+
+    }else{
+        folderLinkObj.DE_PW = "DE_S";
+        folderLinkObj.url = link;
+        folderLinkObj.type = "userServerLink";
+    } 
+
+    makeStudyCaseId(link, function name(d) {
+        folderLinkObj.DE_PW +=d;
+        })
+    folderLinkObj.inLink = link;
+    callback(folderLinkObj);
+
+}
+
+function encodeUrl(url) {
+    var link = btoa(url).slice(0,-1).replace('/','_').replace('+','-');
+    return link;
+}
+
+function decodeUrl(encodedString) {
+    
+    var url = atob(encodedString).replace('_','/').replace('-','+');
+    return url;
+}
+
+function getGFolderID(link) {
+    var linkID;
+
+    if (link.includes("google.com")) {
+
+        if (link.includes("?usp=sharing")) {
+            linkID = link.replace("?usp=sharing", "");
+        } else if (link.includes("open?id=")) {
+            linkID = link.replace("open?id=", "");
+        } else {
+            linkID = link;
+        }
+
+        linkID = linkID.split("/");
+        linkID = linkID[linkID.length - 1];
+
+    } else {
+        //server link or ms
+        linkID = link;
+    }
+
+    return linkID;
+}
+
+
+function makeStudyCaseId(rawUrl, callback){
+
+    var longUrl=rawUrl;
+    var request = gapi.client.urlshortener.url.insert({
+      'resource': {
+      'longUrl': longUrl
+    }
+    });
+    request.execute(function(response) 
+    {
+        var DE_PW ="";
+        if(response.id != null)
+        {
+            //response.id:  https://goo.gl/bMOO
+            DE_PW = response.id.split("/");
+            DE_PW = DE_PW[DE_PW.length-1];  //DE_PW: bMOO
+            
+        }
+        else
+        {
+            DE_PW = encodeUrl(rawUrl)
+        }
+
+        //console.log(DE_PW);
+        callback(DE_PW);
+ 
+    });
+ }
