@@ -323,28 +323,34 @@ function getGFolderID(link) {
 function makeStudyCaseId(rawUrl, callback){
 
     var longUrl=rawUrl;
-    var request = gapi.client.urlshortener.url.insert({
-      'resource': {
-      'longUrl': longUrl
-    }
-    });
-    request.execute(function(response) 
-    {
-        var DE_PW ="";
-        if(response.id != null)
-        {
-            //response.id:  https://goo.gl/bMOO
-            DE_PW = response.id.split("/");
-            DE_PW = DE_PW[DE_PW.length-1];  //DE_PW: bMOO
-            
-        }
-        else
-        {
-            DE_PW = encodeUrl(rawUrl)
-        }
 
-        //console.log(DE_PW);
-        callback(DE_PW);
- 
+    gapi.client.setApiKey(Gkey);
+    gapi.client.load('urlshortener', 'v1', function () {
+        var request = gapi.client.urlshortener.url.insert({
+        'resource': {
+        'longUrl': longUrl
+        }
+        });
+        request.execute(function(response) 
+        {
+            var DE_PW ="";
+            if(response.id != null)
+            {
+                //response.id:  https://goo.gl/bMOO
+                DE_PW = response.id.split("/");
+                DE_PW = DE_PW[DE_PW.length-1];  //DE_PW: bMOO
+                
+            }
+            else
+            {
+                DE_PW = encodeUrl(rawUrl)
+            }
+
+            //console.log(DE_PW);
+            callback(DE_PW);
+    
+        });
     });
+
+    
  }

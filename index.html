@@ -1898,10 +1898,7 @@
 
         window.onload = function () {
             
-            gapi.client.setApiKey(Gkey);
-            gapi.client.load('urlshortener', 'v1');
-
-            if (window.location.href.toUpperCase().search("GFOLDER") > 0) {
+            if (window.location.href.toUpperCase().search("GFOLDER") > 0 || window.location.href.toUpperCase().search("/DE_") > 0) {
                 // this is old user with google drive files.
                 d3.select("#welcome").style("display", "none");
                 MP_getGoogleIDandLoad("URL");
