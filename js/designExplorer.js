@@ -190,6 +190,7 @@ function prepareGFolder(folderLink) {
             if (csvFile === undefined) {
                 alert("Could not find the data.csv file in this folder, please double check!");
             } else {
+                _googleReturnObj = googleReturnObj;
                 readyToLoad(csvFile);
             }
    
@@ -330,12 +331,14 @@ function getGFolderID(link) {
 }
 
 
-function CopyToClipboard(text,id) {
-    document.querySelector("#"+id).select();
-    // Copy to the clipboard
-    document.execCommand('copy');
-}
 
+function CopyToClipboard(element) {
+  var $temp = $("<input>");
+  $("body").append($temp);
+  $temp.val($(element).text()).select();
+  document.execCommand("copy");
+  $temp.remove();
+}
 
  function makeUrlId(rawUrl,callback) {
      var longUrl=rawUrl;

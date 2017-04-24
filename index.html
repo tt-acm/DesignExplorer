@@ -111,7 +111,12 @@
 <script>
     //load FolderInfo ,Json data_ Mingbo Peng Modified--------------------------------------------------------------------
 
-    var googleReturnObj ={}; //{"fileName":Google Drive ID} //ready for next update 
+    var _googleReturnObj ={ //{"fileName":Google Drive ID}
+        csvFiles:{},
+        imgFiles:{},
+        jsonFiles:{},
+        settingFiles:{}
+    }; 
     var _folderInfo = {
         "DE_PW":"",
         "inLink":"",
@@ -123,7 +128,10 @@
         if (csvFilePathLink.length > 0) {
             // remove the current selection
             unloadPageContent();
-            d3.csv(csvFilePathLink, loadDataToDesignExplorer);
+            d3.csv(csvFilePathLink, function (data) {
+                loadDataToDesignExplorer(data);
+                loadSetting();
+            } );
             //window.prompt only if user input data, not from URL
             if (document.getElementById("folderLink").value) {
                 showStillLink();
@@ -155,16 +163,16 @@
             } else {                                       //folder is one GoogleDrive or OneDrive
                 
                 if(type =="img"){
-                    link = googleReturnObj.imgFiles[file];
+                    link = _googleReturnObj.imgFiles[file];
                     
                 }else if(type =="threeD"){
-                    link = googleReturnObj.jsonFiles[file];
+                    link = _googleReturnObj.jsonFiles[file];
                     
                 }else if(type =="setting"){
-                    link = googleReturnObj.settingFiles[file];
+                    link = _googleReturnObj.settingFiles[file];
                     
                 }else if(type =="csv"){
-                    link = googleReturnObj.csvFiles[file];
+                    link = _googleReturnObj.csvFiles[file];
                     
                 }
 
@@ -488,18 +496,18 @@
                         <h5 class="text-center" style="color: #9d9d9d;">Please put valid images and 3D-json files URL. (Example:<a href="design_explorer_data/example/LocalCSV_example.csv" target="_blank">data.csv</a>)</h5>
                     </div>
                     <div id="showStaticLink" class="text-muted">
-                        <h5 class="col-lg-3 col-md-offset-1">Link: </h5>
+                        <h5 class="col-lg-2 col-md-offset-1">Link: </h5>
                         <h5 class="col-lg-8">
                             <code id="myStudyID">Passcode</code>
-                            <button id="copy-link" class="btn btn-xs btn-default" onclick="CopyToClipboard(this, myStudyID)">
+                            <button id="copy-link" class="btn btn-xs btn-default" onclick="CopyToClipboard('#myStudyID')" data-toggle="tooltip" data-placement="bottom" title="Click to copy the link!">
                                 <span class="glyphicon glyphicon-share"></span>
                             </button>
                         </h5>
                         
-                        <h5 class="col-lg-3 col-md-offset-1">Short Link: </h5>
+                        <h5 class="col-lg-2 col-md-offset-1">Short Link: </h5>
                         <h5 class="col-lg-8">
                             <code id="showShortUrl">Passcode</code>
-                            <button id="copy-showShortUrl" class="btn btn-xs btn-default " onclick="CopyToClipboard(this, showShortUrl)">
+                            <button id="copy-showShortUrl" class="btn btn-xs btn-default " onclick="CopyToClipboard('#showShortUrl')" data-toggle="tooltip" data-placement="bottom" title="Click to copy the link!">
                                 <span class="glyphicon glyphicon-share"></span>
                             </button>
                         </h5>
@@ -538,6 +546,7 @@
 
 
     <!-- Bootstrap Core JavaScript -->
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
     <script src="bootstrap_side_bar/js/bootstrap.min.js"></script>
 
     <!-- Hide sliders if user asked for a stripped down version -->
@@ -925,16 +934,12 @@
                     nextImgKey = imgKeyList[currentImgIndex+1];
 
                 }else{
-
                     nextImgKey = imgKeyList[0];
                 }
 
                 return nextImgKey;
 
             }
-
-
-            
 
         }
 
@@ -2512,14 +2517,18 @@
             var userDimScale = {};
 
             dimKeys.forEach(function(data){
-                dimScales[data] = graph.dimensions()[data].yscale.domain();
+
+                if (graph.dimensions()[data].type != "string") {
+                    dimScales[data] = graph.dimensions()[data].yscale.domain();
+                }
+                
             });
 
             //remove current
             scaleDiv.selectAll("#scaleList .form-group").remove();
 
             var selectList = scaleDiv.selectAll('#scaleList')
-                        .data(dimKeys).enter()
+                        .data(d3.keys(dimScales)).enter()
                         .append("div")
                         .attr("class", "form-group form-inline");
                     
@@ -2557,19 +2566,35 @@
                      return;
                  }
 
-                 d3.keys(userDimScale).forEach( function (d) {
-                     chart.dimensions()[d].yscale.domain(userDimScale[d]);
-                     chart.yscaleDomains()[d] = userDimScale[d];
-                 })
+                 updateScales(chart,userDimScale);
                  
-                //  chart.reRender();
-                 update_colors(pcIsColoredBy);
-                 
-
                  d3.select("#showSetting")
                     .style("display", "none");
              })
 
+
+
+             d3.select("#dataSetting  #saveUserSetting").on("click", function(d){
+                 if (userDimScale === undefined) {
+                     return;
+                 }
+
+                 var exportScales = saveSetting_Scales(dimScales,userDimScale);
+                 saveSetting(exportScales);
+
+
+             })
+
+        }
+
+        function updateScales(chart, scales) {
+            d3.keys(scales).forEach( function (d) {
+                     chart.dimensions()[d].yscale.domain(scales[d]);
+                     chart.yscaleDomains()[d] = scales[d];
+                 })
+                 
+            //chart.reRender();
+            update_colors(pcIsColoredBy);
         }
 
         function OnScaleChanged(params,oldScale, userScale) {
@@ -2591,8 +2616,50 @@
             return newScale;
         }
 
-        function setDomains(params) {
+        function saveSetting_Scales(allScales, userScales) {
+            var exportScales = allScales;
+
+            d3.keys(userScales).forEach( function (d) {
+                exportScales[d] = userScales[d];
+            })
+
+            return (exportScales);
+
+        }
+
+        function saveSetting(Scales) {
+            var exportJson = {
+                "scales":{}
+            };
+
+            exportJson.scales = Scales;
+            var JsonContent = "data:attachment/json;charset=utf-8,";
             
+
+            JsonContent += encodeURI(JSON.stringify(exportJson));
+
+            var a = d3.select("body")
+                .append("a")
+                .attr("href", JsonContent)
+                .attr("target", '_blank')
+                .attr("download", 'settings.json');
+
+            a[0][0].click();
+
+        }
+
+        function loadSetting() {
+            var settingFiles =  d3.keys(_googleReturnObj.settingFiles);
+
+            if (settingFiles.length ==0) {
+                return;
+            }
+
+            var jsonFile = settingFiles[0];
+
+            d3.json(_googleReturnObj.settingFiles[jsonFile], function (d) {
+                updateScales(graph,d.scales);
+            })
         }
 
     </script>
