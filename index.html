@@ -104,7 +104,7 @@
 
 
     <!-- Google Client Scripts -->
-    <script src="./js/GoogleClient.js" type="text/javascript" language="javascript"></script>
+    <!--<script src="./js/GoogleClient.js" type="text/javascript" language="javascript"></script>-->
 
 </head>
 
@@ -187,10 +187,30 @@
     }
 
     function showStillLink() {
+        var studyCaseLink = encodeUrl(_folderInfo.inLink) ;
+        var studyLongUrl = document.location.origin +"/DesignExplorer/?ID="+ studyCaseLink
 
         d3.select("#loadFileLocally").style("display","none");
-        d3.select("#showStaticLink").classed("Show", true)
-            .selectAll("#myStudyID").html(_folderInfo.DE_PW);
+        
+        makeUrlId(studyLongUrl, function name(d) {
+            _folderInfo.DE_PW = d;
+            var studyEncodedUrl = "";
+
+            if(d.length ==6){ // google url id
+                
+                studyEncodedUrl = document.location.origin +"/DesignExplorer/?ID="+_folderInfo.DE_PW;
+                d3.select("#showShortUrl").html("https://goo.gl/"+d);
+
+            }else{
+                studyEncodedUrl = studyLongUrl;
+            }
+                d3.select("#showStaticLink").classed("Show", true)
+                    .selectAll("#myStudyID").html(studyEncodedUrl);
+            
+            
+        })
+        
+
     }
 
 
@@ -468,8 +488,21 @@
                         <h5 class="text-center" style="color: #9d9d9d;">Please put valid images and 3D-json files URL. (Example:<a href="design_explorer_data/example/LocalCSV_example.csv" target="_blank">data.csv</a>)</h5>
                     </div>
                     <div id="showStaticLink" class="text-muted">
-                        <h5 class="col-lg-2 col-md-offset-2">StudyID: </h5><h5 class="col-lg-8"><code id="myStudyID">Passcode</code></h5>
-                        <h5 class="col-lg-2 col-md-offset-2">Link For Share: </h5><h5 class="col-lg-8">http://DesignExplorer/<code id="myStudyID">Passcode</code></h5>
+                        <h5 class="col-lg-3 col-md-offset-1">Link: </h5>
+                        <h5 class="col-lg-8">
+                            <code id="myStudyID">Passcode</code>
+                            <button id="copy-link" class="btn btn-xs btn-default" onclick="CopyToClipboard(this, myStudyID)">
+                                <span class="glyphicon glyphicon-share"></span>
+                            </button>
+                        </h5>
+                        
+                        <h5 class="col-lg-3 col-md-offset-1">Short Link: </h5>
+                        <h5 class="col-lg-8">
+                            <code id="showShortUrl">Passcode</code>
+                            <button id="copy-showShortUrl" class="btn btn-xs btn-default " onclick="CopyToClipboard(this, showShortUrl)">
+                                <span class="glyphicon glyphicon-share"></span>
+                            </button>
+                        </h5>
                     </div>
                 </div>
 
@@ -1898,7 +1931,7 @@
 
         window.onload = function () {
             
-            if (window.location.href.toUpperCase().search("GFOLDER") > 0 || window.location.href.toUpperCase().search("/DE_") > 0) {
+            if (window.location.href.toUpperCase().search("GFOLDER") > 0 || window.location.href.toUpperCase().search("ID=") > 0) {
                 // this is old user with google drive files.
                 d3.select("#welcome").style("display", "none");
                 MP_getGoogleIDandLoad("URL");

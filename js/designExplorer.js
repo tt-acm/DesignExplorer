@@ -79,9 +79,9 @@ function overwriteInitialGlobalValues() {
     d3.select("#viewer3d").attr("class", "zoomed hidden");
 }
 
-function getUrlVars() {
+function getUrlVars(rawUrl) {
     var vars = {};
-    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
+    var parts = rawUrl.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
         vars[key] = value;
     });
     return vars;
@@ -201,24 +201,35 @@ function prepareGFolder(folderLink) {
 
 function MP_getGoogleIDandLoad(dataMethod) {
     var serverFolderLink;
-    // if(isGoodForLoading ==0) return;
+    
     document.getElementById('csv-file').value = "";
 
     if (dataMethod === "URL") {
-        var GfolderORUrl = getUrlVars().GFOLDER;
+        
         document.getElementById("folderLink").value = "";
-        if (GfolderORUrl.search("/") == -1) {
-            //GfolderORUrl is google folder ID
-            serverFolderLink = "https://drive.google.com/drive/folders/" + GfolderORUrl;
-        } else {
-            serverFolderLink = GfolderORUrl;
-        }
+
+        var inUrl = window.location.href;
+        decodeUrlID(
+            inUrl, 
+            function(d){
+                loadFromUrl(d);
+            }
+        );
+
+        console.log("2:"+serverFolderLink)
 
     } else {
         serverFolderLink = document.getElementById("folderLink").value;
+        loadFromUrl(serverFolderLink);
     }
 
-    checkInputLink(serverFolderLink, function (d) {
+    
+
+}
+
+function loadFromUrl(rawUrl) {
+
+    checkInputLink(rawUrl, function (d) {
         _folderInfo = d; //set global foler obj
 
         if (d.type === "userServerLink") {
@@ -231,7 +242,6 @@ function MP_getGoogleIDandLoad(dataMethod) {
 
         //console.log(link);
     })
-
 }
 
 function changeLabelSize(size) {
@@ -258,7 +268,7 @@ function checkInputLink(link, callback){
     if (link.includes("google.com")) {
 
         var GFolderID = getGFolderID(link);
-        folderLinkObj.DE_PW = "DE_G"; 
+        //folderLinkObj.DE_PW = "DE_G"; 
         folderLinkObj.url ="https://www.googleapis.com/drive/v3/files?q=%27" + GFolderID + "%27+in+parents&key=" +Gkey;
         folderLinkObj.type = "GoogleDrive";
 
@@ -266,19 +276,19 @@ function checkInputLink(link, callback){
 
         //"https://1drv.ms/f/s!Avr4WH-N5Us-hNEf3V-AWTUuvsVZBQ"; 
         //document.getElementById("folderLinkID").value = serverFolderLink;
-        folderLinkObj.DE_PW = "DE_O";
+        //folderLinkObj.DE_PW = "DE_O";
         folderLinkObj.url = "https://api.onedrive.com/v1.0/shares/u!" + encodeUrl(link) +"/root?expand=children";
         folderLinkObj.type = "OneDrive";
 
     }else{
-        folderLinkObj.DE_PW = "DE_S";
+        //folderLinkObj.DE_PW = "DE_S";
         folderLinkObj.url = link;
         folderLinkObj.type = "userServerLink";
     } 
 
-    makeStudyCaseId(link, function name(d) {
-        folderLinkObj.DE_PW +=d;
-        })
+    // makeUrlId(link, function name(d) {
+    //     folderLinkObj.DE_PW +=d;
+    //     })
     folderLinkObj.inLink = link;
     callback(folderLinkObj);
 
@@ -291,7 +301,7 @@ function encodeUrl(url) {
 
 function decodeUrl(encodedString) {
     
-    var url = atob(encodedString).replace('_','/').replace('-','+');
+    var url = atob(encodedString.replace('_','/').replace('-','+')+"=");
     return url;
 }
 
@@ -320,19 +330,28 @@ function getGFolderID(link) {
 }
 
 
-function makeStudyCaseId(rawUrl, callback){
+function CopyToClipboard(text,id) {
+    document.querySelector("#"+id).select();
+    // Copy to the clipboard
+    document.execCommand('copy');
+}
 
-    var longUrl=rawUrl;
 
-    gapi.client.setApiKey(Gkey);
-    gapi.client.load('urlshortener', 'v1', function () {
-        var request = gapi.client.urlshortener.url.insert({
-        'resource': {
-        'longUrl': longUrl
-        }
-        });
-        request.execute(function(response) 
-        {
+ function makeUrlId(rawUrl,callback) {
+     var longUrl=rawUrl;
+
+     $.ajax({
+          type: 'POST',
+          contentType: 'application/json',
+          url: "https://www.googleapis.com/urlshortener/v1/url?key="+Gkey,
+          data: "{ longUrl: '"+longUrl+"'}",
+          error: function(e) {
+
+            callback(encodeUrl(longUrl));
+
+          },
+          dataType: 'json',
+          success: function(response) {
             var DE_PW ="";
             if(response.id != null)
             {
@@ -341,16 +360,55 @@ function makeStudyCaseId(rawUrl, callback){
                 DE_PW = DE_PW[DE_PW.length-1];  //DE_PW: bMOO
                 
             }
-            else
-            {
-                DE_PW = encodeUrl(rawUrl)
-            }
-
-            //console.log(DE_PW);
             callback(DE_PW);
-    
-        });
-    });
-
-    
+        	}
+        });  
  }
+
+function decodeUrlID(rawUrl, callback) {
+    var serverFolderLink="";
+    var urlVars = getUrlVars(rawUrl)
+    var GfolderORUrl = urlVars.GFOLDER;
+    var DEID = urlVars.ID;
+
+    //old GFOLDER
+    if (GfolderORUrl != undefined) {
+
+        if (GfolderORUrl.search("/") == -1) {
+            //GfolderORUrl is google folder ID
+            serverFolderLink = "https://drive.google.com/drive/folders/" + GfolderORUrl;
+        } else {
+            serverFolderLink = GfolderORUrl;
+        }
+
+        callback(serverFolderLink);
+
+    } else if(DEID != undefined) {
+
+        //linkID = rawUrl.split("/");
+        //linkID = linkID[linkID.length - 1];
+        linkID = DEID;
+        //console.log(linkID)
+        
+        if (linkID.length === 6) {
+            d3.json("https://www.googleapis.com/urlshortener/v1/url?key="+ Gkey+"&shortUrl=http://goo.gl/"+linkID, 
+                function(d){
+                    var GID = (getUrlVars(d.longUrl).ID);
+                    serverFolderLink = decodeUrl(GID);
+                    callback(serverFolderLink);
+                }
+            )
+        } else {
+            serverFolderLink = decodeUrl(linkID);
+            callback(serverFolderLink);
+        }
+        
+
+        
+
+    }else {
+
+    }
+
+
+}
