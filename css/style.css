@@ -4,7 +4,7 @@ body {
     font-size: 12px;
 }
 
-div {
+.modal-content{
     background-color: white;
 }
 
@@ -113,10 +113,10 @@ div#thumbnails-btm_container.rightChartFullScreenToggled
     right: 0;
     width: 25%;
 
-    -webkit-transition: all 0.3s ease;
-    -moz-transition: all 0.3s ease;
-    -o-transition: all 0.3s ease;
-    transition: all 0.3s ease;
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
     
 }
 div#thumbnails-btm_container.onRight,
@@ -143,10 +143,7 @@ div#thumbnails-btm.col-lg-12{
 #zoomedArea {
     overflow: hidden;
     margin-top: 10px;
-    -webkit-transition: all 0.3s ease;
-    -moz-transition: all 0.3s ease;
-    -o-transition: all 0.3s ease;
-    transition: all 0.3s ease;
+
 }
 
 #legend {
@@ -206,7 +203,7 @@ a#copyRightButton {
     margin: 5px;
 }*/
 
-.popupWindow{
+.popupWindow, .modal-backdrop{
     background-color: rgba(0, 0, 0, 0.30);
 }
 
@@ -278,15 +275,11 @@ g.cell text {
 }
 
 #scaleList .control-label{
-    width: 15%;
+    width: 30%;
+    text-align:left
 }
 
-#loadFileLocally, #showStaticLink{
-    -webkit-transition: all 0.3s ease;
-    -moz-transition: all 0.3s ease;
-    -o-transition: all 0.3s ease;
-    transition: all 0.3s ease;
-}
+
 
 #showStaticLink{
     opacity: 0;

@@ -73,6 +73,7 @@
 
     <!-- Bootstrap Core CSS -->
     <link href="bootstrap_side_bar/css/bootstrap.min.css" rel="stylesheet">
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
 
     <!-- Custom CSS -->
     <link href="bootstrap_side_bar/css/simple-sidebar.css" rel="stylesheet">
@@ -101,7 +102,8 @@
     <!-- Design Explorer Scripts -->
     <script src="./js/designExplorer.js" type="text/javascript" language="javascript"></script>
     <!-- for clean parameters before new data comes in -->
-
+    
+  
 
     <!-- Google Client Scripts -->
     <!--<script src="./js/GoogleClient.js" type="text/javascript" language="javascript"></script>-->
@@ -131,11 +133,14 @@
             d3.csv(csvFilePathLink, function (data) {
                 loadDataToDesignExplorer(data);
                 loadSetting();
+                updateLayoutOnDeselect();
             } );
             //window.prompt only if user input data, not from URL
             if (document.getElementById("folderLink").value) {
                 showStillLink();
             }
+
+            //updateLayoutOnDeselect();
 
             //d3.select("#welcome").style("display", "none");
         } else {
@@ -182,23 +187,34 @@
         return link;
     }
 
-    function getStillLink() {
-        if (_folderInfo.DE_PW.length > 0) {
-            //var msg;
-            var msg = document.location.origin +"/DesignExplorer/"+ _folderInfo.DE_PW;
+    // function getStillLink() {
+    //     if (_folderInfo.DE_PW.length > 0) {
+    //         //var msg;
+    //         var msg = document.location.origin +"/DesignExplorer/"+ _folderInfo.DE_PW;
             
-            window.prompt("This is the link that you can access next time without loading!", msg);
+    //         window.prompt("This is the link that you can access next time without loading!", msg);
 
-        } else {
-            alert("You have to put online folder information first!");
-        }
-    }
+    //     } else {
+    //         alert("You have to put online folder information first!");
+    //     }
+    // }
 
     function showStillLink() {
-        var studyCaseLink = encodeUrl(_folderInfo.inLink) ;
-        var studyLongUrl = document.location.origin +"/DesignExplorer/?ID="+ studyCaseLink
 
-        d3.select("#loadFileLocally").style("display","none");
+        var studyCaseLink = encodeUrl(_folderInfo.inLink);
+
+        if (studyCaseLink.length===0) {
+            var warningString = "There is no static link for you if you are not using online shared folder.";
+            d3.select("#myStudyID").html(warningString);
+            // d3.select("#myStudyID").html(warningString);
+            $("#showStillLink").modal()
+            return;
+        }
+
+        //valid online folder available
+        var studyLongUrl = document.location.origin +"/DesignExplorer/?ID="+ studyCaseLink;
+        d3.select("#welcome").style("display","none");
+        
         
         makeUrlId(studyLongUrl, function name(d) {
             _folderInfo.DE_PW = d;
@@ -212,9 +228,9 @@
             }else{
                 studyEncodedUrl = studyLongUrl;
             }
-                d3.select("#showStaticLink").classed("Show", true)
-                    .selectAll("#myStudyID").html(studyEncodedUrl);
-            
+
+            d3.selectAll("#myStudyID").html(studyEncodedUrl);
+            $("#showStillLink").modal()
             
         })
         
@@ -303,7 +319,7 @@
                                     <button id="remove" class="btn btn-default btn-xs">Exclude Selection</button>
                                     <button id="keep" class="btn btn-default btn-xs">Zoom to Selection</button>
                                     <button id="savecsv" class="btn btn-default btn-xs" onclick="saveToCSV()">Save Selection to File</button>
-                                    <button id="stilllink" class="btn btn-default btn-xs" onclick="getStillLink()">My Static Link</button>
+                                    <button id="stilllink" class="btn btn-default btn-xs" onclick="showStillLink()">My Static Link</button>
                                     <a class="btn btn-default btn-xs" href="http://www.mpendesign.com/category/tutorial/" target="_blank">Tutorial</a>
                                     <a href="https://github.com/tt-acm/DesignExplorer/wiki" class="btn btn-default btn-xs" target="_blank">
                                         Info <span class="glyphicon glyphicon-new-window"></span>
@@ -384,13 +400,14 @@
                                 <label>
                                     <input type="radio" class="toggleView" name="visMode" value="3D" id="threeDRadio"> 3D</label>
 
-                                <button type="button" class="btn btn-default btn-xs" id="toggleComments" style="margin-right:10px; margin-left:5px; margin-top: 2px;"
-                                    title="Add Comments">
+                                <button type="button" class="btn btn-default btn-xs" id="toggleComments" title="Add Comments">
                                     <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                                 </button>
-                                <button type="button" class="btn btn-default btn-xs" id="fullscreentoggle" style="margin-right:10px; margin-left:5px; margin-top: 2px;"
-                                    title="Full Screen Toggle">
+                                <button type="button" class="btn btn-default btn-xs" id="fullscreentoggle" title="Full Screen Toggle">
                                     <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
+                                </button>
+                                <button type="button" class="btn btn-default btn-xs"title="Unselect" onclick="updateLayoutOnDeselect()">
+                                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                                 </button>
 
                             </form>
@@ -495,47 +512,66 @@
                         </p>
                         <h5 class="text-center" style="color: #9d9d9d;">Please put valid images and 3D-json files URL. (Example:<a href="design_explorer_data/example/LocalCSV_example.csv" target="_blank">data.csv</a>)</h5>
                     </div>
-                    <div id="showStaticLink" class="text-muted">
-                        <h5 class="col-lg-2 col-md-offset-1">Link: </h5>
-                        <h5 class="col-lg-8">
-                            <code id="myStudyID">Passcode</code>
-                            <button id="copy-link" class="btn btn-xs btn-default" onclick="CopyToClipboard('#myStudyID')" data-toggle="tooltip" data-placement="bottom" title="Click to copy the link!">
-                                <span class="glyphicon glyphicon-share"></span>
-                            </button>
-                        </h5>
-                        
-                        <h5 class="col-lg-2 col-md-offset-1">Short Link: </h5>
-                        <h5 class="col-lg-8">
-                            <code id="showShortUrl">Passcode</code>
-                            <button id="copy-showShortUrl" class="btn btn-xs btn-default " onclick="CopyToClipboard('#showShortUrl')" data-toggle="tooltip" data-placement="bottom" title="Click to copy the link!">
-                                <span class="glyphicon glyphicon-share"></span>
-                            </button>
-                        </h5>
-                    </div>
+                    
                 </div>
 
             </div>
 
+            <!--show static link-->
+            <!-- Modal -->
+            <div class="modal fade" id="showStillLink" role="dialog">
+                <div class="modal-dialog">
+                
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Static link</h4>
+                    </div>
+                    <div class="modal-body"> 
+                        <h5 >Link for share </h5>
+                        <p >
+                            <code id="myStudyID">Not available</code>
+                            <button id="copy-link" class="btn btn-xs btn-default" onclick="CopyToClipboard('#myStudyID')" data-toggle="tooltip" data-placement="bottom" title="Click to copy the link!">
+                                <span class="glyphicon glyphicon-share"></span>
+                            </button>
+                        </p> 
+                        <h5 >Short link </h5>
+                        <p >
+                            <code id="showShortUrl">Not available</code>
+                            <button id="copy-showShortUrl" class="btn btn-xs btn-default " onclick="CopyToClipboard('#showShortUrl')" data-toggle="tooltip" data-placement="bottom" title="Click to copy the link!">
+                                <span class="glyphicon glyphicon-share"></span>
+                            </button>
+                        </p> 
+                        
+                    </div>
+                    
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+                
+                </div>
+            </div>
+
             <!--data setting -->
             <div class="row-fluid col-lg-12 row-centered vertical-center fullscreen popupWindow" id="showSetting" style=" display:none">
-                <div class="col-sm-12 col-centered" id="dataSetting" style="width: 700px;height: 500px">
+                <div class="col-sm-12 col-centered" id="dataSetting" style="width: 700px;height: 600px">
                     <button class="btn btn-default btn-sm pull-right popupWindowClose">
                         <span class="glyphicon glyphicon-remove"></span>
                     </button>
 
-                    <h4 class="text-center" style="margin: 60px 0 30px 0;">
-                        set dimension scale:
-                    </h4>
-                    <div class="text-center col-xs-11 col-md-offset-1" id="scaleList">
+                    <h1 class="text-center" style="margin: 60px 0 30px 0;">
+                        Set dimension scales
+                    </h1>
+                    <div class="text-center col-xs-12" id="scaleList">
                         <!--placeholder for scale setting list-->
                     </div>
 
                     <div class="col-xs-6 col-md-offset-3" style="margin-top: 2.5em;">
                         <button id="setUserSetting" type="button" class="btn col-xs-4 col-md-offset-1">Set</button>
-                        <button id="saveUserSetting" type="button" class="btn col-xs-4 col-md-offset-1">Save</button>
+                        <button id="saveUserSetting" type="button" class="btn col-xs-4 col-md-offset-1" data-toggle="tooltip" data-placement="bottom" title ="Export the setting file, and save to where data.csv located!">Save</button>
                     </div>
-
-                    
 
                 </div>
             </div>
@@ -546,7 +582,6 @@
 
 
     <!-- Bootstrap Core JavaScript -->
-    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
     <script src="bootstrap_side_bar/js/bootstrap.min.js"></script>
 
     <!-- Hide sliders if user asked for a stripped down version -->
@@ -994,63 +1029,59 @@
 
             var height = d3.select("#graph").style("height").replace("px", "");
 
-            if (height > 1) { //for some reasons, height ! == 0 doesn't work at here
+            if (height > 0) { 
                 // collapse
                 d3.select("#graph")
                     .attr("class", "parcoords collapse 2s")
-                    .transition().duration(200)
                     .style("height", "0px");
+
+                //mirror collapse behavior with radar chart
+                $("#radarChart").collapse("hide");
 
                 //disable buttons
                 d3.select("#reset").classed("disabled", true);
                 d3.select("#remove").classed("disabled", true);
                 d3.select("#keep").classed("disabled", true);
 
-
                 if (graph.highlight().length !== 0) {
-
                     d3.selectAll("#zoomedArea")
-                        .style("height", cleanHeight + "px")
-                        .each("end", function () {
-                            // resize view
-                            if (currentView == "3D") {
-                                va3cViewer.viewerDiv.resize();
-                            }
-                        });
-
-                } else {
-
-                    //mirror collapse behavior with radar chart
-                    $("#radarChart").collapse("hide");
-
-                    d3.select("#thumbnails-btm_container")
-                        .transition().duration(500).style("height", cleanHeight + "px");
+                            .style("height", cleanHeight + "px");
+                            // .each("end", function () {
+                            //     // resize view
+                            //     if (currentView == "3D") {
+                            //         va3cViewer.viewerDiv.resize();
+                            //     }
+                            // });
                 }
+
+                d3.select("#thumbnails-btm_container").style("height", cleanHeight + "px");
 
             } else {
                 // collapse in
                 d3.select("#graph")
                     .transition("ease out").attr("class", "parcoords collapse in")
-                    .transition().duration(350)
                     .style("height", graphHeight + "px");
+
+                 //mirror collapse behavior with radar chart
+                $("#radarChart").collapse("show");
 
                 //enable buttons
                 d3.select("#reset").classed("disabled", false);
                 d3.select("#remove").classed("disabled", false);
                 d3.select("#keep").classed("disabled", false);
 
-                // if there is a selecion let it in
                 if (graph.highlight().length !== 0) {
                     d3.selectAll("#zoomedArea")
-                        .transition().duration(1000).style("height", zoomedHeight + "px");
-                } else {
-
-                    //mirror collapse behavior with radar chart
-                    $("#radarChart").collapse("show");
-
-                    d3.select("#thumbnails-btm_container")
-                        .transition().duration(1000).style("height", zoomedHeight + "px");
+                            .style("height", zoomedHeight + "px");
+                            // .each("end", function () {
+                            //     // resize view
+                            //     if (currentView == "3D") {
+                            //         va3cViewer.viewerDiv.resize();
+                            //     }
+                            // });
                 }
+                d3.select("#thumbnails-btm_container").style("height", zoomedHeight + "px");
+                
             }
         });
 
@@ -1061,21 +1092,7 @@
     <script type="text/javascript">
         // this script imports the csv file and does the initial data processing
         // such as separating inputs, outputs, images, etc.
-        var originalData, //csv as it is imported
-            cleanedData = [], //all the columns to be used for parallel coordinates
-            numericalData = [],
-            inputData = [], // columns with input values - to be used for sliders
-            outputData = [], // columns with output values - to be used for radar graph
-            slidersInfo = [], // {name:'inputName', tickValues : [sorted set of values]},
-            currentSliderValues = {}, // collector for values
-            allDataCollector = {},
-            slidersMapping = {}, // I collect the data for all the input sliders here so I can use it to remap the sliders later
-            ids = [], // Here I collect all data based on a unique ID from inputs
-            cleanedParams4pc = {};
-            imageLinkKeys = [];
-
-
-
+        
         function analyzeInputData(originalData) {
             var keys = d3.keys(originalData[0]);
             // var id = 0;
@@ -1233,13 +1250,7 @@
     <script type="text/javascript">
         var graph;
         //set up heights of divs
-        var windowWidth = 0,
-            windowHeight = 0,
-            cleanHeight = 0, 
-            cleanWidth = 0,
-            graphHeight = 0, 
-            zoomedHeight = 0, 
-            opacity = 0.4;
+        var opacity = 0.4;
 
 
         var pcIsColoredBy;
@@ -1247,16 +1258,6 @@
         var color = d3.scale.linear()
             .range(["#3182bd", "#f33"]);
 
-        function calWidthAndHeight() {
-            windowWidth = window.innerWidth,
-            windowHeight = window.innerHeight,
-            cleanHeight = windowHeight - 85, // 2
-            cleanWidth = windowWidth - 100,
-            graphHeight = (cleanHeight / 3)-24, //remove 22+2 top tool button
-            zoomedHeight = (cleanHeight*2 / 3)-24; //remove 22+2 top tool button
-        }
-
-        calWidthAndHeight();
 
         var scatterHeight = d3.select("#ScChartWrapper").style("height").replace("px", "");
 
@@ -1677,9 +1678,9 @@
         function addPlaceHolderImage() {
             // add an image holder with toggle between 2D and 3D
             // just toggle between 2d and 3d
-            d3.select("#zoomed")
-                .style("height", zoomedHeight)
-                .append("img");
+            // d3.select("#zoomed")
+            //     .style("height", zoomedHeight)
+            //     .append("img");
             //.attr("src", "https://raw.githubusercontent.com/tt-acm/DesignExplorer/gh-pages/design_explorer_data/img/placeholder/placeholder.png?token=ACx89Xl7jGRusi88wWHKH97INGjRifH5ks5Vy6YGwA%3D%3D");
         }
 
@@ -1769,6 +1770,8 @@
                     graph.reset();
                     updateGraph(cleanedData);
                     update_colors(pcIsColoredBy);
+
+                    loadSetting();
 
                 });
 
@@ -1892,6 +1895,9 @@
     <!-- import data  //  onload functions to close intro window and read input data -->
     <script>
         function loadDataToDesignExplorer(data) {
+
+            overwriteInitialGlobalValues();
+
             // analyze data and separate them as input/output and general data
             analyzeInputData(data);
 
@@ -2024,6 +2030,10 @@
 
         }; // end of window.onload
 
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();   
+    }); 
+
     </script>
 
     <!-- Setting up sliders -->
@@ -2104,10 +2114,10 @@
                 if (!graph.brushed()) {
                     // in case graph is just rendered
                     data = graph.data();
-                    console.log("graph.data()"+data.length);
+                    //console.log("graph.data()"+data.length);
                 } else {
                     data = graph.brushed();
-                    console.log("graph.brushed()"+data.length);
+                    //console.log("graph.brushed()"+data.length);
                 }
 
                 
@@ -2201,7 +2211,6 @@
 
                 currentSliderValues[changedSliderName] = newValue;
             } else {
-                console.log(newValue);
                 return;
             }
 
@@ -2290,6 +2299,7 @@
         var currentView = "2D";
         var initit3DViewer = true;
         var fullscreen = false;
+        var va3cViewer;
 
         // Initiate 3D viewer
         function initiate3DViewer() {
@@ -2336,6 +2346,7 @@
                 // user is changing to 3D view so let's load it.
                 //$.when(loadNew3DModel()).then(va3cViewer.viewerDiv.resize());
                 loadNew3DModel();
+                
             }
 
 
@@ -2354,7 +2365,10 @@
             d3.select(".Spectacles_Footer").remove();
 
             // resize the view
-            va3cViewer.viewerDiv.resize();
+            //if (va3cViewer !==undefined) {
+                va3cViewer.viewerDiv.resize();
+            
+            
 
         }
 
@@ -2376,13 +2390,13 @@
 
             //make sure width and height are 100%
 
-            d3.select("#viewer3d")
-                .style("width", "100%")
-                .style("height", "100%");
+            // d3.select("#viewer3d")
+            //     .style("width", "100%")
+            //     .style("height", "100%");
 
-            d3.select("#zoomed")
-                .style("width", "100%")
-                .style("height", "100%");
+            // d3.select("#zoomed")
+            //     .style("width", "100%")
+            //     .style("height", "100%");
 
             //change full screen icon
             d3.select("button#fullscreentoggle").select("span")
@@ -2390,11 +2404,13 @@
                     return fullscreen ? "glyphicon glyphicon-resize-small" : "glyphicon glyphicon-fullscreen";
                 });
 
+
             if (initit3DViewer) {
                 return 0;
             } else {
                 va3cViewer.viewerDiv.resize();
             }
+
 
         }
 
