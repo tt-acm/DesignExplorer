@@ -35,7 +35,7 @@ d3.parcoords = function (config) {
         showControlPoints: false,
         hideAxis: [],
         flipAxes: [],
-        animationTime: 1100 // How long it takes to flip the axis when you double click
+        animationTime: 300 // How long it takes to flip the axis when you double click
     };
 
     __.chartSize=[__.width,__.height]; 
@@ -512,6 +512,9 @@ d3.parcoords = function (config) {
         if (!d3.keys(__.dimensions).length) {
             pc.detectDimensions();
         }
+        var highlightedData = pc.highlighted();
+
+        
 
         //pc.autoscale();
         pc.updateAxes();
@@ -519,6 +522,10 @@ d3.parcoords = function (config) {
         pc.render[__.mode]();
 
         events.render.call(this);
+
+        if (highlightedData.length > 0) {
+            pc.highlight(highlightedData);
+        }
         return this;
     };
 
@@ -848,8 +855,6 @@ d3.parcoords = function (config) {
         if (pc.brushMode() === "1D-axes" || pc.brushMode() === "1D-axes-multi") {
             pc.brushExtents(state);
         }
-
-        
 
         pc.reRender();
     }

@@ -4,7 +4,7 @@ body {
     font-size: 12px;
 }
 
-.modal-content{
+.modal-content, #viewer2d, #viewer3d{
     background-color: white;
 }
 

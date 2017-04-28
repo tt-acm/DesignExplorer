@@ -237,12 +237,9 @@
 
     }
 
-
-
-
 </script>
 
-<body>
+<body >
 
     <!-- Navbar -->
     <nav class="navbar navbar-default" style="margin-bottom:0">
@@ -1260,9 +1257,10 @@
 
 
         var scatterHeight = d3.select("#ScChartWrapper").style("height").replace("px", "");
+        window.addEventListener("resize", myFunction);
 
         //redraw the charts when window size changes
-        $(window).resize(function () { 
+        function myFunction () { 
             calWidthAndHeight();
 
             var newGraphWidth = windowWidth*0.75-30; // (col-lg-9 x0.73) - (boside padding 15*2)
@@ -1295,7 +1293,7 @@
             }            
             //console.log(graphHeight+"x"+zoomedHeight);
 
-        });
+        };
 
 
         function drawParallelCoordinates() {
@@ -1405,16 +1403,25 @@
 
             // change color of lines
             // set domain of color scale
-            var values = graph.data().map(function (d) {
-                return parseFloat(valueToNumber(d[dim], dim));
-            });
-
+            var values = graph.data().map(function (d) { 
+                    return parseFloat(valueToNumber(d[dim], dim)); 
+                });
+            
+            var highlightedData = graph.highlighted();
+            
+            
             colorDomain = color.domain(d3.extent(values));
 
             // change colors for each line
             graph.color(function (d) {
                 return color([valueToNumber(d[dim], dim)]);
-            }).reRender();
+            }).render();
+
+            //keep highlighted data
+            if (highlightedData.length>0) {
+                graph.highlight(highlightedData)
+            } 
+            
 
             // change border color for images
             d3.selectAll("img#thumbnails-btm, img#thumbnails-side").style("border-color", function (d) {
@@ -1699,12 +1706,13 @@
                     .style("width", newWidth + "px");
 
             //redraw pcChart
-            var highlightedData = graph.highlighted().length !== 0 ? graph.highlighted() : 0;
+            var highlightedData = graph.highlighted();
             //graph.width(newWidth).height(newHeight);
             graph.chartSize([newWidth,newHeight]);
             //graph.reRender();
-            if (highlightedData !== 0) graph.highlight(highlightedData);
+            if (highlightedData.length > 0) graph.highlight(highlightedData);
             updateLabels();
+            update_colors(pcIsColoredBy);
 
         }
 
@@ -1933,7 +1941,7 @@
 
 
             // add place holder image to zoomed area
-            addPlaceHolderImage();
+            //addPlaceHolderImage();
 
             // set up events between graphs
             setupEvents();
@@ -2365,9 +2373,9 @@
             d3.select(".Spectacles_Footer").remove();
 
             // resize the view
-            //if (va3cViewer !==undefined) {
+            if (va3cViewer !==undefined) {
                 va3cViewer.viewerDiv.resize();
-            
+            }
             
 
         }
