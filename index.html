@@ -400,11 +400,9 @@
                         <div class="pull-right" id="vis">
                             <form>
 
-                                <label>
-                                    <input type="radio" class="toggleView" name="visMode" value="2D" checked> 2D</label>
+                                <label><input type="radio" class="toggleView" name="visMode" value="2D" checked> 2D</label>
                                 <!-- show 2D image on load-->
-                                <label>
-                                    <input type="radio" class="toggleView" name="visMode" value="3D" id="threeDRadio"> 3D</label>
+                                <label id="threeDLabel"><input type="radio" class="toggleView" name="visMode" value="3D" id="threeDRadio"> 3D</label>
 
                                 <button type="button" class="btn btn-default btn-xs" id="toggleComments" title="Add Comments">
                                     <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
@@ -1108,8 +1106,8 @@
             keys.forEach(function (key) {
                 if(key.startsWith("img")){
                     imageLinkKeys.push(key);
-                    //console.log(imageLinkKeys);
                 }
+
             })
 
             originalData.forEach(function (row, rowCount) {
@@ -1167,6 +1165,13 @@
                 cleanedData.forEach(function (d) {
                     d.Rating = 0;
                 });
+            }
+
+            //remove threeD radio
+            if (keys.indexOf("threeD") == -1) { 
+                d3.select("#threeDLabel").classed("hidden",true);
+            }else{
+                d3.select("#threeDLabel").classed("hidden", false);
             }
 
         }
