@@ -208,7 +208,8 @@ a#copyRightButton {
     margin: 5px;
 }*/
 
-.popupWindow, .modal-backdrop{
+.popupWindow, 
+.modal-backdrop{
     background-color: rgba(0, 0, 0, 0.30);
 }
 
@@ -232,14 +233,16 @@ a#copyRightButton {
     
 }
 
-/*#ScChartWrapper.rightChartFullScreenToggled{
+#ScChartWrapper.rightChartFullScreenToggled{
     width: 75%;
     left: 15px;
     z-index: 9;
     position: absolute;
-}*/
+    background: white;
+}
 
-.col-lg-3 .chartSide.rightChartFullScreenToggled, .col-lg-3 .row-fluid.rightChartFullScreenToggled{
+.col-lg-3 .chartSide.rightChartFullScreenToggled, 
+.col-lg-3 .row-fluid.rightChartFullScreenToggled{
     width: 100%;
     float: left;
 }

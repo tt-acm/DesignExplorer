@@ -646,69 +646,69 @@
     <script type="text/javascript">
         // update radar chart
         var scatterChart;
-        function updateRadarChart() {
-            //format data for radar chart
-            var selectedData;
-            var outputKeys = d3.keys(outputData[0]);
-            if (graph.brushed().length > 0) {
-                selectedData = graph.brushed();
-            } else {
-                selectedData = graph.data();
+        // function updateRadarChart() {
+        //     //format data for radar chart
+        //     var selectedData;
+        //     var outputKeys = d3.keys(outputData[0]);
+        //     if (graph.brushed().length > 0) {
+        //         selectedData = graph.brushed();
+        //     } else {
+        //         selectedData = graph.data();
 
-            }
+        //     }
 
-            //var selectedData = graph.brushed();
-            selectedDataFormatted = [];
-            radarChartColors = [];
+        //     //var selectedData = graph.brushed();
+        //     selectedDataFormatted = [];
+        //     radarChartColors = [];
 
-            selectedData.forEach(function (d) {
-                selectedDataFormatted.push(formatData(d));
-                //debugger;
-                radarChartColors.push(color(d[pcIsColoredBy]));
+        //     selectedData.forEach(function (d) {
+        //         selectedDataFormatted.push(formatData(d));
+        //         //debugger;
+        //         radarChartColors.push(color(d[pcIsColoredBy]));
 
-            });
+        //     });
 
 
-            //get height, width for radar chart
-            //we want the graph to be centered above the thumbnails
-            //65px is to fit text
-            var divWidth = d3.select("#thumbnails-side").style("width").replace("px", "");
-            var pcHeight = d3.select("#graph").style("height").replace("px", "");
-            var rcDimension = Math.min(pcHeight, divWidth) - 65;
+        //     //get height, width for radar chart
+        //     //we want the graph to be centered above the thumbnails
+        //     //65px is to fit text
+        //     var divWidth = d3.select("#thumbnails-side").style("width").replace("px", "");
+        //     var pcHeight = d3.select("#graph").style("height").replace("px", "");
+        //     var rcDimension = Math.min(pcHeight, divWidth) - 65;
 
-            radarGrey = "rgb(160,160,160)";
+        //     radarGrey = "rgb(160,160,160)";
 
-            //configure radar chart
-            cfg = ({
-                w: rcDimension,
-                h: rcDimension,
-                color: function () {
-                    return radarGrey;
-                },
-                radius: 4,
-                maxValue: 100,
-                extraWidthX: divWidth - rcDimension,
-                extraWidthY: 65,
-                translateX: (divWidth - rcDimension) / 2,
-                translateY: 65 / 2,
-                levels: 5,
-            });
+        //     //configure radar chart
+        //     cfg = ({
+        //         w: rcDimension,
+        //         h: rcDimension,
+        //         color: function () {
+        //             return radarGrey;
+        //         },
+        //         radius: 4,
+        //         maxValue: 100,
+        //         extraWidthX: divWidth - rcDimension,
+        //         extraWidthY: 65,
+        //         translateX: (divWidth - rcDimension) / 2,
+        //         translateY: 65 / 2,
+        //         levels: 5,
+        //     });
 
-            RadarChart.draw("#radarChart", selectedDataFormatted, cfg);
+        //     RadarChart.draw("#radarChart", selectedDataFormatted, cfg);
 
-            //move lines to back
-            d3.selectAll(".area").moveToBack();
+        //     //move lines to back
+        //     d3.selectAll(".area").moveToBack();
 
-            //did not work using CSS
-            d3.selectAll(".rclegend")
-                .style("fill", "steelblue")
-                .style("font-size", 9);
-        }
+        //     //did not work using CSS
+        //     d3.selectAll(".rclegend")
+        //         .style("fill", "steelblue")
+        //         .style("font-size", 9);
+        // }
 
         // clean radar chart
-        function cleanRadarChart() {
-            d3.selectAll(".radar-chart").remove();
-        }
+        // function cleanRadarChart() {
+        //     d3.selectAll(".radar-chart").remove();
+        // }
 
         // add scatter chart
         function addScatterChart() {
@@ -828,39 +828,48 @@
             isRightChartFullScreenToggled = !isRightChartFullScreenToggled;
 
             d3.selectAll(
-                    "#ScChartWrapper,.chartSide,.col-lg-3 .row-fluid,.thumbnailSide,#copyRightButton, .scatter-matrix-container circle, #PcChartWrapper, #thumbnails-btm_container, #thumbnails-btm_container #thumbnails-btm,  #zoomedArea"
+                    "#ScChartWrapper," +
+                    ".chartSide,"+
+                    ".col-lg-3 .row-fluid,"+
+                    ".thumbnailSide,"+
+                    "#copyRightButton, "+
+                    ".scatter-matrix-container circle,"+
+                    " #PcChartWrapper, "+
+                    "#thumbnails-btm_container, "+
+                    "#thumbnails-btm_container #thumbnails-btm, "+
+                    " #zoomedArea"
                 )
                 .classed("rightChartFullScreenToggled", isRightChartFullScreenToggled);
 
-            // d3.select("#thumbnails-btm_container")
-            //     .classed("col-lg-3", isRightChartFullScreenToggled)
-            //     .classed("col-lg-12", !isRightChartFullScreenToggled);
+        //     // d3.select("#thumbnails-btm_container")
+        //     //     .classed("col-lg-3", isRightChartFullScreenToggled)
+        //     //     .classed("col-lg-12", !isRightChartFullScreenToggled);
 
-            // d3.select("#thumbnails-btm_container #thumbnails-btm")
-            //     .classed("onRight", isRightChartFullScreenToggled)
+        //     // d3.select("#thumbnails-btm_container #thumbnails-btm")
+        //     //     .classed("onRight", isRightChartFullScreenToggled)
 
 
 
-            // d3.selectAll(".col-lg-9,#thumbnails-btm_container") // hide left side
-            //     .transition().delay(200)
-            //     .style("display", function () {
-            //         if (isRightChartFullScreenToggled) {
-            //             return "none";
-            //         } else {
-            //             return "block";
-            //         }
-            //     });
+        //     // d3.selectAll(".col-lg-9,#thumbnails-btm_container") // hide left side
+        //     //     .transition().delay(200)
+        //     //     .style("display", function () {
+        //     //         if (isRightChartFullScreenToggled) {
+        //     //             return "none";
+        //     //         } else {
+        //     //             return "block";
+        //     //         }
+        //     //     });
 
             if (isRightChartFullScreenToggled) {
-                var newDim =  windowHeight - 200;
-                
+                //var newDim =  windowHeight - 200;
+                d3.select("#thumbnails-btm_container").style("height", cleanHeight + "px");
             } else {
-                var newDim =  d3.select("#graph").style("height").replace("px", "") - 20;
+                d3.select("#thumbnails-btm_container").style("height", zoomedHeight+"px");
             }
-            // resizeScChart(newDim, newDim);
 
+            //update_sc_colorsOnly();
+             //resizeScChart(newDim, newDim);
 
-            
 
         });
 
