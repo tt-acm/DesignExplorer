@@ -94,6 +94,8 @@ output {
     left: 0;
     position: absolute;
     overflow: hidden;
+    background-image: url(/img/thorntontomasetti.jpg);
+    background-size: contain;
 }
 
 
@@ -102,9 +104,11 @@ output {
     height: 100%;
     width: auto;
     display: block;
-    /* to center the imge - hopefully! */
     margin-left: auto;
     margin-right: auto;
+    min-width: 300px;
+    background-image: url(/img/thorntontomasetti.jpg);
+    background-size: contain;
 }
 div#thumbnails-btm_container.onRight, 
 div#thumbnails-btm_container.rightChartFullScreenToggled
@@ -143,6 +147,7 @@ div#thumbnails-btm.col-lg-12{
 #zoomedArea {
     overflow: hidden;
     margin-top: 10px;
+    min-height: 0;
 
 }
 
