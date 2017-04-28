@@ -884,8 +884,9 @@
 
 
             // show zoomed area
+            var thumbnailsHeight =  d3.select("#thumbnails-btm_container").style("height").replace("px", "");
             d3.select("#zoomedArea")
-                .style("height", zoomedHeight + "px");
+                .style("height", thumbnailsHeight + "px");
             
 
             // move btm thumbnail to right
@@ -1871,6 +1872,13 @@
                         var newpcWidth = windowWidth - 30;  
                         resizePcChart(newpcWidth,newpcHeight);
 
+                        
+                        if (graph.highlighted().length>0) {
+                            d3.selectAll("#thumbnails-btm_container, #zoomedArea").style("height", (cleanHeight - newpcHeight - 24) + "px");
+                        } else {
+                            d3.select("#thumbnails-btm_container").style("height", (cleanHeight - newpcHeight - 24) + "px");
+                        }
+
                     } else {
                         // set left chart full screen
                         var oldpcHeight = graphHeight;
@@ -1886,10 +1894,12 @@
                         //back to normal size mode
                         resizePcChart(oldpcWidth,oldpcHeight);
 
-                        //show left side thumbnails FIXME: when fullscreen size back to normal size, zoomed area not showing properly
-                        // d3.select("#thumbnails-side_container")
-                        //     .transition().duration(1500)
-                        //     .style("height", (newpcHeight * 2) - oldpcHeight + "px");
+                        if (graph.highlighted().length > 0) {
+                                d3.selectAll("#thumbnails-btm_container, #zoomedArea").style("height", zoomedHeight + "px");
+                            } else {
+                                d3.select("#thumbnails-btm_container").style("height", zoomedHeight + "px");
+                            }
+
                     }
 
                 });
