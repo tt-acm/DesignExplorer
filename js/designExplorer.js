@@ -386,15 +386,15 @@ function CopyToClipboard(element) {
           },
           dataType: 'json',
           success: function(response) {
-            var DE_PW ="";
+            var UrlID ="";
             if(response.id != null)
             {
                 //response.id:  https://goo.gl/bMOO
-                DE_PW = response.id.split("/");
-                DE_PW = DE_PW[DE_PW.length-1];  //DE_PW: bMOO
+                UrlID = response.id.split("/");
+                UrlID = UrlID[UrlID.length-1];  //UrlID: bMOO
                 
             }
-            callback(DE_PW);
+            callback(UrlID);
         	}
         });  
  }

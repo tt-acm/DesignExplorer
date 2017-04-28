@@ -202,13 +202,22 @@
     function showStillLink() {
 
         var studyCaseLink = encodeUrl(_folderInfo.inLink);
+        var studyEncodedUrl = "";
 
         if (studyCaseLink.length===0) {
             var warningString = "There is no static link for you if you are not using online shared folder.";
             d3.select("#myStudyID").html(warningString);
-            // d3.select("#myStudyID").html(warningString);
             $("#showStillLink").modal()
             return;
+
+        }else if (_folderInfo.DE_PW.length>0){
+            // if _folderInfo.DE_PW existed, just return.
+            studyEncodedUrl = document.location.origin + "/DesignExplorer/?ID=" + _folderInfo.DE_PW; 
+            d3.select("#showShortUrl").html("https://goo.gl/" +_folderInfo.DE_PW);
+            d3.select("#myStudyID").html(studyEncodedUrl); 
+            $("#showStillLink").modal();
+            return;
+
         }
 
         //valid online folder available
@@ -216,20 +225,20 @@
         d3.select("#welcome").style("display","none");
         
         
-        makeUrlId(studyLongUrl, function name(d) {
-            _folderInfo.DE_PW = d;
-            var studyEncodedUrl = "";
+        makeUrlId(studyLongUrl, function name(UrlId) {
+            _folderInfo.DE_PW = UrlId;
+            
 
-            if(d.length ==6){ // google url id
+            if(UrlId.length ==6){ // google url id
                 
                 studyEncodedUrl = document.location.origin +"/DesignExplorer/?ID="+_folderInfo.DE_PW;
-                d3.select("#showShortUrl").html("https://goo.gl/"+d);
+                d3.select("#showShortUrl").html("https://goo.gl/"+ _folderInfo.DE_PW);
 
             }else{
                 studyEncodedUrl = studyLongUrl;
             }
 
-            d3.selectAll("#myStudyID").html(studyEncodedUrl);
+            d3.select("#myStudyID").html(studyEncodedUrl);
             $("#showStillLink").modal()
             
         })
