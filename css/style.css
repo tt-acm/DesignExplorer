@@ -94,7 +94,7 @@ output {
     left: 0;
     position: absolute;
     overflow: hidden;
-    background-image: url(/img/thorntontomasetti.jpg);
+    background-image: url(../img/thorntontomasetti.jpg);
     background-size: contain;
 }
 
@@ -107,7 +107,7 @@ output {
     margin-left: auto;
     margin-right: auto;
     min-width: 300px;
-    background-image: url(/img/thorntontomasetti.jpg);
+    background-image: url(../img/thorntontomasetti.jpg);
     background-size: contain;
 }
 div#thumbnails-btm_container.onRight, 
