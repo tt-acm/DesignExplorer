@@ -913,7 +913,7 @@
             d3.select("#viewer2d")
                 .select("img")
                 .data(selectedImage.data())
-                .attr("src", makeUrl(selectedImage.datum().img,"img"))
+                .attr("src", makeUrl(selectedImage.datum()[imageLinkKeys[0]],"img"))
                 .attr("title", getTitle)
                 .attr("id",imageLinkKeys[0])
                 .on("click", function (d){
@@ -1669,7 +1669,8 @@
 
             // attach images ---------------------------------------------------------------------------------------------------
             var imgLink = function (d) {
-                return makeUrl(d.img,"img");
+                var theFirstImg = imageLinkKeys[0];
+                return makeUrl(d[theFirstImg],"img");
             };
 
 
