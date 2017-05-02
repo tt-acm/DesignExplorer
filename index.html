@@ -2279,7 +2279,7 @@
                 // push the image to zoomed area
                 d3.select("#viewer2d")
                     .select("img")
-                    .attr("src", makeUrl(selectedData.img,"img"));
+                    .attr("src", makeUrl(selectedData[imageLinkKeys[0]],"img"));
 
                 if (currentView == "3D") loadNew3DModel();
 
