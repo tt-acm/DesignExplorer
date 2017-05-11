@@ -293,8 +293,7 @@ function checkInputLink(link, callback){
         "inLink":"",
         "url":"",
         "type":""
-    }
-    
+    };
 
     if (link.includes("google.com")) {
 
@@ -313,13 +312,15 @@ function checkInputLink(link, callback){
 
     }else{
         //folderLinkObj.DE_PW = "DE_S";
+        if (link.slice(-1) !== "/") {
+            link +="/";
+        }
+
         folderLinkObj.url = link;
         folderLinkObj.type = "userServerLink";
     } 
 
-    // makeUrlId(link, function name(d) {
-    //     folderLinkObj.DE_PW +=d;
-    //     })
+
     folderLinkObj.inLink = link;
     // console.log(folderLinkObj);
     callback(folderLinkObj);
@@ -327,12 +328,11 @@ function checkInputLink(link, callback){
 }
 
 function encodeUrl(url) {
-    var link = btoa(url).slice(0,-1).replace('/','_').replace('+','-');
+    var link = btoa(url).slice(0, -1).replace('/','_').replace('+','-');
     return link;
 }
 
 function decodeUrl(encodedString) {
-    
     var url = atob(encodedString.replace('_','/').replace('-','+')+"=");
     return url;
 }
@@ -360,8 +360,6 @@ function getGFolderID(link) {
 
     return linkID;
 }
-
-
 
 function CopyToClipboard(element) {
   var $temp = $("<input>");
@@ -401,12 +399,12 @@ function CopyToClipboard(element) {
 
 function decodeUrlID(rawUrl, callback) {
     var serverFolderLink="";
-    var urlVars = getUrlVars(rawUrl)
+    var urlVars = getUrlVars(rawUrl);
     var GfolderORUrl = urlVars.GFOLDER;
     var DEID = urlVars.ID;
 
     //old GFOLDER
-    if (GfolderORUrl != undefined) {
+    if (GfolderORUrl !== undefined) {
 
         if (GfolderORUrl.search("/") == -1) {
             //GfolderORUrl is google folder ID
@@ -417,7 +415,7 @@ function decodeUrlID(rawUrl, callback) {
 
         callback(serverFolderLink);
 
-    } else if(DEID != undefined) {
+    } else if(DEID !== undefined) {
 
         //linkID = rawUrl.split("/");
         //linkID = linkID[linkID.length - 1];
