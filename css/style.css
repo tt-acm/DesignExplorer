@@ -233,12 +233,15 @@ a#copyRightButton {
     
 }
 
+#ScChartWrapper {
+    background-color: white;
+}
+
 #ScChartWrapper.rightChartFullScreenToggled{
     width: 75%;
     left: 15px;
     z-index: 9;
     position: absolute;
-    background: white;
 }
 
 .col-lg-3 .chartSide.rightChartFullScreenToggled, 
