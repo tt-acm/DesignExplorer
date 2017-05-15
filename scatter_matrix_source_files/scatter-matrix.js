@@ -196,10 +196,11 @@ ScatterMatrix.prototype.render = function() {
                 d3.selectAll(".cell circle").attr("r", "1");
             }
 
+            
+
             self.__draw(self.__cell_size, svg, color_variable, selected_colors, to_include, drill_variables);
 
         });
-
 
 
         var variable_li =
@@ -236,34 +237,7 @@ ScatterMatrix.prototype.render = function() {
                 return '' + i + ': ' + d;
             });
 
-        // drill_li =
-        //     drill_control
-        //     .append('p').text('Horizontal Variable:')
-        //     .append('ul')
-        //     .selectAll('li')
-        //     .data(original_numeric_variables)
-        //     .enter().append('li');
-        //
-        // drill_li.append('input')
-        //     .attr('type', 'checkbox')
-        //     .on('click', function(d, i) {
-        //         var new_drill_variables = [];
-        //         for (var j in drill_variables) {
-        //             var v = drill_variables[j];
-        //             if (v !== d || this.checked) {
-        //                 new_drill_variables.push(v);
-        //             }
-        //         }
-        //         if (this.checked) {
-        //             new_drill_variables.push(d);
-        //         }
-        //         drill_variables = new_drill_variables;
-        //         self.__draw(self.__cell_size, svg, color_variable, selected_colors, to_include, drill_variables);
-        //     });
-        // drill_li.append('label')
-        //     .html(function(d) {
-        //         return d;
-        //     });
+        
 
         self.__draw(self.__cell_size, svg, color_variable, selected_colors, to_include, drill_variables);
     });
@@ -594,6 +568,9 @@ ScatterMatrix.prototype.__draw = function(cell_size, container_el, color_variabl
                 })
                 .attr("r",function(d){
                     return isRightChartFullScreenToggled?2:1;
+                })
+                .style("fill", function (d) {
+                    return color(valueToNumber(d[pcIsColoredBy], pcIsColoredBy));
                 });
 
             // Add titles for x variables and drill variable values
@@ -667,5 +644,5 @@ ScatterMatrix.prototype.__draw = function(cell_size, container_el, color_variabl
 
     updateScatterChart(); //for selected data
     highlightScatterDot();//for highlighted Data
-    update_sc_colorsOnly();
+    // update_sc_colorsOnly();
 };

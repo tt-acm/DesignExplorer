@@ -4,7 +4,7 @@ body {
     font-size: 12px;
 }
 
-div {
+.modal-content, #viewer2d, #viewer3d{
     background-color: white;
 }
 
@@ -67,41 +67,88 @@ output {
     overflow: auto;
 }
 
-#thumbnails-side img,
+#thumbnails-btm .col-xs-1:before,
+#thumbnails-btm .col-xs-3:before {
+    content: "";
+    display: block;
+    margin-top: 100%;
+}
+
+#thumbnails-btm .col-xs-1,
+#thumbnails-btm .col-xs-3 {
+    padding: 0px;
+    -ms-transform: scale(0.9, 0.9); /* IE 9 */
+    -webkit-transform: scale(0.9, 0.9); /* Safari */
+    transform: scale(0.9, 0.9);
+}
+
+
 #thumbnails-btm img {
     width: 100%;
-    margin-top: 1em;
+    height: 100%;
     border-radius: 50%;
-}
-
-#thumbnails-side img {
-    border: .3em solid;
-}
-
-#thumbnails-btm img {
     border: .5em solid;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    position: absolute;
+    overflow: hidden;
+    background-image: url(../img/thorntontomasetti.jpg);
+    background-size: contain;
 }
+
 
 #zoomed img,
 #zoomedArea img {
     height: 100%;
     width: auto;
     display: block;
-    /* to center the imge - hopefully! */
     margin-left: auto;
     margin-right: auto;
+    min-width: 300px;
+    background-image: url(../img/thorntontomasetti.jpg);
+    background-size: contain;
+}
+div#thumbnails-btm_container.onRight, 
+div#thumbnails-btm_container.rightChartFullScreenToggled
+{
+    position: absolute;
+    right: 0;
+    width: 25%;
+
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+    
+}
+div#thumbnails-btm_container.onRight,
+div#thumbnails-btm_container.onRight #thumbnails-btm div, 
+div#thumbnails-btm_container.rightChartFullScreenToggled #thumbnails-btm div
+{
+    width: 25%;
 }
 
-#thumbnails-side,
-#thumbnails-btm {
+div#thumbnails-btm.col-lg-12{
+    margin-top: 20px;
     overflow: auto;
-    height: 100%;
+    /* Firefox */
+    height: -moz-calc(100% - 50px);
+    /* WebKit */
+    height: -webkit-calc(100% - 50px);
+    /* Opera */
+    height: -o-calc(100% - 50px);
+    /* Standard */
+    height: calc(100% - 50px);
 }
 
 #thumbnails-btm_container,
 #zoomedArea {
     overflow: hidden;
     margin-top: 10px;
+    min-height: 0;
+
 }
 
 #legend {
@@ -150,33 +197,28 @@ input#csv-file {
     height: 2.6em;
     width: 420px;
 }
-.col-lg-3 {
-    position: fixed;
-    right: 0;
-    -webkit-transition: all 0.5s ease;
-    -moz-transition: all 0.5s ease;
-    -o-transition: all 0.5s ease;
-    transition: all 0.5s ease;
-}
 
-div#thumbnails-side_container {
-    margin-top: 30px;
-}
 
 a#copyRightButton {
     overflow: hidden;
 }
 
 /*custom cs*/
-#close, #loadDataclose{
+/*#close, #loadDataclose{
     margin: 5px;
-}
+}*/
 
-#welcome{
+.popupWindow, 
+.modal-backdrop{
     background-color: rgba(0, 0, 0, 0.30);
 }
 
-#welcomeContainer, #loadDataContainer{
+#welcomeContainer .col-sm-4 {
+    width: 33.33333333%;
+    float: left;
+}
+
+.popupWindow div.col-centered{
     background-color: #ffffff;
     opacity: 1;
     z-index: 1000;
@@ -184,22 +226,38 @@ a#copyRightButton {
     height: 80%;
     margin-left: auto;
     margin-right: auto;
-    min-width: 720px;
+    max-height: 700px; 
+    min-height: 530px;
+    min-width: 560px;
+    padding: 2em;
     
 }
 
-.col-lg-3.rightChartFullScreenToggled{
-    width: 100%;
-}
-.col-lg-3 .chartSide.rightChartFullScreenToggled, .col-lg-3 .row-fluid.rightChartFullScreenToggled{
-    width: 70%;
-    float: left;
+#ScChartWrapper.rightChartFullScreenToggled{
+    width: 75%;
+    left: 15px;
+    z-index: 9;
+    position: absolute;
+    background: white;
 }
 
-.col-lg-3 .thumbnailSide.rightChartFullScreenToggled{
-    width: 30%;
+.col-lg-3 .chartSide.rightChartFullScreenToggled, 
+.col-lg-3 .row-fluid.rightChartFullScreenToggled{
+    width: 100%;
     float: left;
 }
+#zoomedArea.rightChartFullScreenToggled{
+    display: none;
+    z-index: 1;
+}
+#PcChartWrapper.rightChartFullScreenToggled{
+    position: absolute;
+}
+#thumbnails-btm_container.rightChartFullScreenToggled{
+    width: 25%;
+    height: calc(100% - 70px);
+}
+
 .col-lg-3 #copyRightButton.rightChartFullScreenToggled{
     width: 85% !important;
 }
@@ -211,4 +269,31 @@ g.cell text {
     border-radius: 20px 0 0 20px;
     width: 300px;
     height: 2.2em;
+}
+
+#scaleList{
+    overflow-y: auto;
+    height: 60%;
+}
+
+#scaleList .form-control{
+    min-width: 50px;
+    max-width: 20%;
+    margin-left: 0.5em;
+}
+
+#scaleList .control-label{
+    width: 30%;
+    text-align:left
+}
+
+
+
+#showStaticLink{
+    opacity: 0;
+}
+
+#showStaticLink.Show{
+    opacity: 1;
+    margin-top: 50px;
 }

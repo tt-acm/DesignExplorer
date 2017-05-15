@@ -1,0 +1,120 @@
+/*
+//The MIT License (MIT)
+//
+//Copyright (c) 2015 Thornton Tomasetti, Inc.
+//
+//Permission is hereby granted, free of charge, to any person obtaining a copy
+//of this software and associated documentation files (the "Software"), to deal
+//in the Software without restriction, including without limitation the rights
+//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//copies of the Software, and to permit persons to whom the Software is
+//furnished to do so, subject to the following conditions:
+//
+//The above copyright notice and this permission notice shall be included in
+//all copies or substantial portions of the Software.
+//
+//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//THE SOFTWARE.
+*/
+
+
+.Spectacles_attributeList {
+    height: 1px;
+    width: 360px;
+    background-color: #fafafa;
+    font-size: 11px;
+    color: #555;
+    text-align: left;
+    position: fixed;
+    z-index: 999;
+    padding: 5px 6px;
+    display: none;
+    overflow: auto;
+    opacity: 0.85;
+}
+
+
+.Spectacles_attributeList h5 {
+    display: inline;
+    color : lightslategray;;
+}
+
+.Spectacles_attributeListHeader {
+    background-color: #e8e8e8;
+    font-size: 13px;
+    padding: 5px 2px;
+}
+
+.Spectacles_openFile {
+    padding: 10px;
+    background-color: #ffffff;
+    visibility: hidden;
+    position: fixed;
+    margin-top: -100px;
+    margin-left: -175px;
+    width: 350px;
+    height: 200px;
+    z-index: 1001;
+    font-size: 100%;
+}
+
+.Spectacles_openFile h1 {
+    margin: 0px;
+}
+
+.Spectacles_openButton {
+    margin-top: 15px;
+    justify-content: center;
+}
+
+.Spectacles_openUrl {
+    margin-top: 15px;
+}
+
+.Spectacles_blackout {
+    position: fixed;
+    background-color: black;
+    opacity: 0.66;
+    display: none;
+    z-index: 1000;
+}
+
+.Spectacles_loading {
+    position: fixed;
+    margin-left: -75px;
+    display: none;
+    z-index: 1002;
+    color: #ffffff;
+}
+
+.Spectacles_errorMessage {
+
+}
+
+.Spectacles_uiTarget {
+    position: fixed;
+    width: 300px;
+    z-index: 10;
+}
+
+.Spectacles_Header {
+    background-color: #e8e8e8;
+    border-bottom: 1px solid #ddd;
+}
+
+.Spectacles_Header h2{
+    position: absolute;
+    top: 7px;
+    right: 75px;
+}
+
+.Spectacles_Footer {
+    position: fixed;
+    z-index: 10;
+    white-space: nowrap;
+}
