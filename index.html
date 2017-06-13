@@ -2633,15 +2633,37 @@
             //TargetMark setting----------------------------------------------------------------------------------------------------------
             var itemTickNumberSetting = panelBodyContent.append("li")
                                                     .attr("class", "list-group-item form-inline")
-                                                    .text("Target Mark : ");
+                                                    .text("Target Mark: ");
             
             itemTickNumberSetting.append("input")
                         .attr("class", "form-control input-sm")
-                        .attr("placeholder", function(d){return _userSetting.dimMark[d];})
+                        .attr("style","margin-left: 1.1em;")
+                        .attr("placeholder", function(d){return _userSetting.dimMark[d]!==undefined?_userSetting.dimMark[d].value:"Mark value";})
                         .attr("type", "text")
+                        .attr("id", function(d){return "setting_markValue_"+string_as_unicode_escape(d);})
                         .on("change", function(d){
-                            var value = $(this).val();
-                            newUserSetting.dimMark[d] =value;
+                            if(newUserSetting.dimMark[d] ===undefined){
+                                newUserSetting.dimMark[d] = {
+                                    value:"",
+                                    prefix:""
+                                    }
+                            }
+                            newUserSetting.dimMark[d].value = $(this).val();
+                        });
+
+            itemTickNumberSetting.append("input")
+                        .attr("class", "form-control input-sm")
+                        .attr("placeholder", function(d){return _userSetting.dimMark[d]!==undefined?_userSetting.dimMark[d].prefix:"Prefix text";} )
+                        .attr("type", "text")
+                        .attr("id", function(d){return "setting_markPrefix_"+string_as_unicode_escape(d);})
+                        .on("change", function(d){
+                            if(newUserSetting.dimMark[d] ===undefined){
+                                newUserSetting.dimMark[d] = {
+                                    value:"",
+                                    prefix:""
+                                    }
+                            }
+                            newUserSetting.dimMark[d].prefix = $(this).val();
                         });
 
             itemTickNumberSetting.append("button")
@@ -2649,7 +2671,13 @@
                         .text("Remove")
                         .attr("type", "button")
                         .on("click", function(d){
-                            newUserSetting.dimMark[d] ="ToBeRemoved";
+                            d3.select("#setting_markValue_"+string_as_unicode_escape(d)).attr("value", "ToBeRemoved");
+                            d3.select("#setting_markPrefix_"+string_as_unicode_escape(d)).attr("value", "ToBeRemoved");
+                            newUserSetting.dimMark[d] ={
+                                    value:"ToBeRemoved",
+                                    prefix:""
+                                    };
+                            
                         });
 
 
@@ -2748,7 +2776,15 @@
             })
         }
 
-        function setMarkOnDim(chart,dim,markValue){
+        function setMarkOnDim(chart,dim,dimMark){
+
+            markValue = dimMark.value;
+            markPrefix = "";
+
+            if (dimMark.prefix !==undefined){
+                markPrefix =dimMark.prefix
+            }
+
 
             dimID = "dim_"+string_as_unicode_escape(dim); 
             //remove the current first
@@ -2766,8 +2802,8 @@
                 
                 //add mark
                 var dim = d3.select("#"+dimID).select(".axis").append("g").attr("class", "tick mark").attr("transform", "translate(0,"+yHeight+")");
-                dim.append("line").attr("x2", "-6").attr("x1", "6");
-                dim.append("text").attr("x", "-9").attr("y", "0").attr("dy", ".32em").attr("text-anchor","end").text(markValue);
+                dim.append("line").attr("x2", "-8").attr("x1", "8");
+                dim.append("text").attr("x", "-9").attr("y", "0").attr("dy", ".32em").attr("text-anchor","end").text(markPrefix+": "+markValue);
             }
 
 

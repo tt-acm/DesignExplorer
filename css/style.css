@@ -281,7 +281,7 @@ g.cell text {
 
 #dimSettingList .form-control{
     min-width: 50px;
-    width: 40%;
+    width: 35%;
     margin-left: 0.5em;
 }
 
@@ -296,8 +296,7 @@ g.cell text {
 }
 
 #graph svg g.mark line{
-    stroke: red;
-    stroke-width: 3px;
+    stroke-width: 4px;
 }
 
 #navbar-studyInfo{
