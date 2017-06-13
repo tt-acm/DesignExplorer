@@ -1038,7 +1038,9 @@
     <script type="text/javascript">
         // this script imports the csv file and does the initial data processing
         // such as separating inputs, outputs, images, etc.
-        
+        var hasImgLink = true;
+        var has3DLink = false;
+
         function analyzeInputData(originalData) {
             var keys = d3.keys(originalData[0]);
             // var id = 0;
@@ -1109,10 +1111,20 @@
                 });
             }
 
+            if (keys.indexOf("img") == -1) { 
+                hasImgLink = false;
+                d3.select("#thumbnails-btm_container").remove();
+            }else{
+                hasImgLink = true;
+                
+            }
+
             //remove threeD radio
             if (keys.indexOf("threeD") == -1) { 
+                has3DLink = false;
                 d3.select("#threeDLabel").classed("hidden",true);
             }else{
+                has3DLink = true;
                 d3.select("#threeDLabel").classed("hidden", false);
             }
 
