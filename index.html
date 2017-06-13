@@ -45,6 +45,7 @@
 
     <!-- jQuery -->
     <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="js/jquery.lazy.min.js"></script>
 
     <!-- Sliders script and css -->
     <script src="./rangeslider_files/js/ion.rangeSlider.js"></script>
@@ -485,7 +486,7 @@
                     </div>
                     <div class="col-lg-12" style="position: absolute;bottom: 2em;width: calc(100% - 60px);">
                         <h3 class="text-center"> Happy Exploring! </h3>
-                        <h5 class="text-center">v2 (05/15/2017)</h5>
+                        <h5 class="text-center">v2 (06/13/2017)</h5>
                         <br>
                         <h5 class="text-center">
                             &copy; CORE studio | Thornton Tomasetti |
@@ -1628,8 +1629,9 @@
                 .attr("class", "col-xs-1")
                 .style("cursor", "pointer")
                 .append("img")
+                .attr("class", "lazy")
                 .attr("id", "thumbnails-btm")
-                .attr("src", imgLink)
+                .attr("data-src", imgLink)
                 .on("click", updateLayoutOnSelect)
                 .attr("title", getTitle)
                 .style("border-color", function (d) {
@@ -1918,13 +1920,28 @@
             // add thumbnails
             updateImageGrid(graph.data(), true); // true will set the size of btm div
 
-
+            
 
             // add place holder image to zoomed area
             //addPlaceHolderImage();
 
             // set up events between graphs
             setupEvents();
+
+            //lazy load
+            $(function() {
+                $('.lazy').Lazy({
+                    // your configuration goes here
+                    scrollDirection: 'vertical',
+                    effect: 'fadeIn',
+                    visibleOnly: true,
+                    onError: function(element) {
+                        console.log('error loading ' + element.data('src'));
+                    },
+                    appendScroll: $('div#thumbnails-btm')
+
+                });
+            });
         }
 
 
