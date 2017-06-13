@@ -654,12 +654,19 @@
             3: "design_explorer_data/AIA building.csv"
         };
 
+        sampleSettingFiles = {
+            1: "design_explorer_data/RedBox/settings.json",
+            2: "design_explorer_data/DefaultData/settings.json",
+            3: "design_explorer_data/AIAbuilding/settings.json"
+        };
+
         d3.selectAll(".sampleImage")
             .on("click", function () {
                 var selSample = d3.select(this);
                 var id = selSample[0][0].id.replace("sample", "");
 
                 var filePath = sampleFiles[id];
+                var settingFilePath =sampleSettingFiles[id];
 
                 // remove the current selection
                 unloadPageContent();
@@ -667,7 +674,11 @@
                 d3.select("div#welcome").style("display", "none");
 
                 // load the new file
-                d3.csv(filePath, loadDataToDesignExplorer);
+                d3.csv(filePath, function (data) {
+                    loadDataToDesignExplorer(data);
+                    loadSetting(settingFilePath);
+                    });
+
             });
 
     </script>
@@ -1954,8 +1965,10 @@
             } else {
                 // load default data
                 //parse the csv data from the design_explorer_data folder
-                d3.csv("design_explorer_data/default_onload.csv",
-                    loadDataToDesignExplorer);
+                d3.csv("design_explorer_data/default_onload.csv", function (data) {
+                    loadDataToDesignExplorer(data);
+                    loadSetting("design_explorer_data/DefaultData/settings.json");
+                    });
 
             }
 
@@ -2894,17 +2907,26 @@
 
         }
 
-        function loadSetting() {
-
-            var settingFiles =  d3.keys(_googleReturnObj.settingFiles);
+        function loadSetting(settingFilePath) {
             
-            if (settingFiles.length ==0) {
-                return;
+            var jsonFileLink = "";
+
+            if(settingFilePath!==undefined){
+                jsonFileLink =settingFilePath;
+            }else{
+
+                var settingFiles =  d3.keys(_googleReturnObj.settingFiles);
+                if (settingFiles.length ==0) { return;}
+
+                var jsonFile = settingFiles[0];
+                jsonFileLink = _googleReturnObj.settingFiles[jsonFile];
             }
 
-            var jsonFile = settingFiles[0];
+            console.log(jsonFileLink);
 
-            d3.json(_googleReturnObj.settingFiles[jsonFile], function (d) {
+            
+
+            d3.json(jsonFileLink, function (d) {
                 //updata to global _userSetting
                 _userSetting = d;
                 setSettings(graph,_userSetting);
