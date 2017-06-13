@@ -450,14 +450,17 @@ d3.parcoords = function (config) {
         dims.forEach(function (k) {
             newDims[k] = __.dimensions[k] ? __.dimensions[k] : {};
             //Set up defaults
+            newDims[k].index = newDims[k].index != null ? newDims[k].index : currIndex;
             newDims[k].orient = newDims[k].orient ? newDims[k].orient : 'left';
             newDims[k].ticks = newDims[k].ticks != null ? newDims[k].ticks : 5;
             newDims[k].innerTickSize = newDims[k].innerTickSize != null ? newDims[k].innerTickSize : 6;
             newDims[k].outerTickSize = newDims[k].outerTickSize != null ? newDims[k].outerTickSize : 0;
             newDims[k].tickPadding = newDims[k].tickPadding != null ? newDims[k].tickPadding : 3;
             newDims[k].type = newDims[k].type ? newDims[k].type : types[k];
+
+            
             //newDims[k].yscale.domain //domain is setted by autoscale
-            newDims[k].index = newDims[k].index != null ? newDims[k].index : currIndex;
+            
             currIndex++;
         });
         //console.log(newDims);
@@ -883,6 +886,7 @@ d3.parcoords = function (config) {
                 return d;
             })
             .enter().append("svg:g")
+            .attr("id", function (d) {return "dim_"+string_as_unicode_escape(d);})
             .attr("class", "dimension")
             .attr("transform", function (d) {
                 return "translate(" + xscale(d) + ")";
@@ -893,7 +897,7 @@ d3.parcoords = function (config) {
             .attr("class", "axis")
             .attr("transform", "translate(0,0)")
             .each(function (d) {
-                d3.select(this).call(pc.applyAxisConfig(axis, __.dimensions[d]))
+                d3.select(this).call(pc.applyAxisConfig(axis, __.dimensions[d]));
             })
             .append("svg:text")
             .attr({
@@ -948,6 +952,7 @@ d3.parcoords = function (config) {
         //console.log(g_data);
         // Enter
         g_data.enter().append("svg:g")
+            .attr("id", function (d) {return "dim_"+d;})
             .attr("class", "dimension")
             .attr("transform", function (p) {
                 return "translate(" + position(p) + ")";
@@ -977,7 +982,7 @@ d3.parcoords = function (config) {
             .transition()
             .duration(animationTime)
             .each(function (d) {
-                d3.select(this).call(pc.applyAxisConfig(axis, __.dimensions[d]))
+                d3.select(this).call(pc.applyAxisConfig(axis, __.dimensions[d]));
             });
         g_data.select(".label")
             .transition()
@@ -1015,6 +1020,8 @@ d3.parcoords = function (config) {
 
     pc.applyAxisConfig = function (axis, dimension) {
         //console.log(dimension.yscale.domain());
+        //console.log(dimension.tickValues);
+        //console.log(dimension.tickFormat);
 
         return axis.scale(dimension.yscale)
             .orient(dimension.orient)

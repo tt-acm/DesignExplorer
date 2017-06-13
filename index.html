@@ -126,6 +126,16 @@
         "type":""
     }
 
+    var _userSetting = {
+        studyInfo: {
+            name:"",
+            date:""
+        },
+        dimScales:{},
+        dimTicks:{},
+        dimMark:{}
+    }
+
     function readyToLoad(csvFilePathLink) {
         if (csvFilePathLink.length > 0) {
             // remove the current selection
@@ -247,7 +257,7 @@
 <body >
 
     <!-- Navbar -->
-    <nav class="navbar navbar-default" style="margin-bottom:0">
+    <nav class="navbar" style="margin-bottom:0">
         <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
@@ -273,8 +283,13 @@
                         </p>
                     </li>
                 </ul>
+                <div id = "navbar-studyInfo">
+                    <h4></h4>
+                    <h6></h6>
+                </div>
             </div>
             <!-- /.navbar-collapse -->
+
         </div>
     </nav>
 
@@ -400,7 +415,7 @@
                                 <!-- show 2D image on load-->
                                 <label id="threeDLabel"><input type="radio" class="toggleView" name="visMode" value="3D" id="threeDRadio"> 3D</label>
 
-                                <button type="button" class="btn btn-default btn-xs" id="toggleComments" title="Add Comments">
+                                <button type="button" class="btn btn-default btn-xs hide" id="toggleComments" title="Add Comments">
                                     <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                                 </button>
                                 <button type="button" class="btn btn-default btn-xs" id="fullscreentoggle" title="Full Screen Toggle">
@@ -492,7 +507,7 @@
                     </button>
 
                     <h4 class="text-center" style="margin: 100px 0 30px 0;">
-                        From online folder:
+                        From the cloud:
                     </h4>
                     <p class="text-center">
                         <input type="text" id="folderLink" class="btn btn-default btn-sm toggled" name="imgfolder" placeholder="GoogleDrive, OneDrive, or server link"
@@ -561,14 +576,32 @@
                         <span class="glyphicon glyphicon-remove"></span>
                     </button>
 
-                    <h1 class="text-center" style="margin: 60px 0 30px 0;">
-                        Set dimension scales
-                    </h1>
-                    <div class="text-center col-xs-12" id="scaleList">
+                    <h1 style="margin: 30px 0 10px 0;">Setting</h1>
+                    <h6 style="margin: 0 30px 30px 0;">All settings will not be effective once this page is reloaded, unless save the setting file with data.csv on the cloud.</h6>
+
+                    <div class="panel-group" id="dimSettingList">
                         <!--placeholder for scale setting list-->
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#dimSettingList" href="#settingStudyInfo">Study Information</a>
+                                </h4>
+                            </div>
+                            <div id="settingStudyInfo" class="panel-collapse collapse in">
+                                <div class="panel-body">
+                                    <ul class="list-group">
+                                        <li class="list-group-item form-inline">Study Name: <input id="studyNameInput" class="form-control input-sm" type="text" style="width: 80%"></li>
+                                        <li class="list-group-item form-inline">Study Date: <input id="studyDateInput" class="form-control input-sm" type="text" style="width: 80%;    margin-left: 1.1em;"></li>
+                                        <li class="list-group-item form-inline">Password: <input class="form-control input-sm" placeholder="WIP" type="text" style="width: 40%; margin-left: 1.6em;" disabled><input class="form-control input-sm" placeholder="Confirm" type="text" style="width: 39%;" disabled></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
-                    <div class="col-xs-6 col-md-offset-3" style="margin-top: 2.5em;">
+                    <!--buttons for setting list-->
+                    <div class="col-xs-6 col-md-offset-3" style="margin-top: 1.5em;">
                         <button id="setUserSetting" type="button" class="btn col-xs-4 col-md-offset-1">Set</button>
                         <button id="saveUserSetting" type="button" class="btn col-xs-4 col-md-offset-1" data-toggle="tooltip" data-placement="bottom" title ="Export the setting file, and save to where data.csv located!">Save</button>
                     </div>
@@ -642,69 +675,6 @@
     <script type="text/javascript">
         // update radar chart
         var scatterChart;
-        // function updateRadarChart() {
-        //     //format data for radar chart
-        //     var selectedData;
-        //     var outputKeys = d3.keys(outputData[0]);
-        //     if (graph.brushed().length > 0) {
-        //         selectedData = graph.brushed();
-        //     } else {
-        //         selectedData = graph.data();
-
-        //     }
-
-        //     //var selectedData = graph.brushed();
-        //     selectedDataFormatted = [];
-        //     radarChartColors = [];
-
-        //     selectedData.forEach(function (d) {
-        //         selectedDataFormatted.push(formatData(d));
-        //         //debugger;
-        //         radarChartColors.push(color(d[pcIsColoredBy]));
-
-        //     });
-
-
-        //     //get height, width for radar chart
-        //     //we want the graph to be centered above the thumbnails
-        //     //65px is to fit text
-        //     var divWidth = d3.select("#thumbnails-side").style("width").replace("px", "");
-        //     var pcHeight = d3.select("#graph").style("height").replace("px", "");
-        //     var rcDimension = Math.min(pcHeight, divWidth) - 65;
-
-        //     radarGrey = "rgb(160,160,160)";
-
-        //     //configure radar chart
-        //     cfg = ({
-        //         w: rcDimension,
-        //         h: rcDimension,
-        //         color: function () {
-        //             return radarGrey;
-        //         },
-        //         radius: 4,
-        //         maxValue: 100,
-        //         extraWidthX: divWidth - rcDimension,
-        //         extraWidthY: 65,
-        //         translateX: (divWidth - rcDimension) / 2,
-        //         translateY: 65 / 2,
-        //         levels: 5,
-        //     });
-
-        //     RadarChart.draw("#radarChart", selectedDataFormatted, cfg);
-
-        //     //move lines to back
-        //     d3.selectAll(".area").moveToBack();
-
-        //     //did not work using CSS
-        //     d3.selectAll(".rclegend")
-        //         .style("fill", "steelblue")
-        //         .style("font-size", 9);
-        // }
-
-        // clean radar chart
-        // function cleanRadarChart() {
-        //     d3.selectAll(".radar-chart").remove();
-        // }
 
         // add scatter chart
         function addScatterChart() {
@@ -837,34 +807,12 @@
                 )
                 .classed("rightChartFullScreenToggled", isRightChartFullScreenToggled);
 
-        //     // d3.select("#thumbnails-btm_container")
-        //     //     .classed("col-lg-3", isRightChartFullScreenToggled)
-        //     //     .classed("col-lg-12", !isRightChartFullScreenToggled);
-
-        //     // d3.select("#thumbnails-btm_container #thumbnails-btm")
-        //     //     .classed("onRight", isRightChartFullScreenToggled)
-
-
-
-        //     // d3.selectAll(".col-lg-9,#thumbnails-btm_container") // hide left side
-        //     //     .transition().delay(200)
-        //     //     .style("display", function () {
-        //     //         if (isRightChartFullScreenToggled) {
-        //     //             return "none";
-        //     //         } else {
-        //     //             return "block";
-        //     //         }
-        //     //     });
-
             if (isRightChartFullScreenToggled) {
                 //var newDim =  windowHeight - 200;
                 d3.select("#thumbnails-btm_container").style("height", cleanHeight + "px");
             } else {
                 d3.select("#thumbnails-btm_container").style("height", zoomedHeight+"px");
             }
-
-            //update_sc_colorsOnly();
-             //resizeScChart(newDim, newDim);
 
 
         });
@@ -1056,12 +1004,6 @@
                 if (graph.highlight().length !== 0) {
                     d3.selectAll("#zoomedArea")
                             .style("height", cleanHeight + "px");
-                            // .each("end", function () {
-                            //     // resize view
-                            //     if (currentView == "3D") {
-                            //         va3cViewer.viewerDiv.resize();
-                            //     }
-                            // });
                 }
 
                 d3.select("#thumbnails-btm_container").style("height", cleanHeight + "px");
@@ -1083,12 +1025,6 @@
                 if (graph.highlight().length !== 0) {
                     d3.selectAll("#zoomedArea")
                             .style("height", zoomedHeight + "px");
-                            // .each("end", function () {
-                            //     // resize view
-                            //     if (currentView == "3D") {
-                            //         va3cViewer.viewerDiv.resize();
-                            //     }
-                            // });
                 }
                 d3.select("#thumbnails-btm_container").style("height", zoomedHeight + "px");
                 
@@ -1259,6 +1195,7 @@
             var output = '';
             for (var i = 0, l = input.length; i < l; i++)
                 output += input.charCodeAt(i).toString(16);
+
             return output;
         }
 
@@ -1801,7 +1738,7 @@
                     updateGraph(cleanedData);
                     update_colors(pcIsColoredBy);
 
-                    loadSetting();
+                    setSettings(graph,_userSetting);
 
                 });
 
@@ -2219,6 +2156,10 @@
 
         function updateSlidersValue(data) {
 
+            if(data ==undefined){
+                return;
+            }
+
             // clear report area
             d3.selectAll("#sliders-report").text("");
 
@@ -2566,91 +2507,319 @@
                     .style("display", "flex");
             
             var dimKeys = d3.keys(graph.dimensions()); 
-            var scaleDiv = d3.select("#scaleList");
+            var dimSettingListDiv = d3.select("#dimSettingList");
 
-            var dimScales ={};
-            var userDimScale = {};
+            var newUserSetting = {
+                studyInfo: {
+                    name:_userSetting.studyInfo.name,
+                    date:_userSetting.studyInfo.date
+                },
+                dimScales:{},
+                dimTicks:{},
+                dimMark:{}
+            };
 
-            dimKeys.forEach(function(data){
+            // var userStudyInfo = {
+            //     name:"",
+            //     date:""
+            // }
 
-                if (graph.dimensions()[data].type != "string") {
-                    dimScales[data] = graph.dimensions()[data].yscale.domain();
-                }
-                
-            });
+            var dimScales ={};//for current value
+            // var userDimScale = {};
+
+            var dimTicks = {}; //for current value
+            //var userDimTicks = {}; //for saved
+
+            var dimMark = {}; //for current value
+            // var userDimMark = {}; //for saved
+
+            //filter dimensions are string type
+            d3.selectAll("#graph svg .dimension")
+                .each(function(d){
+                    if (graph.dimensions()[d].type != "string") {
+                        dimScales[d] = graph.dimensions()[d].yscale.domain();
+                        dimTicks[d] = d3.select(this).selectAll(".tick").size();
+                        if(_userSetting.dimMark[d] !== undefined){
+                            dimTicks[d] --;
+                        }
+                    }
+                })
+            
 
             //remove current
-            scaleDiv.selectAll("#scaleList .form-group").remove();
+            dimSettingListDiv.selectAll(".panel-default").remove();
 
-            var selectList = scaleDiv.selectAll('#scaleList')
+            //Add this study/project info
+            dimSettingListDiv.select("#studyNameInput")
+                            .attr("value", newUserSetting.studyInfo.name)
+                            .on("change", function(d){
+                                newUserSetting.studyInfo.name = $(this).val();
+                            });
+            dimSettingListDiv.select("#studyDateInput")
+                            .attr("value", newUserSetting.studyInfo.date)
+                            .on("change", function(d){
+                                newUserSetting.studyInfo.date = $(this).val();
+                            });
+
+
+            var selectList = dimSettingListDiv.selectAll('#dimSettingList')
                         .data(d3.keys(dimScales)).enter()
                         .append("div")
-                        .attr("class", "form-group form-inline");
+                        .attr("class", "panel panel-default");
                     
-            selectList.append("label")
-                        .attr("class", "control-label")
-                        .text(function(d){return d;});
+            var panelHeading = selectList.append("div").attr("class", "panel-heading");
 
-            selectList.append("input")
+            panelHeading.append("h4")
+                        .attr("class", "panel-title")
+                            .append("a")
+                            .attr("data-toggle", "collapse")
+                            .attr("data-parent", "#dimSettingList")
+                            .attr("href", function(d){return "#setting"+string_as_unicode_escape(d);})
+                            .text(function(d){return d;});
+
+            
+            var panelBody = selectList.append("div")
+                        .attr("id", function(d){return "setting"+string_as_unicode_escape(d);})
+                        .attr("class", "panel-collapse collapse");
+            
+            var panelBodyContent = panelBody.append("div").attr("class", "panel-body")
+                                                .append("ul").attr("class", "list-group");
+            
+            //TickNumber setting----------------------------------------------------------------------------------------------------------
+            var itemTickNumberSetting = panelBodyContent.append("li")
+                                                    .attr("class", "list-group-item form-inline")
+                                                    .text("Tick Number: ");
+            
+            itemTickNumberSetting.append("input")
+                        .attr("class", "form-control input-sm")
+                        .attr("placeholder", function(d){return dimTicks[d];})
+                        .attr("type", "text")
+                        .on("change", function(d){
+                            var value = $(this).val();
+                            newUserSetting.dimTicks[d] = value;
+                        });
+
+            
+            //scale setting----------------------------------------------------------------------------------------------------------
+            var itemScaleSetting = panelBodyContent.append("li")
+                                                    .attr("class", "list-group-item form-inline")
+                                                    .text("Scale Range: ");
+
+            //min scale input
+            itemScaleSetting.append("input")
                         .attr("class", "form-control input-sm")
                         .attr("placeholder", function(d){return "From: " +dimScales[d][0];})
                         .attr("type", "text")
                         .on("change", function(d){
                             var value = $(this).val();
-                            userDimScale[d] = OnScaleChanged(
-                                {"min":value}, dimScales[d], userDimScale[d]
+                            newUserSetting.dimScales[d] = OnScaleChanged(
+                                {"min":value}, dimScales[d], newUserSetting.dimScales[d]
                             )
                         });
 
-            //selectListItems.append("input").attr("class", "form-control input-sm").attr("placeholder", "max").attr("type", "text");
-            selectList.append("input")
+            //max scale input
+            itemScaleSetting.append("input")
                         .attr("class", "form-control input-sm")
                         .attr("placeholder", function(d){return "TO: "+dimScales[d][1];})
                         .attr("type", "text")
                         .on("change", function(d){
                             var value = $(this).val();
-                            userDimScale[d] = OnScaleChanged(
-                                {"max":value}, dimScales[d] , userDimScale[d]
+                            newUserSetting.dimScales[d] = OnScaleChanged(
+                                {"max":value}, dimScales[d] , newUserSetting.dimScales[d]
                             )
                         });
+
+
+            //TargetMark setting----------------------------------------------------------------------------------------------------------
+            var itemTickNumberSetting = panelBodyContent.append("li")
+                                                    .attr("class", "list-group-item form-inline")
+                                                    .text("Target Mark: ");
             
-             d3.select("#dataSetting #setUserSetting").on("click",function (d) {
-                //  console.log(userDimScale);
+            itemTickNumberSetting.append("input")
+                        .attr("class", "form-control input-sm")
+                        .attr("style","margin-left: 1.1em;")
+                        .attr("placeholder", function(d){return _userSetting.dimMark[d]!==undefined?_userSetting.dimMark[d].value:"Mark value";})
+                        .attr("type", "text")
+                        .attr("id", function(d){return "setting_markValue_"+string_as_unicode_escape(d);})
+                        .on("change", function(d){
+                            if(newUserSetting.dimMark[d] ===undefined){
+                                newUserSetting.dimMark[d] = {
+                                    value:"",
+                                    prefix:""
+                                    }
+                            }
+                            newUserSetting.dimMark[d].value = $(this).val();
+                        });
 
-                 if (userDimScale === undefined) {
-                     return;
-                 }
+            itemTickNumberSetting.append("input")
+                        .attr("class", "form-control input-sm")
+                        .attr("placeholder", function(d){return _userSetting.dimMark[d]!==undefined?_userSetting.dimMark[d].prefix:"Prefix text";} )
+                        .attr("type", "text")
+                        .attr("id", function(d){return "setting_markPrefix_"+string_as_unicode_escape(d);})
+                        .on("change", function(d){
+                            if(newUserSetting.dimMark[d] ===undefined){
+                                newUserSetting.dimMark[d] = {
+                                    value:"",
+                                    prefix:""
+                                    }
+                            }
+                            newUserSetting.dimMark[d].prefix = $(this).val();
+                        });
 
-                 updateScales(chart,userDimScale);
-                 
-                 d3.select("#showSetting")
-                    .style("display", "none");
-             })
+            itemTickNumberSetting.append("button")
+                        .attr("class", "btn btn-sm")
+                        .text("Remove")
+                        .attr("type", "button")
+                        .on("click", function(d){
+                            d3.select("#setting_markValue_"+string_as_unicode_escape(d)).attr("value", "ToBeRemoved");
+                            d3.select("#setting_markPrefix_"+string_as_unicode_escape(d)).attr("value", "ToBeRemoved");
+                            newUserSetting.dimMark[d] ={
+                                    value:"ToBeRemoved",
+                                    prefix:""
+                                    };
+                            
+                        });
 
 
+            //set up button event
+            d3.select("#dataSetting #setUserSetting").on("click",function (d) {
+                setSettings(chart,newUserSetting);
+                d3.select("#showSetting")
+                .style("display", "none");
+            })
 
              d3.select("#dataSetting  #saveUserSetting").on("click", function(d){
-                 if (userDimScale === undefined) {
-                     return;
-                 }
-
-                 var exportScales = saveSetting_Scales(dimScales,userDimScale);
-                 saveSetting(exportScales);
-
+                 saveSetting(_userSetting,newUserSetting);
 
              })
 
         }
 
-        function updateScales(chart, scales) {
+        function setSettings(chart,userSetting) {
+
+            var isThereNewStudyInfo = Object.keys(userSetting.studyInfo).length >0;
+            var isThereNewDimScales = Object.keys(userSetting.dimScales).length >0;
+            var isThereNewDimTicks = Object.keys(userSetting.dimTicks).length >0;
+            
+
+            if (isThereNewStudyInfo) {
+                    setStudyInfo(userSetting.studyInfo);
+            }
+
+            if (isThereNewDimScales) {
+                    setAllScales(chart, userSetting.dimScales);
+            }
+
+            if (isThereNewDimTicks) {
+                    setAllTicks(chart, userSetting.dimTicks);
+            }
+
+            if(isThereNewDimScales || isThereNewDimTicks){
+                //only redraw the graph if any defined
+                graph.updateAxes();
+
+                //chart.reRender();
+                update_colors(pcIsColoredBy);
+                
+            }
+            
+            //set target mark must be after graph.updateAxes();
+            setAllTargetMarks(chart, userSetting.dimMark);
+            
+        }
+
+        function setStudyInfo(studyInfoData){
+            var studyInfo = d3.select("#navbar-studyInfo");
+            studyInfo.select("h4").text(studyInfoData.name);
+            studyInfo.select("h6").text(studyInfoData.date);
+
+            //update the global _userSetting
+            _userSetting.studyInfo.name = studyInfoData.name;
+            _userSetting.studyInfo.date = studyInfoData.date;
+            
+        }
+
+        function setAllScales(chart, scales){
             d3.keys(scales).forEach( function (d) {
-                     chart.dimensions()[d].yscale.domain(scales[d]);
-                     chart.yscaleDomains()[d] = scales[d];
+                    //update scales
+                    chart.dimensions()[d].yscale.domain(scales[d]);
+                    chart.yscaleDomains()[d] = scales[d]; 
+
+                    //update the global _userSetting
+                    _userSetting.dimScales[d] = scales[d];
                  })
-            graph.updateAxes();
-                 
-            //chart.reRender();
-            update_colors(pcIsColoredBy);
+        }
+
+        function setAllTicks(chart, tickNumbers){
+            d3.keys(tickNumbers).forEach( function (d) {
+                    var scale = chart.dimensions()[d].yscale.domain();
+                    //update ticks
+                    chart.dimensions()[d].tickFormat = d3.format("");
+                    chart.dimensions()[d].tickValues = calTickValues(scale,tickNumbers[d]);
+
+                    //update the global _userSetting
+                    _userSetting.dimTicks[d] = tickNumbers[d];
+                 })
+        }
+
+        function setAllTargetMarks(chart, targetMark){
+            
+            d3.keys(targetMark).forEach( function (d) {
+                    //update the global _userSetting
+                    _userSetting.dimMark[d] = targetMark[d];
+                    
+            })
+            
+            //set marks based on global _userSetting
+            d3.keys(_userSetting.dimMark).forEach( function (d) {
+                    setMarkOnDim(chart, d, _userSetting.dimMark[d]);
+            })
+        }
+
+        function setMarkOnDim(chart,dim,dimMark){
+
+            markValue = dimMark.value;
+            markPrefix = "";
+
+            if (dimMark.prefix !==undefined){
+                markPrefix =dimMark.prefix
+            }
+
+
+            dimID = "dim_"+string_as_unicode_escape(dim); 
+            //remove the current first
+            d3.select("#"+dimID).select(".axis .mark").remove();
+
+            if (markValue=="ToBeRemoved") {
+                delete _userSetting.dimMark[dim];
+
+            } else {
+
+                var canvasHeight = d3.select("#graph canvas").style("height").replace("px","");
+
+                domain = chart.dimensions()[dim].yscale.domain();
+                yHeight = d3.scale.linear().domain(domain).range([canvasHeight,0])(markValue);
+                
+                //add mark
+                var dim = d3.select("#"+dimID).select(".axis").append("g").attr("class", "tick mark").attr("transform", "translate(0,"+yHeight+")");
+                dim.append("line").attr("x2", "-8").attr("x1", "8");
+                dim.append("text").attr("x", "-9").attr("y", "0").attr("dy", ".32em").attr("text-anchor","end").text(markPrefix+": "+markValue);
+            }
+
+
+            
+        }
+
+        function calTickValues (scale, tickNumber){
+            tickNumber--;
+
+            if(tickNumber<=0){
+                tickNumber = 5;
+            }
+            newDimTickValues = d3.range(scale[0], scale[1], (scale[1]-scale[0])/tickNumber)
+            newDimTickValues.push(scale[1]); // add the last
+
+            return newDimTickValues;
         }
 
         function OnScaleChanged(params,oldScale, userScale) {
@@ -2672,23 +2841,15 @@
             return newScale;
         }
 
-        function saveSetting_Scales(allScales, userScales) {
-            var exportScales = allScales;
+        function saveSetting(globalUserSetting,newUserSetting) {
 
-            d3.keys(userScales).forEach( function (d) {
-                exportScales[d] = userScales[d];
-            })
+            Object.assign(globalUserSetting.dimMark,newUserSetting.dimMark)
+            Object.assign(globalUserSetting.dimScales,newUserSetting.dimScales)
+            Object.assign(globalUserSetting.dimTicks,newUserSetting.dimTicks)
+            Object.assign(globalUserSetting.studyInfo,newUserSetting.studyInfo)
 
-            return (exportScales);
+            var exportJson = globalUserSetting;
 
-        }
-
-        function saveSetting(Scales) {
-            var exportJson = {
-                "scales":{}
-            };
-
-            exportJson.scales = Scales;
             var JsonContent = "data:attachment/json;charset=utf-8,";
             
 
@@ -2705,8 +2866,9 @@
         }
 
         function loadSetting() {
-            var settingFiles =  d3.keys(_googleReturnObj.settingFiles);
 
+            var settingFiles =  d3.keys(_googleReturnObj.settingFiles);
+            
             if (settingFiles.length ==0) {
                 return;
             }
@@ -2714,9 +2876,15 @@
             var jsonFile = settingFiles[0];
 
             d3.json(_googleReturnObj.settingFiles[jsonFile], function (d) {
-                updateScales(graph,d.scales);
+                //updata to global _userSetting
+                _userSetting = d;
+                setSettings(graph,_userSetting);
             })
+
+            
         }
+
+
 
     </script>
 

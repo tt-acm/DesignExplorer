@@ -58,12 +58,21 @@ function overwriteInitialGlobalValues() {
 	googleFolderLink="";
     imageLinkKeys = [];
 
+    _userSetting = {
+        studyInfo: {
+            name:"",
+            date:""
+        },
+        dimScales:{},
+        dimTicks:{},
+        dimMark:{}
+    };
+
     rcheight = height = d3.select("#graph").style("height").replace("px", "");
 
     selectedDataFormatted = [];
 
     firstRating = true; // variable for star rating
-
 
     //set up heights of divs ro default
     calWidthAndHeight();
