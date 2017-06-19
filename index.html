@@ -45,7 +45,7 @@
 
     <!-- jQuery -->
     <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
-    <script type="text/javascript" src="js/jquery.lazy.min.js"></script>
+    <!--<script type="text/javascript" src="js/jquery.lazy.min.js"></script>-->
 
     <!-- Sliders script and css -->
     <script src="./rangeslider_files/js/ion.rangeSlider.js"></script>
@@ -1646,9 +1646,8 @@
                 .attr("class", "col-xs-1")
                 .style("cursor", "pointer")
                 .append("img")
-                .attr("class", "lazy")
                 .attr("id", "thumbnails-btm")
-                .attr("data-src", imgLink)
+                .attr("src", imgLink)
                 .on("click", updateLayoutOnSelect)
                 .attr("title", getTitle)
                 .style("border-color", function (d) {
@@ -1946,19 +1945,19 @@
             setupEvents();
 
             //lazy load
-            $(function() {
-                $('.lazy').Lazy({
-                    // your configuration goes here
-                    scrollDirection: 'vertical',
-                    effect: 'fadeIn',
-                    visibleOnly: true,
-                    onError: function(element) {
-                        console.log('error loading ' + element.data('src'));
-                    },
-                    appendScroll: $('div#thumbnails-btm')
+            // $(function() {
+            //     $('.lazy').Lazy({
+            //         // your configuration goes here
+            //         scrollDirection: 'vertical',
+            //         effect: 'fadeIn',
+            //         visibleOnly: true,
+            //         onError: function(element) {
+            //             console.log('error loading ' + element.data('src'));
+            //         },
+            //         appendScroll: $('div#thumbnails-btm')
 
-                });
-            });
+            //     });
+            // });
         }
 
 
