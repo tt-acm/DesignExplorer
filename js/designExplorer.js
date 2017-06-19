@@ -54,9 +54,13 @@ function overwriteInitialGlobalValues() {
     allDataCollector = {};
     slidersMapping = {}; // I collect the data for all the input sliders here so I can use it to remap the sliders later
     ids = []; // Here I collect all data based on a unique ID from inputs
-	cleanedParams4pc = {};
+	cleanedKeys4pc = {};
 	googleFolderLink="";
+
+    inputDataKeys =[];
+    outputDataKeys =[];
     imageLinkKeys = [];
+
 
     _userSetting = {
         studyInfo: {

@@ -45,7 +45,7 @@
 
     <!-- jQuery -->
     <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
-    <script type="text/javascript" src="js/jquery.lazy.min.js"></script>
+    <!--<script type="text/javascript" src="js/jquery.lazy.min.js"></script>-->
 
     <!-- Sliders script and css -->
     <script src="./rangeslider_files/js/ion.rangeSlider.js"></script>
@@ -654,12 +654,19 @@
             3: "design_explorer_data/AIA building.csv"
         };
 
+        sampleSettingFiles = {
+            1: "design_explorer_data/RedBox/settings.json",
+            2: "design_explorer_data/DefaultData/settings.json",
+            3: "design_explorer_data/AIAbuilding/settings.json"
+        };
+
         d3.selectAll(".sampleImage")
             .on("click", function () {
                 var selSample = d3.select(this);
                 var id = selSample[0][0].id.replace("sample", "");
 
                 var filePath = sampleFiles[id];
+                var settingFilePath =sampleSettingFiles[id];
 
                 // remove the current selection
                 unloadPageContent();
@@ -667,7 +674,11 @@
                 d3.select("div#welcome").style("display", "none");
 
                 // load the new file
-                d3.csv(filePath, loadDataToDesignExplorer);
+                d3.csv(filePath, function (data) {
+                    loadDataToDesignExplorer(data);
+                    loadSetting(settingFilePath);
+                    });
+
             });
 
     </script>
@@ -1044,12 +1055,20 @@
 
         function analyzeInputData(originalData) {
             var keys = d3.keys(originalData[0]);
-            // var id = 0;
-
-            //get img keys []   
+            //get keys []   
             keys.forEach(function (key) {
-                if(key.startsWith("img")){
+                key = key.trim().replace(".", " ");
+
+                if(key.toUpperCase().startsWith("IMG"))
+                {
                     imageLinkKeys.push(key);
+                }
+                else if(key.toUpperCase().startsWith("THREED")){
+                    //do nothing
+                }
+                else{
+                    var cleanKey = key.trim().replace(".", " ").replace("in:", "").replace("out:", "");
+                    cleanedKeys4pc[cleanKey] = {};
                 }
 
             })
@@ -1058,55 +1077,53 @@
 
                 var inputParams = {},
                     outputParams = {},
+                    otherParams ={},
+                    imgParams ={},
+                    threeDParams ={},
                     cleanedParams = {};
 
                 keys.forEach(function (key, i) {
-                    cleanKeyValue = key.trim().replace(".", " ");
+                    var cleanKey = key.trim().replace(".", " ");
 
-                    // if (key.trim().startsWith("in:") !== true) {console.log("there is no inputs");}
-                    if (cleanKeyValue.startsWith("in:")) {
+                    if (cleanKey.toUpperCase().startsWith("IN:")) {
+                        cleanKey = cleanKey.slice(3);
+                        inputParams[cleanKey] = row[key];
 
-                        inputParams[cleanKeyValue.replace("in:", "")] = row[key];
-                        cleanedParams[cleanKeyValue.replace("in:", "")] = row[key];
-                        cleanedParams4pc[cleanKeyValue.replace("in:", "")] = {};
+                    } else if (cleanKey.toUpperCase().startsWith("OUT:")) {
+                        cleanKey = cleanKey.slice(4);
+                        outputParams[cleanKey] = row[key];
 
+                    } else if (cleanKey.toUpperCase().startsWith("IMG")) {
 
-                    } else if (cleanKeyValue.trim().startsWith("out:")) {
+                        imgParams[cleanKey] = row[key];
 
-                        outputParams[cleanKeyValue.replace("out:", "")] = row[key];
-                        cleanedParams[cleanKeyValue.replace("out:", "")] = row[key];
-                        cleanedParams4pc[cleanKeyValue.replace("out:", "")] = {};
+                    } else if (cleanKey.toUpperCase().startsWith("THREED")) {
+                        
+                        threeDParams[cleanKey] = row[key];
 
                     } else {
-                        
-                        cleanedParams[cleanKeyValue] = row[key];
-                        if (!cleanKeyValue.startsWith("img") &&  cleanKeyValue != "threeD") {
-                            cleanedParams4pc[cleanKeyValue] = {};
-                        }
+                        otherParams[cleanKey] = row[key];
                     }
                 });
 
-                // var id = getCaseId(inputParams);
-                // id += 1;
-                // ids.push(id);
+                Object.assign(cleanedParams,inputParams,outputParams,otherParams,imgParams,threeDParams);
+
                 var id = getCaseId(inputParams);
                 ids.push(id);
 
-
                 allDataCollector[id] = {};
-                //allDataCollector[id]["inputData"] = inputParams; //don't need them for now
-                //allDataCollector[id]["outputParams"] = outputParams;
                 allDataCollector[id].cleanedParams = cleanedParams;
 
                 inputData.push(inputParams);
                 outputData.push(outputParams);
                 cleanedData.push(cleanedParams);
+                
             });
 
 
             // add rating of 0 to all the options if not already there
             if (keys.indexOf("Rating") == -1) {
-                cleanedParams4pc.Rating = {};
+                cleanedKeys4pc.Rating = {};
                 cleanedData.forEach(function (d) {
                     d.Rating = 0;
                 });
@@ -1270,7 +1287,7 @@
         function drawParallelCoordinates() {
 
             // remove Rating for on page load
-            var iniDimensions = d3.keys(cleanedParams4pc).filter(function (d) {
+            var iniDimensions = d3.keys(cleanedKeys4pc).filter(function (d) {
                 return (d != "Rating") && (d != "Description");
             }).reduce(function (acc, cur) {
                 acc[cur] = {};
@@ -1433,7 +1450,7 @@
 
             // legend boxes are diminsions of the graph
             //console.log(Object.keys(graph.dimensions()));
-            dimensions = d3.keys(cleanedParams4pc).map(function (d) {
+            dimensions = d3.keys(cleanedKeys4pc).map(function (d) {
                 return {
                     name: d,
                     enabled: true
@@ -1442,7 +1459,7 @@
 
             // find size of the square based on the height
             //var legendSquareSize = 16;
-            var legendSquareSize = Math.max(legendHeight / (d3.keys(cleanedParams4pc).length + 4), 12);
+            var legendSquareSize = Math.max(legendHeight / (d3.keys(cleanedKeys4pc).length + 4), 12);
 
             // create one group for each rect and text
             var legend = d3.select("#legend").append("svg")
@@ -1629,9 +1646,8 @@
                 .attr("class", "col-xs-1")
                 .style("cursor", "pointer")
                 .append("img")
-                .attr("class", "lazy")
                 .attr("id", "thumbnails-btm")
-                .attr("data-src", imgLink)
+                .attr("src", imgLink)
                 .on("click", updateLayoutOnSelect)
                 .attr("title", getTitle)
                 .style("border-color", function (d) {
@@ -1929,19 +1945,19 @@
             setupEvents();
 
             //lazy load
-            $(function() {
-                $('.lazy').Lazy({
-                    // your configuration goes here
-                    scrollDirection: 'vertical',
-                    effect: 'fadeIn',
-                    visibleOnly: true,
-                    onError: function(element) {
-                        console.log('error loading ' + element.data('src'));
-                    },
-                    appendScroll: $('div#thumbnails-btm')
+            // $(function() {
+            //     $('.lazy').Lazy({
+            //         // your configuration goes here
+            //         scrollDirection: 'vertical',
+            //         effect: 'fadeIn',
+            //         visibleOnly: true,
+            //         onError: function(element) {
+            //             console.log('error loading ' + element.data('src'));
+            //         },
+            //         appendScroll: $('div#thumbnails-btm')
 
-                });
-            });
+            //     });
+            // });
         }
 
 
@@ -1954,8 +1970,10 @@
             } else {
                 // load default data
                 //parse the csv data from the design_explorer_data folder
-                d3.csv("design_explorer_data/default_onload.csv",
-                    loadDataToDesignExplorer);
+                d3.csv("design_explorer_data/default_onload.csv", function (data) {
+                    loadDataToDesignExplorer(data);
+                    loadSetting("design_explorer_data/DefaultData/settings.json");
+                    });
 
             }
 
@@ -2446,7 +2464,7 @@
                         });
 
                     // add Rating to dimensions
-                    graph.dimensions(cleanedParams4pc);
+                    graph.dimensions(cleanedKeys4pc);
                     graph.scale("Rating", [0, 5]);
                     graph.updateAxes();
                     firstRating = false;
@@ -2894,19 +2912,34 @@
 
         }
 
-        function loadSetting() {
-
-            var settingFiles =  d3.keys(_googleReturnObj.settingFiles);
+        function loadSetting(settingFilePath) {
             
-            if (settingFiles.length ==0) {
-                return;
+            var jsonFileLink = "";
+
+            if(settingFilePath!==undefined){
+                jsonFileLink =settingFilePath;
+            }else{
+
+                var settingFiles =  d3.keys(_googleReturnObj.settingFiles);
+                if (settingFiles.length ==0) {
+                     jsonFileLink = "design_explorer_data/settings.json"
+
+                }else {
+
+                    var jsonFile = settingFiles[0];
+                    jsonFileLink = _googleReturnObj.settingFiles[jsonFile];
+                }
+
+                
             }
 
-            var jsonFile = settingFiles[0];
+            console.log(jsonFileLink);
 
-            d3.json(_googleReturnObj.settingFiles[jsonFile], function (d) {
+
+            d3.json(jsonFileLink, function (d) {
                 //updata to global _userSetting
                 _userSetting = d;
+                console.log(_userSetting);
                 setSettings(graph,_userSetting);
             })
 
