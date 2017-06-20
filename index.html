@@ -2039,7 +2039,10 @@
 
                         //originalDataLength = data.length;
 
-                        if (data !== null) loadDataToDesignExplorer(data);
+                        if (data !== null) {
+                            loadDataToDesignExplorer(data);
+                            loadSetting();
+                            };
                     };
 
 
