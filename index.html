@@ -1458,13 +1458,17 @@
             });
 
             // find size of the square based on the height
+            var keyCounts = d3.keys(cleanedKeys4pc).length;
             //var legendSquareSize = 16;
-            var legendSquareSize = Math.max(legendHeight / (d3.keys(cleanedKeys4pc).length + 4), 12);
+            var legendSquareSize = Math.max(legendHeight / (keyCounts + 4), 12);
+
+
+            var legend = d3.select("#legend").style("height", legendHeight+"px");
 
             // create one group for each rect and text
             var legend = d3.select("#legend").append("svg")
                 .attr("width", legendWidth)
-                .attr("height", legendHeight)
+                .attr("height", legendSquareSize*(keyCounts+10))
                 .selectAll("g")
                 .data(dimensions)
                 .enter().append("g")
