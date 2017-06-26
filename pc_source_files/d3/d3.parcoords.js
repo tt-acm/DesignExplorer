@@ -2,7 +2,7 @@ d3.parcoords = function (config) {
     var __ = {
         data: [],
         highlighted: [],
-        yscaleDomains: {},
+        yscaleDomains: {}, //MP added //yscalDomains is set by user or flipped or string type
         yscaleTicks: {},
         dimensions: {},
         dimensionTitleRotation: 0,
@@ -1514,7 +1514,17 @@ d3.parcoords = function (config) {
     };
 
     pc.reset = function(){
-        __.yscaleDomains = {};
+        d3.keys(__.yscaleDomains).forEach(function (k) {
+            if(__.dimensions[k] === undefined){
+                return;
+            }
+
+            if (__.dimensions[k].type != "string") {
+                delete __.yscaleDomains[k];
+            } else {
+                //keep current string domin
+            }
+        });
     }
 
     pc.update = function () {

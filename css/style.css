@@ -304,3 +304,8 @@ g.cell text {
     right: 50px;
     text-align: right;
 }
+
+#vis .imgSwitch select{
+    width: 100%;
+    margin-top: 10px;
+}
