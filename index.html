@@ -2960,13 +2960,9 @@
                 
             }
 
-            console.log(jsonFileLink);
-
-
             d3.json(jsonFileLink, function (d) {
                 //updata to global _userSetting
                 _userSetting = d;
-                console.log(_userSetting);
                 setSettings(graph,_userSetting);
             })
 
