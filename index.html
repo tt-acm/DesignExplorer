@@ -434,8 +434,9 @@
                                 <input class="star" type="radio" name="rating" value="3" />
                                 <input class="star" type="radio" name="rating" value="4" />
                                 <input class="star" type="radio" name="rating" value="5" />
-
                             </form>
+                            <div class="dropdown imgSwitch"></div>
+
                         </div>
                         <div id="viewer3d" style="width:100%; height:100%" class="hidden">
                             <!-- place holder for the viewer -->
@@ -563,7 +564,7 @@
                     </div>
                     
                     <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     </div>
                 </div>
                 
@@ -846,7 +847,6 @@
 
             var selectedImage = d3.select(this);
 
-
             // highlight the line graph
             graph.highlight(selectedImage.data());
 
@@ -870,21 +870,9 @@
                 .select("img")
                 .data(selectedImage.data())
                 .attr("src", makeUrl(selectedImage.datum()[imageLinkKeys[0]],"img"))
-                .attr("title", getTitle)
-                .attr("id",imageLinkKeys[0])
-                .on("click", function (d){
-                    var currentKey = d3.select(this).attr("id");
-                    var nextKey = viewer2dNextImg(imageLinkKeys,currentKey);
-                    
-                    d3.select(this)
-                        .attr("id",nextKey)
-                        .attr("src", makeUrl(d[nextKey],"img"));
-                     
-                });
+                .attr("title", getTitle);
                 
-            
-                
-
+            addImgSwitch(selectedImage);
             updateIterationData(selectedImage.data());
 
 
@@ -929,24 +917,69 @@
 
         }
 
-        function viewer2dNextImg(imgKeyList, currentImgKey){
+        function addImgSwitch(selectedData){
+            
 
-            if(imgKeyList.length>=1){
-                var currentImgIndex = imgKeyList.indexOf(currentImgKey);
-                
-                if(currentImgIndex+1<imgKeyList.length){
+            if(imageLinkKeys.length <=1){
+                d3.select(".imgSwitch").classed("hidden", true)
+                return;
+            }else{
+                d3.select(".imgSwitch").classed("hidden", false)
+                //remove current first
+                d3.selectAll(".imgSwitch select").remove();
 
-                    nextImgKey = imgKeyList[currentImgIndex+1];
+                //add
+                var select = d3.select(".imgSwitch")
+                .append("select")
+                .attr("class", "btn btn-default btn-xs");
 
-                }else{
-                    nextImgKey = imgKeyList[0];
-                }
+                 // add img options
+                select.selectAll("option")
+                    .data(imageLinkKeys)
+                    .enter()
+                    .append("option")
+                    .attr("value", function (d) {
+                        return d;
+                    })
+                    .text(function (d) {
+                        return d;
+                    });
 
-                return nextImgKey;
+                // add change event to show images
+                select.on("change", function (d) {
+                    imgKey = d3.select(this).property("value");
 
+                    // update the value in other dropdown menu
+                    d3.selectAll("select option").filter(function (d) {
+                        return d == imgKey;
+                    }).attr("selected", "true");
+
+                    d3.select("#viewer2d img")
+                        .attr("src", makeUrl(selectedData.datum()[imgKey],"img"));
+                });
             }
 
+           
         }
+       
+        // function viewer2dNextImg(imgKeyList, currentImgKey){
+
+        //     if(imgKeyList.length>=1){
+        //         var currentImgIndex = imgKeyList.indexOf(currentImgKey);
+                
+        //         if(currentImgIndex+1<imgKeyList.length){
+
+        //             nextImgKey = imgKeyList[currentImgIndex+1];
+
+        //         }else{
+        //             nextImgKey = imgKeyList[0];
+        //         }
+
+        //         return nextImgKey;
+
+        //     }
+
+        // }
 
 
         // update layout on select
@@ -1504,7 +1537,7 @@
             sortBy = d3.keys(graph.dimensions())[0]; // will be used to sort thumbnail images
             ascending = true;
 
-            var select = d3.selectAll(".sorting")
+            var select = d3.select(".sorting")
                 .text("Sort by: ")
                 .append("select")
                 .attr("class", "btn btn-default btn-xs");
@@ -1659,20 +1692,6 @@
                     return color(valueToNumber(d[pcIsColoredBy], pcIsColoredBy));
                 });
 
-            // d3.select("#thumbnails-side")
-            //     .selectAll("div")
-            //     .data(data).enter()
-            //     .append("div")
-            //     .attr("class", "col-xs-3")
-            //     .style("cursor", "pointer")
-            //     .append("img")
-            //     .attr("id", "thumbnails-side")
-            //     .attr("src", imgLink)
-            //     .on("click", updateLayoutOnSelect)
-            //     .attr("title", getTitle)
-            //     .style("border-color", function (d) {
-            //         return color(valueToNumber(d[pcIsColoredBy], pcIsColoredBy));
-            //     });
         }
 
 
