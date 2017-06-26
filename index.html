@@ -1129,7 +1129,8 @@
                 });
             }
 
-            if (keys.indexOf("img") == -1) { 
+            //check imageLinkKeys array if it is empty
+            if (imageLinkKeys.length ==0) { 
                 hasImgLink = false;
                 d3.select("#thumbnails-btm_container").remove();
             }else{
