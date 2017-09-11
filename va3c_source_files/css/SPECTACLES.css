@@ -26,7 +26,7 @@
 .Spectacles_attributeList {
     height: 1px;
     width: 360px;
-    background-color: #fafafa;
+    /* background-color: #fafafa; */
     font-size: 11px;
     color: #555;
     text-align: left;
@@ -90,10 +90,6 @@
     display: none;
     z-index: 1002;
     color: #ffffff;
-}
-
-.Spectacles_errorMessage {
-
 }
 
 .Spectacles_uiTarget {

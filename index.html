@@ -405,9 +405,17 @@
 
                     <!-- Zoomed div for zoomed in areas -->
                     <div class="col-lg-9" id="zoomedArea" style="height:0px">
-                        <div id="IterationData" class="Spectacles_attributeList" style="display: none;right: auto;bottom: 1%;height: auto; width: auto;min-width: 280px;">
-                            <h4>Attributes</h4>
-                            <p>data</p>
+                        <div class="panel-group Spectacles_attributeList" id="IterationData" style="display: none;right: auto;bottom: 1%;height: auto; width: auto;min-width: 280px;">
+                                <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h4 class="panel-title">
+                                    <a data-toggle="collapse" href="#collapse1">Attributes</a>
+                                    </h4>
+                                </div>
+                                <div id="collapse1" class="panel-collapse collapse in">
+                                    <div class="panel-body"><p>data</p></div>
+                                </div>
+                            </div>
                         </div>
                         <div class="pull-right" id="vis">
                             <form>
