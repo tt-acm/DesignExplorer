@@ -1994,6 +1994,11 @@
 
 
         window.onload = function () {
+            var isIE = /*@cc_on!@*/false || !!document.documentMode;
+
+            if(isIE){
+                alert("Please use modern browsers to ensure the maximized experience.\n\nGoogle Chrome, or Firefox is suggested to use.");
+            }
             
             if (window.location.href.toUpperCase().search("GFOLDER") > 0 || window.location.href.toUpperCase().search("ID=") > 0) {
                 // this is old user with google drive files.
