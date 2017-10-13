@@ -1540,7 +1540,7 @@ d3.parcoords = function (config) {
         if (isBrushed()) {
             pc.renderBrushed();
         } else {
-            pc.Render();
+            pc.reRender();
         }
 
         // axes, destroys old brushes.
