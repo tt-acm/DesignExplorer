@@ -339,6 +339,7 @@
                                     <button id="savecsv" class="btn btn-default btn-xs" onclick="saveToCSV()">Save Selection to File</button>
                                     <button id="stilllink" class="btn btn-default btn-xs" onclick="showStillLink()">My Static Link</button>
                                     <a class="btn btn-default btn-xs" href="http://www.mpendesign.com/category/tutorial/" target="_blank">Tutorial</a>
+                                    <a class="btn btn-default btn-xs" href="https://www.thorntontomasetti.com/services/sustainability/" target="_blank">Services</a>
                                     <a href="https://github.com/tt-acm/DesignExplorer/wiki" class="btn btn-default btn-xs" target="_blank">
                                         Info <span class="glyphicon glyphicon-new-window"></span>
                                     </a>
@@ -495,7 +496,7 @@
                     </div>
                     <div class="col-lg-12" style="position: absolute;bottom: 2em;width: calc(100% - 60px);">
                         <h3 class="text-center"> Happy Exploring! </h3>
-                        <h5 class="text-center">v2 (09/25/2017)</h5>
+                        <h5 class="text-center">v2 (10/17/2017)</h5>
                         <br>
                         <h5 class="text-center">
                             &copy; CORE studio | Thornton Tomasetti |
@@ -1063,9 +1064,16 @@
 
             } else {
                 // collapse in
+                var pcHeight = 0;
+                if (isLeftChartFullScreenToggled) {
+                    pcHeight = (windowHeight - 109) * 0.5-50;
+                }else{
+                    pcHeight = graphHeight;
+                }
                 d3.select("#graph")
                     .transition("ease out").attr("class", "parcoords collapse in")
-                    .style("height", graphHeight + "px");
+                    .style("height", pcHeight + "px");
+                
 
                  //mirror collapse behavior with radar chart
                 $("#radarChart").collapse("show");
@@ -1287,10 +1295,10 @@
 
 
         var scatterHeight = d3.select("#ScChartWrapper").style("height").replace("px", "");
-        window.addEventListener("resize", myFunction);
+        window.addEventListener("resize", reDrawPcChart);
 
         //redraw the charts when window size changes
-        function myFunction () { 
+        function reDrawPcChart () { 
             calWidthAndHeight();
 
             var newGraphWidth = windowWidth*0.75-30; // (col-lg-9 x0.73) - (boside padding 15*2)
@@ -1890,6 +1898,7 @@
                     if (isLeftChartFullScreenToggled) {
                         var newpcHeight = (windowHeight - 109) * 0.5-50;
                         var newpcWidth = windowWidth - 30;  
+
                         resizePcChart(newpcWidth,newpcHeight);
 
                         
@@ -1910,7 +1919,6 @@
                             oldpcWidth = windowWidth*0.75 - 30;
                         }
                         
-            
                         //back to normal size mode
                         resizePcChart(oldpcWidth,oldpcHeight);
 
