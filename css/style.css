@@ -4,7 +4,7 @@ body {
     font-size: 12px;
 }
 
-div {
+.modal-content, #viewer2d, #viewer3d{
     background-color: white;
 }
 
@@ -94,6 +94,8 @@ output {
     left: 0;
     position: absolute;
     overflow: hidden;
+    background-image: url(../img/thorntontomasetti.jpg);
+    background-size: contain;
 }
 
 
@@ -102,9 +104,11 @@ output {
     height: 100%;
     width: auto;
     display: block;
-    /* to center the imge - hopefully! */
     margin-left: auto;
     margin-right: auto;
+    min-width: 300px;
+    background-image: url(../img/thorntontomasetti.jpg);
+    background-size: contain;
 }
 div#thumbnails-btm_container.onRight, 
 div#thumbnails-btm_container.rightChartFullScreenToggled
@@ -113,10 +117,10 @@ div#thumbnails-btm_container.rightChartFullScreenToggled
     right: 0;
     width: 25%;
 
-    -webkit-transition: all 0.3s ease;
-    -moz-transition: all 0.3s ease;
-    -o-transition: all 0.3s ease;
-    transition: all 0.3s ease;
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
     
 }
 div#thumbnails-btm_container.onRight,
@@ -143,10 +147,8 @@ div#thumbnails-btm.col-lg-12{
 #zoomedArea {
     overflow: hidden;
     margin-top: 10px;
-    -webkit-transition: all 0.3s ease;
-    -moz-transition: all 0.3s ease;
-    -o-transition: all 0.3s ease;
-    transition: all 0.3s ease;
+    min-height: 0;
+
 }
 
 #legend {
@@ -206,7 +208,8 @@ a#copyRightButton {
     margin: 5px;
 }*/
 
-.popupWindow{
+.popupWindow, 
+.modal-backdrop{
     background-color: rgba(0, 0, 0, 0.30);
 }
 
@@ -230,14 +233,19 @@ a#copyRightButton {
     
 }
 
-/*#ScChartWrapper.rightChartFullScreenToggled{
+#ScChartWrapper {
+    background-color: white;
+}
+
+#ScChartWrapper.rightChartFullScreenToggled{
     width: 75%;
     left: 15px;
     z-index: 9;
     position: absolute;
-}*/
+}
 
-.col-lg-3 .chartSide.rightChartFullScreenToggled, .col-lg-3 .row-fluid.rightChartFullScreenToggled{
+.col-lg-3 .chartSide.rightChartFullScreenToggled, 
+.col-lg-3 .row-fluid.rightChartFullScreenToggled{
     width: 100%;
     float: left;
 }
@@ -266,27 +274,17 @@ g.cell text {
     height: 2.2em;
 }
 
-#scaleList{
+#dimSettingList{
     overflow-y: auto;
-    height: 60%;
+    height: 62%;
 }
 
-#scaleList .form-control{
+#dimSettingList .form-control{
     min-width: 50px;
-    max-width: 20%;
+    width: 35%;
     margin-left: 0.5em;
 }
 
-#scaleList .control-label{
-    width: 15%;
-}
-
-#loadFileLocally, #showStaticLink{
-    -webkit-transition: all 0.3s ease;
-    -moz-transition: all 0.3s ease;
-    -o-transition: all 0.3s ease;
-    transition: all 0.3s ease;
-}
 
 #showStaticLink{
     opacity: 0;
@@ -295,4 +293,23 @@ g.cell text {
 #showStaticLink.Show{
     opacity: 1;
     margin-top: 50px;
+}
+
+#graph svg g.mark line{
+    stroke-width: 4px;
+}
+
+#navbar-studyInfo{
+    position: absolute;
+    right: 50px;
+    text-align: right;
+}
+
+#vis .imgSwitch select{
+    width: 100%;
+    margin-top: 10px;
+}
+
+#vis .imgSwitch{
+    float: right;
 }

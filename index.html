@@ -45,6 +45,7 @@
 
     <!-- jQuery -->
     <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+    <!--<script type="text/javascript" src="js/jquery.lazy.min.js"></script>-->
 
     <!-- Sliders script and css -->
     <script src="./rangeslider_files/js/ion.rangeSlider.js"></script>
@@ -73,6 +74,7 @@
 
     <!-- Bootstrap Core CSS -->
     <link href="bootstrap_side_bar/css/bootstrap.min.css" rel="stylesheet">
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
 
     <!-- Custom CSS -->
     <link href="bootstrap_side_bar/css/simple-sidebar.css" rel="stylesheet">
@@ -101,7 +103,8 @@
     <!-- Design Explorer Scripts -->
     <script src="./js/designExplorer.js" type="text/javascript" language="javascript"></script>
     <!-- for clean parameters before new data comes in -->
-
+    
+  
 
     <!-- Google Client Scripts -->
     <!--<script src="./js/GoogleClient.js" type="text/javascript" language="javascript"></script>-->
@@ -111,7 +114,12 @@
 <script>
     //load FolderInfo ,Json data_ Mingbo Peng Modified--------------------------------------------------------------------
 
-    var googleReturnObj ={}; //{"fileName":Google Drive ID} //ready for next update 
+    var _googleReturnObj ={ //{"fileName":Google Drive ID}
+        csvFiles:{},
+        imgFiles:{},
+        jsonFiles:{},
+        settingFiles:{}
+    }; 
     var _folderInfo = {
         "DE_PW":"",
         "inLink":"",
@@ -119,15 +127,31 @@
         "type":""
     }
 
+    var _userSetting = {
+        studyInfo: {
+            name:"",
+            date:""
+        },
+        dimScales:{},
+        dimTicks:{},
+        dimMark:{}
+    }
+
     function readyToLoad(csvFilePathLink) {
         if (csvFilePathLink.length > 0) {
             // remove the current selection
             unloadPageContent();
-            d3.csv(csvFilePathLink, loadDataToDesignExplorer);
+            d3.csv(csvFilePathLink, function (data) {
+                loadDataToDesignExplorer(data);
+                loadSetting();
+                updateLayoutOnDeselect();
+            } );
             //window.prompt only if user input data, not from URL
             if (document.getElementById("folderLink").value) {
                 showStillLink();
             }
+
+            //updateLayoutOnDeselect();
 
             //d3.select("#welcome").style("display", "none");
         } else {
@@ -138,6 +162,13 @@
 
     function makeUrl(file,type) {
         var link;
+        
+        // no img link
+        if(file === 0 || file === undefined){
+            return "http://mingbopeng.github.io/DesignExplorer/img/thorntontomasetti.jpg";
+        }
+ 
+
 
         if (file.startsWith("http")) {
             // file is a valid full Url path
@@ -155,16 +186,16 @@
             } else {                                       //folder is one GoogleDrive or OneDrive
                 
                 if(type =="img"){
-                    link = googleReturnObj.imgFiles[file];
+                    link = _googleReturnObj.imgFiles[file];
                     
                 }else if(type =="threeD"){
-                    link = googleReturnObj.jsonFiles[file];
+                    link = _googleReturnObj.jsonFiles[file];
                     
                 }else if(type =="setting"){
-                    link = googleReturnObj.settingFiles[file];
+                    link = _googleReturnObj.settingFiles[file];
                     
                 }else if(type =="csv"){
-                    link = googleReturnObj.csvFiles[file];
+                    link = _googleReturnObj.csvFiles[file];
                     
                 }
 
@@ -174,54 +205,60 @@
         return link;
     }
 
-    function getStillLink() {
-        if (_folderInfo.DE_PW.length > 0) {
-            //var msg;
-            var msg = document.location.origin +"/DesignExplorer/"+ _folderInfo.DE_PW;
-            
-            window.prompt("This is the link that you can access next time without loading!", msg);
-
-        } else {
-            alert("You have to put online folder information first!");
-        }
-    }
 
     function showStillLink() {
-        var studyCaseLink = encodeUrl(_folderInfo.inLink) ;
-        var studyLongUrl = document.location.origin +"/DesignExplorer/?ID="+ studyCaseLink
 
-        d3.select("#loadFileLocally").style("display","none");
+        var studyCaseLink = encodeUrl(_folderInfo.inLink);
+        var studyEncodedUrl = "";
+
+        if (studyCaseLink.length===0) {
+            var warningString = "There is no static link for you if you are not using online shared folder.";
+            d3.select("#myStudyID").html(warningString);
+            $("#showStillLink").modal()
+            return;
+
+        }else if (_folderInfo.DE_PW.length>0){
+            // if _folderInfo.DE_PW existed, just return.
+            studyEncodedUrl = document.location.origin + "/DesignExplorer/?ID=" + _folderInfo.DE_PW; 
+            d3.select("#showShortUrl").html("https://goo.gl/" +_folderInfo.DE_PW);
+            d3.select("#myStudyID").html(studyEncodedUrl); 
+            $("#showStillLink").modal();
+            return;
+
+        }
+
+        //valid online folder available
+        var studyLongUrl = document.location.origin +"/DesignExplorer/?ID="+ studyCaseLink;
+        d3.select("#welcome").style("display","none");
         
-        makeUrlId(studyLongUrl, function name(d) {
-            _folderInfo.DE_PW = d;
-            var studyEncodedUrl = "";
+        
+        makeUrlId(studyLongUrl, function name(UrlId) {
+            _folderInfo.DE_PW = UrlId;
+            
 
-            if(d.length ==6){ // google url id
+            if(UrlId.length ==6){ // google url id
                 
                 studyEncodedUrl = document.location.origin +"/DesignExplorer/?ID="+_folderInfo.DE_PW;
-                d3.select("#showShortUrl").html("https://goo.gl/"+d);
+                d3.select("#showShortUrl").html("https://goo.gl/"+ _folderInfo.DE_PW);
 
             }else{
                 studyEncodedUrl = studyLongUrl;
             }
-                d3.select("#showStaticLink").classed("Show", true)
-                    .selectAll("#myStudyID").html(studyEncodedUrl);
-            
+
+            d3.select("#myStudyID").html(studyEncodedUrl);
+            $("#showStillLink").modal()
             
         })
         
 
     }
 
-
-
-
 </script>
 
-<body>
+<body >
 
     <!-- Navbar -->
-    <nav class="navbar navbar-default" style="margin-bottom:0">
+    <nav class="navbar" style="margin-bottom:0">
         <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
@@ -247,8 +284,13 @@
                         </p>
                     </li>
                 </ul>
+                <div id = "navbar-studyInfo">
+                    <h4></h4>
+                    <h6></h6>
+                </div>
             </div>
             <!-- /.navbar-collapse -->
+
         </div>
     </nav>
 
@@ -260,9 +302,9 @@
                 <div class="legend col-xs-12" id="legend">
                     <!--place holder for legends-->
                 </div>
-                <div id="sliders-heading" class="sidebar-brand" style="text-align:center">
+                <!--<div id="sliders-heading" class="sidebar-brand" style="text-align:center">
                     LOAD YOUR DATA!
-                </div>
+                </div>-->
                 <div class="inputSliders col-xs-11" id="inputSliders">
                     <form class="sliders">
                         <!-- I will use this form to disable all the sliders together. -->
@@ -295,8 +337,9 @@
                                     <button id="remove" class="btn btn-default btn-xs">Exclude Selection</button>
                                     <button id="keep" class="btn btn-default btn-xs">Zoom to Selection</button>
                                     <button id="savecsv" class="btn btn-default btn-xs" onclick="saveToCSV()">Save Selection to File</button>
-                                    <button id="stilllink" class="btn btn-default btn-xs" onclick="getStillLink()">My Static Link</button>
+                                    <button id="stilllink" class="btn btn-default btn-xs" onclick="showStillLink()">My Static Link</button>
                                     <a class="btn btn-default btn-xs" href="http://www.mpendesign.com/category/tutorial/" target="_blank">Tutorial</a>
+                                    <a class="btn btn-default btn-xs" href="https://www.thorntontomasetti.com/services/sustainability/" target="_blank">Services</a>
                                     <a href="https://github.com/tt-acm/DesignExplorer/wiki" class="btn btn-default btn-xs" target="_blank">
                                         Info <span class="glyphicon glyphicon-new-window"></span>
                                     </a>
@@ -334,7 +377,7 @@
                                         <span class="glyphicon glyphicon-triangle-left" aria-hidden="true"></span>
                                     </button>
                                     <a id="copyRightButton" href="http://core.thorntontomasetti.com/" class="btn btn-default btn-xs" target="_blank" style="width: calc(100% - 46px);">
-                                        &copy; 2015-17 Thornton Tomasetti
+                                        &copy; 2017 Thornton Tomasetti
                                     </a>
                                     <!--<button type="button" class="btn btn-default btn-xs" id="rcgraph" data-toggle="collapse" data-target="#radarChart">
                                         <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
@@ -363,26 +406,33 @@
 
                     <!-- Zoomed div for zoomed in areas -->
                     <div class="col-lg-9" id="zoomedArea" style="height:0px">
-                        <div id="IterationData" class="Spectacles_attributeList" style="display: none;right: auto;bottom: 1%;height: auto; width: auto;min-width: 280px;">
-                            <h4>Attributes</h4>
-                            <p>data</p>
+                        <div class="panel-group Spectacles_attributeList" id="IterationData" style="display: none;right: auto;bottom: 1%;height: auto; width: auto;min-width: 280px;">
+                                <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h4 class="panel-title">
+                                    <a data-toggle="collapse" href="#collapse1">Attributes</a>
+                                    </h4>
+                                </div>
+                                <div id="collapse1" class="panel-collapse collapse in">
+                                    <div class="panel-body"><p>data</p></div>
+                                </div>
+                            </div>
                         </div>
                         <div class="pull-right" id="vis">
                             <form>
 
-                                <label>
-                                    <input type="radio" class="toggleView" name="visMode" value="2D" checked> 2D</label>
+                                <label><input type="radio" class="toggleView" name="visMode" value="2D" checked> 2D</label>
                                 <!-- show 2D image on load-->
-                                <label>
-                                    <input type="radio" class="toggleView" name="visMode" value="3D" id="threeDRadio"> 3D</label>
+                                <label id="threeDLabel"><input type="radio" class="toggleView" name="visMode" value="3D" id="threeDRadio"> 3D</label>
 
-                                <button type="button" class="btn btn-default btn-xs" id="toggleComments" style="margin-right:10px; margin-left:5px; margin-top: 2px;"
-                                    title="Add Comments">
+                                <button type="button" class="btn btn-default btn-xs hide" id="toggleComments" title="Add Comments">
                                     <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                                 </button>
-                                <button type="button" class="btn btn-default btn-xs" id="fullscreentoggle" style="margin-right:10px; margin-left:5px; margin-top: 2px;"
-                                    title="Full Screen Toggle">
+                                <button type="button" class="btn btn-default btn-xs" id="fullscreentoggle" title="Full Screen Toggle">
                                     <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
+                                </button>
+                                <button type="button" class="btn btn-default btn-xs"title="Unselect" onclick="updateLayoutOnDeselect()">
+                                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                                 </button>
 
                             </form>
@@ -393,8 +443,9 @@
                                 <input class="star" type="radio" name="rating" value="3" />
                                 <input class="star" type="radio" name="rating" value="4" />
                                 <input class="star" type="radio" name="rating" value="5" />
-
                             </form>
+                            <form class="dropdown imgSwitch"></form>
+
                         </div>
                         <div id="viewer3d" style="width:100%; height:100%" class="hidden">
                             <!-- place holder for the viewer -->
@@ -445,7 +496,7 @@
                     </div>
                     <div class="col-lg-12" style="position: absolute;bottom: 2em;width: calc(100% - 60px);">
                         <h3 class="text-center"> Happy Exploring! </h3>
-                        <h5 class="text-center">v2 (03/15/2017)</h5>
+                        <h5 class="text-center">v2 (10/17/2017)</h5>
                         <br>
                         <h5 class="text-center">
                             &copy; CORE studio | Thornton Tomasetti |
@@ -467,7 +518,7 @@
                     </button>
 
                     <h4 class="text-center" style="margin: 100px 0 30px 0;">
-                        From online folder:
+                        From the cloud:
                     </h4>
                     <p class="text-center">
                         <input type="text" id="folderLink" class="btn btn-default btn-sm toggled" name="imgfolder" placeholder="GoogleDrive, OneDrive, or server link"
@@ -487,47 +538,84 @@
                         </p>
                         <h5 class="text-center" style="color: #9d9d9d;">Please put valid images and 3D-json files URL. (Example:<a href="design_explorer_data/example/LocalCSV_example.csv" target="_blank">data.csv</a>)</h5>
                     </div>
-                    <div id="showStaticLink" class="text-muted">
-                        <h5 class="col-lg-3 col-md-offset-1">Link: </h5>
-                        <h5 class="col-lg-8">
-                            <code id="myStudyID">Passcode</code>
-                            <button id="copy-link" class="btn btn-xs btn-default" onclick="CopyToClipboard(this, myStudyID)">
-                                <span class="glyphicon glyphicon-share"></span>
-                            </button>
-                        </h5>
-                        
-                        <h5 class="col-lg-3 col-md-offset-1">Short Link: </h5>
-                        <h5 class="col-lg-8">
-                            <code id="showShortUrl">Passcode</code>
-                            <button id="copy-showShortUrl" class="btn btn-xs btn-default " onclick="CopyToClipboard(this, showShortUrl)">
-                                <span class="glyphicon glyphicon-share"></span>
-                            </button>
-                        </h5>
-                    </div>
+                    
                 </div>
 
             </div>
 
+            <!--show static link-->
+            <!-- Modal -->
+            <div class="modal fade" id="showStillLink" role="dialog">
+                <div class="modal-dialog">
+                
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Static link</h4>
+                    </div>
+                    <div class="modal-body"> 
+                        <h5 >Link for share </h5>
+                        <p >
+                            <code id="myStudyID">Not available</code>
+                            <button id="copy-link" class="btn btn-xs btn-default" onclick="CopyToClipboard('#myStudyID')" data-toggle="tooltip" data-placement="bottom" title="Click to copy the link!">
+                                <span class="glyphicon glyphicon-share"></span>
+                            </button>
+                        </p> 
+                        <h5 >Short link </h5>
+                        <p >
+                            <code id="showShortUrl">Not available</code>
+                            <button id="copy-showShortUrl" class="btn btn-xs btn-default " onclick="CopyToClipboard('#showShortUrl')" data-toggle="tooltip" data-placement="bottom" title="Click to copy the link!">
+                                <span class="glyphicon glyphicon-share"></span>
+                            </button>
+                        </p> 
+                        
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+                
+                </div>
+            </div>
+
             <!--data setting -->
             <div class="row-fluid col-lg-12 row-centered vertical-center fullscreen popupWindow" id="showSetting" style=" display:none">
-                <div class="col-sm-12 col-centered" id="dataSetting" style="width: 700px;height: 500px">
+                <div class="col-sm-12 col-centered" id="dataSetting" style="width: 700px;height: 600px">
                     <button class="btn btn-default btn-sm pull-right popupWindowClose">
                         <span class="glyphicon glyphicon-remove"></span>
                     </button>
 
-                    <h4 class="text-center" style="margin: 60px 0 30px 0;">
-                        set dimension scale:
-                    </h4>
-                    <div class="text-center col-xs-11 col-md-offset-1" id="scaleList">
+                    <h1 style="margin: 30px 0 10px 0;">Setting</h1>
+                    <h6 style="margin: 0 30px 30px 0;">All settings will not be effective once this page is reloaded, unless save the setting file with data.csv on the cloud.</h6>
+
+                    <div class="panel-group" id="dimSettingList">
                         <!--placeholder for scale setting list-->
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#dimSettingList" href="#settingStudyInfo">Study Information</a>
+                                </h4>
+                            </div>
+                            <div id="settingStudyInfo" class="panel-collapse collapse in">
+                                <div class="panel-body">
+                                    <ul class="list-group">
+                                        <li class="list-group-item form-inline">Study Name: <input id="studyNameInput" class="form-control input-sm" type="text" style="width: 80%"></li>
+                                        <li class="list-group-item form-inline">Study Date: <input id="studyDateInput" class="form-control input-sm" type="text" style="width: 80%;    margin-left: 1.1em;"></li>
+                                        <li class="list-group-item form-inline">Password: <input class="form-control input-sm" placeholder="WIP" type="text" style="width: 40%; margin-left: 1.6em;" disabled><input class="form-control input-sm" placeholder="Confirm" type="text" style="width: 39%;" disabled></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
-                    <div class="col-xs-6 col-md-offset-3" style="margin-top: 2.5em;">
+                    <!--buttons for setting list-->
+                    <div class="col-xs-6 col-md-offset-3" style="margin-top: 1.5em;">
                         <button id="setUserSetting" type="button" class="btn col-xs-4 col-md-offset-1">Set</button>
-                        <button id="saveUserSetting" type="button" class="btn col-xs-4 col-md-offset-1">Save</button>
+                        <button id="saveUserSetting" type="button" class="btn col-xs-4 col-md-offset-1" data-toggle="tooltip" data-placement="bottom" title ="Export the setting file, and save to where data.csv located!">Save</button>
                     </div>
-
-                    
 
                 </div>
             </div>
@@ -576,12 +664,19 @@
             3: "design_explorer_data/AIA building.csv"
         };
 
+        sampleSettingFiles = {
+            1: "design_explorer_data/RedBox/settings.json",
+            2: "design_explorer_data/DefaultData/settings.json",
+            3: "design_explorer_data/AIAbuilding/settings.json"
+        };
+
         d3.selectAll(".sampleImage")
             .on("click", function () {
                 var selSample = d3.select(this);
                 var id = selSample[0][0].id.replace("sample", "");
 
                 var filePath = sampleFiles[id];
+                var settingFilePath =sampleSettingFiles[id];
 
                 // remove the current selection
                 unloadPageContent();
@@ -589,7 +684,11 @@
                 d3.select("div#welcome").style("display", "none");
 
                 // load the new file
-                d3.csv(filePath, loadDataToDesignExplorer);
+                d3.csv(filePath, function (data) {
+                    loadDataToDesignExplorer(data);
+                    loadSetting(settingFilePath);
+                    });
+
             });
 
     </script>
@@ -598,69 +697,6 @@
     <script type="text/javascript">
         // update radar chart
         var scatterChart;
-        function updateRadarChart() {
-            //format data for radar chart
-            var selectedData;
-            var outputKeys = d3.keys(outputData[0]);
-            if (graph.brushed().length > 0) {
-                selectedData = graph.brushed();
-            } else {
-                selectedData = graph.data();
-
-            }
-
-            //var selectedData = graph.brushed();
-            selectedDataFormatted = [];
-            radarChartColors = [];
-
-            selectedData.forEach(function (d) {
-                selectedDataFormatted.push(formatData(d));
-                //debugger;
-                radarChartColors.push(color(d[pcIsColoredBy]));
-
-            });
-
-
-            //get height, width for radar chart
-            //we want the graph to be centered above the thumbnails
-            //65px is to fit text
-            var divWidth = d3.select("#thumbnails-side").style("width").replace("px", "");
-            var pcHeight = d3.select("#graph").style("height").replace("px", "");
-            var rcDimension = Math.min(pcHeight, divWidth) - 65;
-
-            radarGrey = "rgb(160,160,160)";
-
-            //configure radar chart
-            cfg = ({
-                w: rcDimension,
-                h: rcDimension,
-                color: function () {
-                    return radarGrey;
-                },
-                radius: 4,
-                maxValue: 100,
-                extraWidthX: divWidth - rcDimension,
-                extraWidthY: 65,
-                translateX: (divWidth - rcDimension) / 2,
-                translateY: 65 / 2,
-                levels: 5,
-            });
-
-            RadarChart.draw("#radarChart", selectedDataFormatted, cfg);
-
-            //move lines to back
-            d3.selectAll(".area").moveToBack();
-
-            //did not work using CSS
-            d3.selectAll(".rclegend")
-                .style("fill", "steelblue")
-                .style("font-size", 9);
-        }
-
-        // clean radar chart
-        function cleanRadarChart() {
-            d3.selectAll(".radar-chart").remove();
-        }
 
         // add scatter chart
         function addScatterChart() {
@@ -780,39 +816,26 @@
             isRightChartFullScreenToggled = !isRightChartFullScreenToggled;
 
             d3.selectAll(
-                    "#ScChartWrapper,.chartSide,.col-lg-3 .row-fluid,.thumbnailSide,#copyRightButton, .scatter-matrix-container circle, #PcChartWrapper, #thumbnails-btm_container, #thumbnails-btm_container #thumbnails-btm,  #zoomedArea"
+                    "#ScChartWrapper," +
+                    ".chartSide,"+
+                    ".col-lg-3 .row-fluid,"+
+                    ".thumbnailSide,"+
+                    "#copyRightButton, "+
+                    ".scatter-matrix-container circle,"+
+                    " #PcChartWrapper, "+
+                    "#thumbnails-btm_container, "+
+                    "#thumbnails-btm_container #thumbnails-btm, "+
+                    " #zoomedArea"
                 )
                 .classed("rightChartFullScreenToggled", isRightChartFullScreenToggled);
 
-            // d3.select("#thumbnails-btm_container")
-            //     .classed("col-lg-3", isRightChartFullScreenToggled)
-            //     .classed("col-lg-12", !isRightChartFullScreenToggled);
-
-            // d3.select("#thumbnails-btm_container #thumbnails-btm")
-            //     .classed("onRight", isRightChartFullScreenToggled)
-
-
-
-            // d3.selectAll(".col-lg-9,#thumbnails-btm_container") // hide left side
-            //     .transition().delay(200)
-            //     .style("display", function () {
-            //         if (isRightChartFullScreenToggled) {
-            //             return "none";
-            //         } else {
-            //             return "block";
-            //         }
-            //     });
-
             if (isRightChartFullScreenToggled) {
-                var newDim =  windowHeight - 200;
-                
+                //var newDim =  windowHeight - 200;
+                d3.select("#thumbnails-btm_container").style("height", cleanHeight + "px");
             } else {
-                var newDim =  d3.select("#graph").style("height").replace("px", "") - 20;
+                d3.select("#thumbnails-btm_container").style("height", zoomedHeight+"px");
             }
-            // resizeScChart(newDim, newDim);
 
-
-            
 
         });
 
@@ -833,7 +856,6 @@
 
             var selectedImage = d3.select(this);
 
-
             // highlight the line graph
             graph.highlight(selectedImage.data());
 
@@ -843,8 +865,9 @@
 
 
             // show zoomed area
+            var thumbnailsHeight =  d3.select("#thumbnails-btm_container").style("height").replace("px", "");
             d3.select("#zoomedArea")
-                .style("height", zoomedHeight + "px");
+                .style("height", thumbnailsHeight + "px");
             
 
             // move btm thumbnail to right
@@ -855,22 +878,10 @@
             d3.select("#viewer2d")
                 .select("img")
                 .data(selectedImage.data())
-                .attr("src", makeUrl(selectedImage.datum().img,"img"))
-                .attr("title", getTitle)
-                .attr("id",imageLinkKeys[0])
-                .on("click", function (d){
-                    var currentKey = d3.select(this).attr("id");
-                    var nextKey = viewer2dNextImg(imageLinkKeys,currentKey);
-                    
-                    d3.select(this)
-                        .attr("id",nextKey)
-                        .attr("src", makeUrl(d[nextKey],"img"));
-                     
-                });
+                .attr("src", makeUrl(selectedImage.datum()[imageLinkKeys[0]],"img"))
+                .attr("title", getTitle);
                 
-            
-                
-
+            addImgSwitch(selectedImage);
             updateIterationData(selectedImage.data());
 
 
@@ -915,28 +926,69 @@
 
         }
 
-        function viewer2dNextImg(imgKeyList, currentImgKey){
-
-            if(imgKeyList.length>=1){
-                var currentImgIndex = imgKeyList.indexOf(currentImgKey);
-                
-                if(currentImgIndex+1<imgKeyList.length){
-
-                    nextImgKey = imgKeyList[currentImgIndex+1];
-
-                }else{
-
-                    nextImgKey = imgKeyList[0];
-                }
-
-                return nextImgKey;
-
-            }
-
-
+        function addImgSwitch(selectedData){
             
 
+            if(imageLinkKeys.length <=1){
+                d3.select(".imgSwitch").classed("hidden", true)
+                return;
+            }else{
+                d3.select(".imgSwitch").classed("hidden", false)
+                //remove current first
+                d3.selectAll(".imgSwitch select").remove();
+
+                //add
+                var select = d3.select(".imgSwitch")
+                .append("select")
+                .attr("class", "btn btn-default btn-xs");
+
+                 // add img options
+                select.selectAll("option")
+                    .data(imageLinkKeys)
+                    .enter()
+                    .append("option")
+                    .attr("value", function (d) {
+                        return d;
+                    })
+                    .text(function (d) {
+                        return d;
+                    });
+
+                // add change event to show images
+                select.on("change", function (d) {
+                    imgKey = d3.select(this).property("value");
+
+                    // update the value in other dropdown menu
+                    d3.selectAll("select option").filter(function (d) {
+                        return d == imgKey;
+                    }).attr("selected", "true");
+
+                    d3.select("#viewer2d img")
+                        .attr("src", makeUrl(selectedData.datum()[imgKey],"img"));
+                });
+            }
+
+           
         }
+       
+        // function viewer2dNextImg(imgKeyList, currentImgKey){
+
+        //     if(imgKeyList.length>=1){
+        //         var currentImgIndex = imgKeyList.indexOf(currentImgKey);
+                
+        //         if(currentImgIndex+1<imgKeyList.length){
+
+        //             nextImgKey = imgKeyList[currentImgIndex+1];
+
+        //         }else{
+        //             nextImgKey = imgKeyList[0];
+        //         }
+
+        //         return nextImgKey;
+
+        //     }
+
+        // }
 
 
         // update layout on select
@@ -989,63 +1041,54 @@
 
             var height = d3.select("#graph").style("height").replace("px", "");
 
-            if (height > 1) { //for some reasons, height ! == 0 doesn't work at here
+            if (height > 0) { 
                 // collapse
                 d3.select("#graph")
                     .attr("class", "parcoords collapse 2s")
-                    .transition().duration(200)
                     .style("height", "0px");
+
+                //mirror collapse behavior with radar chart
+                $("#radarChart").collapse("hide");
 
                 //disable buttons
                 d3.select("#reset").classed("disabled", true);
                 d3.select("#remove").classed("disabled", true);
                 d3.select("#keep").classed("disabled", true);
 
-
                 if (graph.highlight().length !== 0) {
-
                     d3.selectAll("#zoomedArea")
-                        .style("height", cleanHeight + "px")
-                        .each("end", function () {
-                            // resize view
-                            if (currentView == "3D") {
-                                va3cViewer.viewerDiv.resize();
-                            }
-                        });
-
-                } else {
-
-                    //mirror collapse behavior with radar chart
-                    $("#radarChart").collapse("hide");
-
-                    d3.select("#thumbnails-btm_container")
-                        .transition().duration(500).style("height", cleanHeight + "px");
+                            .style("height", cleanHeight + "px");
                 }
+
+                d3.select("#thumbnails-btm_container").style("height", cleanHeight + "px");
 
             } else {
                 // collapse in
+                var pcHeight = 0;
+                if (isLeftChartFullScreenToggled) {
+                    pcHeight = (windowHeight - 109) * 0.5-50;
+                }else{
+                    pcHeight = graphHeight;
+                }
                 d3.select("#graph")
                     .transition("ease out").attr("class", "parcoords collapse in")
-                    .transition().duration(350)
-                    .style("height", graphHeight + "px");
+                    .style("height", pcHeight + "px");
+                
+
+                 //mirror collapse behavior with radar chart
+                $("#radarChart").collapse("show");
 
                 //enable buttons
                 d3.select("#reset").classed("disabled", false);
                 d3.select("#remove").classed("disabled", false);
                 d3.select("#keep").classed("disabled", false);
 
-                // if there is a selecion let it in
                 if (graph.highlight().length !== 0) {
                     d3.selectAll("#zoomedArea")
-                        .transition().duration(1000).style("height", zoomedHeight + "px");
-                } else {
-
-                    //mirror collapse behavior with radar chart
-                    $("#radarChart").collapse("show");
-
-                    d3.select("#thumbnails-btm_container")
-                        .transition().duration(1000).style("height", zoomedHeight + "px");
+                            .style("height", zoomedHeight + "px");
                 }
+                d3.select("#thumbnails-btm_container").style("height", zoomedHeight + "px");
+                
             }
         });
 
@@ -1056,88 +1099,101 @@
     <script type="text/javascript">
         // this script imports the csv file and does the initial data processing
         // such as separating inputs, outputs, images, etc.
-        var originalData, //csv as it is imported
-            cleanedData = [], //all the columns to be used for parallel coordinates
-            numericalData = [],
-            inputData = [], // columns with input values - to be used for sliders
-            outputData = [], // columns with output values - to be used for radar graph
-            slidersInfo = [], // {name:'inputName', tickValues : [sorted set of values]},
-            currentSliderValues = {}, // collector for values
-            allDataCollector = {},
-            slidersMapping = {}, // I collect the data for all the input sliders here so I can use it to remap the sliders later
-            ids = [], // Here I collect all data based on a unique ID from inputs
-            cleanedParams4pc = {};
-            imageLinkKeys = [];
-
-
+        var hasImgLink = true;
+        var has3DLink = false;
 
         function analyzeInputData(originalData) {
             var keys = d3.keys(originalData[0]);
-            // var id = 0;
-
-            //get img keys []   
+            //get keys []   
             keys.forEach(function (key) {
-                if(key.startsWith("img")){
+                key = key.trim().replace(".", " ");
+
+                if(key.toUpperCase().startsWith("IMG"))
+                {
                     imageLinkKeys.push(key);
-                    //console.log(imageLinkKeys);
                 }
+                else if(key.toUpperCase().startsWith("THREED")){
+                    //do nothing
+                }
+                else{
+                    var cleanKey = key.trim().replace(".", " ").replace("in:", "").replace("out:", "");
+                    cleanedKeys4pc[cleanKey] = {};
+                }
+
             })
 
             originalData.forEach(function (row, rowCount) {
 
                 var inputParams = {},
                     outputParams = {},
+                    otherParams ={},
+                    imgParams ={},
+                    threeDParams ={},
                     cleanedParams = {};
 
                 keys.forEach(function (key, i) {
+                    var cleanKey = key.trim().replace(".", " ");
 
-                    // if (key.trim().startsWith("in:") !== true) {console.log("there is no inputs");}
-                    if (key.trim().startsWith("in:")) {
+                    if (cleanKey.toUpperCase().startsWith("IN:")) {
+                        cleanKey = cleanKey.slice(3);
+                        inputParams[cleanKey] = row[key];
 
-                        inputParams[key.replace("in:", "").trim()] = row[key];
-                        cleanedParams[key.replace("in:", "").trim()] = row[key];
-                        cleanedParams4pc[key.replace("in:", "").trim()] = {};
+                    } else if (cleanKey.toUpperCase().startsWith("OUT:")) {
+                        cleanKey = cleanKey.slice(4);
+                        outputParams[cleanKey] = row[key];
 
+                    } else if (cleanKey.toUpperCase().startsWith("IMG")) {
 
-                    } else if (key.trim().startsWith("out:")) {
+                        imgParams[cleanKey] = row[key];
 
-                        outputParams[key.replace("out:", "").trim()] = row[key];
-                        cleanedParams[key.replace("out:", "").trim()] = row[key];
-                        cleanedParams4pc[key.replace("out:", "").trim()] = {};
+                    } else if (cleanKey.toUpperCase().startsWith("THREED")) {
+                        
+                        threeDParams[cleanKey] = row[key];
 
                     } else {
-                        
-                        cleanedParams[key.trim()] = row[key];
-                        if (!key.startsWith("img") &&  key.trim() != "threeD") {
-                            cleanedParams4pc[key.trim()] = {};
-                        }
+                        otherParams[cleanKey] = row[key];
                     }
                 });
 
-                // var id = getCaseId(inputParams);
-                // id += 1;
-                // ids.push(id);
+                Object.assign(cleanedParams,inputParams,outputParams,otherParams,imgParams,threeDParams);
+
                 var id = getCaseId(inputParams);
                 ids.push(id);
 
-
                 allDataCollector[id] = {};
-                //allDataCollector[id]["inputData"] = inputParams; //don't need them for now
-                //allDataCollector[id]["outputParams"] = outputParams;
                 allDataCollector[id].cleanedParams = cleanedParams;
 
                 inputData.push(inputParams);
                 outputData.push(outputParams);
                 cleanedData.push(cleanedParams);
+                
             });
 
 
             // add rating of 0 to all the options if not already there
             if (keys.indexOf("Rating") == -1) {
-                cleanedParams4pc.Rating = {};
+                cleanedKeys4pc.Rating = {};
                 cleanedData.forEach(function (d) {
                     d.Rating = 0;
                 });
+            }
+
+            //check imageLinkKeys array if it is empty
+            if (imageLinkKeys.length ==0) { 
+                hasImgLink = false;
+                d3.select("#thumbnails-btm_container").remove();
+            }else{
+                hasImgLink = true;
+                
+            }
+
+            //remove threeD radio
+            if (keys.indexOf("threeD") == -1) { 
+                has3DLink = false;
+                d3.select("#threeDLabel").classed("hidden",true);
+            }else{
+                has3DLink = true;
+                d3.select("#threeDLabel").classed("hidden", false);
             }
 
         }
@@ -1219,6 +1275,7 @@
             var output = '';
             for (var i = 0, l = input.length; i < l; i++)
                 output += input.charCodeAt(i).toString(16);
+
             return output;
         }
 
@@ -1228,13 +1285,7 @@
     <script type="text/javascript">
         var graph;
         //set up heights of divs
-        var windowWidth = 0,
-            windowHeight = 0,
-            cleanHeight = 0, 
-            cleanWidth = 0,
-            graphHeight = 0, 
-            zoomedHeight = 0, 
-            opacity = 0.4;
+        var opacity = 0.4;
 
 
         var pcIsColoredBy;
@@ -1242,21 +1293,12 @@
         var color = d3.scale.linear()
             .range(["#3182bd", "#f33"]);
 
-        function calWidthAndHeight() {
-            windowWidth = window.innerWidth,
-            windowHeight = window.innerHeight,
-            cleanHeight = windowHeight - 85, // 2
-            cleanWidth = windowWidth - 100,
-            graphHeight = (cleanHeight / 3)-24, //remove 22+2 top tool button
-            zoomedHeight = (cleanHeight*2 / 3)-24; //remove 22+2 top tool button
-        }
-
-        calWidthAndHeight();
 
         var scatterHeight = d3.select("#ScChartWrapper").style("height").replace("px", "");
+        window.addEventListener("resize", reDrawPcChart);
 
         //redraw the charts when window size changes
-        $(window).resize(function () { 
+        function reDrawPcChart () { 
             calWidthAndHeight();
 
             var newGraphWidth = windowWidth*0.75-30; // (col-lg-9 x0.73) - (boside padding 15*2)
@@ -1289,13 +1331,13 @@
             }            
             //console.log(graphHeight+"x"+zoomedHeight);
 
-        });
+        };
 
 
         function drawParallelCoordinates() {
 
             // remove Rating for on page load
-            var iniDimensions = d3.keys(cleanedParams4pc).filter(function (d) {
+            var iniDimensions = d3.keys(cleanedKeys4pc).filter(function (d) {
                 return (d != "Rating") && (d != "Description");
             }).reduce(function (acc, cur) {
                 acc[cur] = {};
@@ -1399,16 +1441,25 @@
 
             // change color of lines
             // set domain of color scale
-            var values = graph.data().map(function (d) {
-                return parseFloat(valueToNumber(d[dim], dim));
-            });
-
+            var values = graph.data().map(function (d) { 
+                    return parseFloat(valueToNumber(d[dim], dim)); 
+                });
+            
+            var highlightedData = graph.highlighted();
+            
+            
             colorDomain = color.domain(d3.extent(values));
 
             // change colors for each line
             graph.color(function (d) {
                 return color([valueToNumber(d[dim], dim)]);
-            }).reRender();
+            }).render();
+
+            //keep highlighted data
+            if (highlightedData.length>0) {
+                graph.highlight(highlightedData)
+            } 
+            
 
             // change border color for images
             d3.selectAll("img#thumbnails-btm, img#thumbnails-side").style("border-color", function (d) {
@@ -1449,7 +1500,7 @@
 
             // legend boxes are diminsions of the graph
             //console.log(Object.keys(graph.dimensions()));
-            dimensions = d3.keys(cleanedParams4pc).map(function (d) {
+            dimensions = d3.keys(cleanedKeys4pc).map(function (d) {
                 return {
                     name: d,
                     enabled: true
@@ -1457,13 +1508,17 @@
             });
 
             // find size of the square based on the height
+            var keyCounts = d3.keys(cleanedKeys4pc).length;
             //var legendSquareSize = 16;
-            var legendSquareSize = Math.max(legendHeight / (d3.keys(cleanedParams4pc).length + 4), 12);
+            var legendSquareSize = Math.max(legendHeight / (keyCounts + 4), 12);
+
+
+            var legend = d3.select("#legend").style("height", legendHeight+"px");
 
             // create one group for each rect and text
             var legend = d3.select("#legend").append("svg")
                 .attr("width", legendWidth)
-                .attr("height", legendHeight)
+                .attr("height", legendSquareSize*(keyCounts+10))
                 .selectAll("g")
                 .data(dimensions)
                 .enter().append("g")
@@ -1498,7 +1553,7 @@
             sortBy = d3.keys(graph.dimensions())[0]; // will be used to sort thumbnail images
             ascending = true;
 
-            var select = d3.selectAll(".sorting")
+            var select = d3.select(".sorting")
                 .text("Sort by: ")
                 .append("select")
                 .attr("class", "btn btn-default btn-xs");
@@ -1632,7 +1687,8 @@
 
             // attach images ---------------------------------------------------------------------------------------------------
             var imgLink = function (d) {
-                return makeUrl(d.img,"img");
+                var theFirstImg = imageLinkKeys[0];
+                return makeUrl(d[theFirstImg],"img");
             };
 
 
@@ -1652,29 +1708,15 @@
                     return color(valueToNumber(d[pcIsColoredBy], pcIsColoredBy));
                 });
 
-            // d3.select("#thumbnails-side")
-            //     .selectAll("div")
-            //     .data(data).enter()
-            //     .append("div")
-            //     .attr("class", "col-xs-3")
-            //     .style("cursor", "pointer")
-            //     .append("img")
-            //     .attr("id", "thumbnails-side")
-            //     .attr("src", imgLink)
-            //     .on("click", updateLayoutOnSelect)
-            //     .attr("title", getTitle)
-            //     .style("border-color", function (d) {
-            //         return color(valueToNumber(d[pcIsColoredBy], pcIsColoredBy));
-            //     });
         }
 
 
         function addPlaceHolderImage() {
             // add an image holder with toggle between 2D and 3D
             // just toggle between 2d and 3d
-            d3.select("#zoomed")
-                .style("height", zoomedHeight)
-                .append("img");
+            // d3.select("#zoomed")
+            //     .style("height", zoomedHeight)
+            //     .append("img");
             //.attr("src", "https://raw.githubusercontent.com/tt-acm/DesignExplorer/gh-pages/design_explorer_data/img/placeholder/placeholder.png?token=ACx89Xl7jGRusi88wWHKH97INGjRifH5ks5Vy6YGwA%3D%3D");
         }
 
@@ -1693,12 +1735,13 @@
                     .style("width", newWidth + "px");
 
             //redraw pcChart
-            var highlightedData = graph.highlighted().length !== 0 ? graph.highlighted() : 0;
+            var highlightedData = graph.highlighted();
             //graph.width(newWidth).height(newHeight);
             graph.chartSize([newWidth,newHeight]);
             //graph.reRender();
-            if (highlightedData !== 0) graph.highlight(highlightedData);
+            if (highlightedData.length > 0) graph.highlight(highlightedData);
             updateLabels();
+            update_colors(pcIsColoredBy);
 
         }
 
@@ -1764,6 +1807,8 @@
                     graph.reset();
                     updateGraph(cleanedData);
                     update_colors(pcIsColoredBy);
+
+                    setSettings(graph,_userSetting);
 
                 });
 
@@ -1853,7 +1898,15 @@
                     if (isLeftChartFullScreenToggled) {
                         var newpcHeight = (windowHeight - 109) * 0.5-50;
                         var newpcWidth = windowWidth - 30;  
+
                         resizePcChart(newpcWidth,newpcHeight);
+
+                        
+                        if (graph.highlighted().length>0) {
+                            d3.selectAll("#thumbnails-btm_container, #zoomedArea").style("height", (cleanHeight - newpcHeight - 24) + "px");
+                        } else {
+                            d3.select("#thumbnails-btm_container").style("height", (cleanHeight - newpcHeight - 24) + "px");
+                        }
 
                     } else {
                         // set left chart full screen
@@ -1866,14 +1919,15 @@
                             oldpcWidth = windowWidth*0.75 - 30;
                         }
                         
-            
                         //back to normal size mode
                         resizePcChart(oldpcWidth,oldpcHeight);
 
-                        //show left side thumbnails FIXME: when fullscreen size back to normal size, zoomed area not showing properly
-                        // d3.select("#thumbnails-side_container")
-                        //     .transition().duration(1500)
-                        //     .style("height", (newpcHeight * 2) - oldpcHeight + "px");
+                        if (graph.highlighted().length > 0) {
+                                d3.selectAll("#thumbnails-btm_container, #zoomedArea").style("height", zoomedHeight + "px");
+                            } else {
+                                d3.select("#thumbnails-btm_container").style("height", zoomedHeight + "px");
+                            }
+
                     }
 
                 });
@@ -1887,6 +1941,9 @@
     <!-- import data  //  onload functions to close intro window and read input data -->
     <script>
         function loadDataToDesignExplorer(data) {
+
+            overwriteInitialGlobalValues();
+
             // analyze data and separate them as input/output and general data
             analyzeInputData(data);
 
@@ -1907,7 +1964,7 @@
 
             // set color change
             // set the initial coloring based on the 3rd column
-            pcIsColoredBy = d3.keys(inputData[0])[0];
+            pcIsColoredBy = graph.getOrderedDimensionKeys()[0];
             update_colors(pcIsColoredBy);
 
             // draw legend in side bar
@@ -1919,17 +1976,37 @@
             // add thumbnails
             updateImageGrid(graph.data(), true); // true will set the size of btm div
 
-
+            
 
             // add place holder image to zoomed area
-            addPlaceHolderImage();
+            //addPlaceHolderImage();
 
             // set up events between graphs
             setupEvents();
+
+            //lazy load
+            // $(function() {
+            //     $('.lazy').Lazy({
+            //         // your configuration goes here
+            //         scrollDirection: 'vertical',
+            //         effect: 'fadeIn',
+            //         visibleOnly: true,
+            //         onError: function(element) {
+            //             console.log('error loading ' + element.data('src'));
+            //         },
+            //         appendScroll: $('div#thumbnails-btm')
+
+            //     });
+            // });
         }
 
 
         window.onload = function () {
+            var isIE = /*@cc_on!@*/false || !!document.documentMode;
+
+            if(isIE){
+                alert("Please use modern browsers to ensure the maximized experience.\n\nGoogle Chrome, or Firefox is suggested to use.");
+            }
             
             if (window.location.href.toUpperCase().search("GFOLDER") > 0 || window.location.href.toUpperCase().search("ID=") > 0) {
                 // this is old user with google drive files.
@@ -1938,8 +2015,10 @@
             } else {
                 // load default data
                 //parse the csv data from the design_explorer_data folder
-                d3.csv("design_explorer_data/default_onload.csv",
-                    loadDataToDesignExplorer);
+                d3.csv("design_explorer_data/default_onload.csv", function (data) {
+                    loadDataToDesignExplorer(data);
+                    loadSetting("design_explorer_data/DefaultData/settings.json");
+                    });
 
             }
 
@@ -2005,7 +2084,10 @@
 
                         //originalDataLength = data.length;
 
-                        if (data !== null) loadDataToDesignExplorer(data);
+                        if (data !== null) {
+                            loadDataToDesignExplorer(data);
+                            loadSetting();
+                            };
                     };
 
 
@@ -2018,6 +2100,10 @@
             });
 
         }; // end of window.onload
+
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();   
+    }); 
 
     </script>
 
@@ -2099,10 +2185,10 @@
                 if (!graph.brushed()) {
                     // in case graph is just rendered
                     data = graph.data();
-                    console.log("graph.data()"+data.length);
+                    //console.log("graph.data()"+data.length);
                 } else {
                     data = graph.brushed();
-                    console.log("graph.brushed()"+data.length);
+                    //console.log("graph.brushed()"+data.length);
                 }
 
                 
@@ -2165,6 +2251,10 @@
 
         function updateSlidersValue(data) {
 
+            if(data ==undefined){
+                return;
+            }
+
             // clear report area
             d3.selectAll("#sliders-report").text("");
 
@@ -2196,7 +2286,6 @@
 
                 currentSliderValues[changedSliderName] = newValue;
             } else {
-                console.log(newValue);
                 return;
             }
 
@@ -2223,7 +2312,7 @@
                 // push the image to zoomed area
                 d3.select("#viewer2d")
                     .select("img")
-                    .attr("src", makeUrl(selectedData.img,"img"));
+                    .attr("src", makeUrl(selectedData[imageLinkKeys[0]],"img"));
 
                 if (currentView == "3D") loadNew3DModel();
 
@@ -2285,6 +2374,7 @@
         var currentView = "2D";
         var initit3DViewer = true;
         var fullscreen = false;
+        var va3cViewer;
 
         // Initiate 3D viewer
         function initiate3DViewer() {
@@ -2331,6 +2421,7 @@
                 // user is changing to 3D view so let's load it.
                 //$.when(loadNew3DModel()).then(va3cViewer.viewerDiv.resize());
                 loadNew3DModel();
+                
             }
 
 
@@ -2349,7 +2440,10 @@
             d3.select(".Spectacles_Footer").remove();
 
             // resize the view
-            va3cViewer.viewerDiv.resize();
+            if (va3cViewer !==undefined) {
+                va3cViewer.viewerDiv.resize();
+            }
+            
 
         }
 
@@ -2371,13 +2465,13 @@
 
             //make sure width and height are 100%
 
-            d3.select("#viewer3d")
-                .style("width", "100%")
-                .style("height", "100%");
+            // d3.select("#viewer3d")
+            //     .style("width", "100%")
+            //     .style("height", "100%");
 
-            d3.select("#zoomed")
-                .style("width", "100%")
-                .style("height", "100%");
+            // d3.select("#zoomed")
+            //     .style("width", "100%")
+            //     .style("height", "100%");
 
             //change full screen icon
             d3.select("button#fullscreentoggle").select("span")
@@ -2385,11 +2479,13 @@
                     return fullscreen ? "glyphicon glyphicon-resize-small" : "glyphicon glyphicon-fullscreen";
                 });
 
+
             if (initit3DViewer) {
                 return 0;
             } else {
                 va3cViewer.viewerDiv.resize();
             }
+
 
         }
 
@@ -2416,7 +2512,7 @@
                         });
 
                     // add Rating to dimensions
-                    graph.dimensions(cleanedParams4pc);
+                    graph.dimensions(cleanedKeys4pc);
                     graph.scale("Rating", [0, 5]);
                     graph.updateAxes();
                     firstRating = false;
@@ -2506,70 +2602,319 @@
                     .style("display", "flex");
             
             var dimKeys = d3.keys(graph.dimensions()); 
-            var scaleDiv = d3.select("#scaleList");
+            var dimSettingListDiv = d3.select("#dimSettingList");
 
-            var dimScales ={};
-            var userDimScale = {};
+            var newUserSetting = {
+                studyInfo: {
+                    name:_userSetting.studyInfo.name,
+                    date:_userSetting.studyInfo.date
+                },
+                dimScales:{},
+                dimTicks:{},
+                dimMark:{}
+            };
 
-            dimKeys.forEach(function(data){
-                dimScales[data] = graph.dimensions()[data].yscale.domain();
-            });
+            // var userStudyInfo = {
+            //     name:"",
+            //     date:""
+            // }
+
+            var dimScales ={};//for current value
+            // var userDimScale = {};
+
+            var dimTicks = {}; //for current value
+            //var userDimTicks = {}; //for saved
+
+            var dimMark = {}; //for current value
+            // var userDimMark = {}; //for saved
+
+            //filter dimensions are string type
+            d3.selectAll("#graph svg .dimension")
+                .each(function(d){
+                    if (graph.dimensions()[d].type != "string") {
+                        dimScales[d] = graph.dimensions()[d].yscale.domain();
+                        dimTicks[d] = d3.select(this).selectAll(".tick").size();
+                        if(_userSetting.dimMark[d] !== undefined){
+                            dimTicks[d] --;
+                        }
+                    }
+                })
+            
 
             //remove current
-            scaleDiv.selectAll("#scaleList .form-group").remove();
+            dimSettingListDiv.selectAll(".panel-default").remove();
 
-            var selectList = scaleDiv.selectAll('#scaleList')
-                        .data(dimKeys).enter()
+            //Add this study/project info
+            dimSettingListDiv.select("#studyNameInput")
+                            .attr("value", newUserSetting.studyInfo.name)
+                            .on("change", function(d){
+                                newUserSetting.studyInfo.name = $(this).val();
+                            });
+            dimSettingListDiv.select("#studyDateInput")
+                            .attr("value", newUserSetting.studyInfo.date)
+                            .on("change", function(d){
+                                newUserSetting.studyInfo.date = $(this).val();
+                            });
+
+
+            var selectList = dimSettingListDiv.selectAll('#dimSettingList')
+                        .data(d3.keys(dimScales)).enter()
                         .append("div")
-                        .attr("class", "form-group form-inline");
+                        .attr("class", "panel panel-default");
                     
-            selectList.append("label")
-                        .attr("class", "control-label")
-                        .text(function(d){return d;});
+            var panelHeading = selectList.append("div").attr("class", "panel-heading");
 
-            selectList.append("input")
+            panelHeading.append("h4")
+                        .attr("class", "panel-title")
+                            .append("a")
+                            .attr("data-toggle", "collapse")
+                            .attr("data-parent", "#dimSettingList")
+                            .attr("href", function(d){return "#setting"+string_as_unicode_escape(d);})
+                            .text(function(d){return d;});
+
+            
+            var panelBody = selectList.append("div")
+                        .attr("id", function(d){return "setting"+string_as_unicode_escape(d);})
+                        .attr("class", "panel-collapse collapse");
+            
+            var panelBodyContent = panelBody.append("div").attr("class", "panel-body")
+                                                .append("ul").attr("class", "list-group");
+            
+            //TickNumber setting----------------------------------------------------------------------------------------------------------
+            var itemTickNumberSetting = panelBodyContent.append("li")
+                                                    .attr("class", "list-group-item form-inline")
+                                                    .text("Tick Number: ");
+            
+            itemTickNumberSetting.append("input")
+                        .attr("class", "form-control input-sm")
+                        .attr("placeholder", function(d){return dimTicks[d];})
+                        .attr("type", "text")
+                        .on("change", function(d){
+                            var value = $(this).val();
+                            newUserSetting.dimTicks[d] = value;
+                        });
+
+            
+            //scale setting----------------------------------------------------------------------------------------------------------
+            var itemScaleSetting = panelBodyContent.append("li")
+                                                    .attr("class", "list-group-item form-inline")
+                                                    .text("Scale Range: ");
+
+            //min scale input
+            itemScaleSetting.append("input")
                         .attr("class", "form-control input-sm")
                         .attr("placeholder", function(d){return "From: " +dimScales[d][0];})
                         .attr("type", "text")
                         .on("change", function(d){
                             var value = $(this).val();
-                            userDimScale[d] = OnScaleChanged(
-                                {"min":value}, dimScales[d], userDimScale[d]
+                            newUserSetting.dimScales[d] = OnScaleChanged(
+                                {"min":value}, dimScales[d], newUserSetting.dimScales[d]
                             )
                         });
 
-            //selectListItems.append("input").attr("class", "form-control input-sm").attr("placeholder", "max").attr("type", "text");
-            selectList.append("input")
+            //max scale input
+            itemScaleSetting.append("input")
                         .attr("class", "form-control input-sm")
                         .attr("placeholder", function(d){return "TO: "+dimScales[d][1];})
                         .attr("type", "text")
                         .on("change", function(d){
                             var value = $(this).val();
-                            userDimScale[d] = OnScaleChanged(
-                                {"max":value}, dimScales[d] , userDimScale[d]
+                            newUserSetting.dimScales[d] = OnScaleChanged(
+                                {"max":value}, dimScales[d] , newUserSetting.dimScales[d]
                             )
                         });
+
+
+            //TargetMark setting----------------------------------------------------------------------------------------------------------
+            var itemTickNumberSetting = panelBodyContent.append("li")
+                                                    .attr("class", "list-group-item form-inline")
+                                                    .text("Target Mark: ");
             
-             d3.select("#dataSetting #setUserSetting").on("click",function (d) {
-                //  console.log(userDimScale);
+            itemTickNumberSetting.append("input")
+                        .attr("class", "form-control input-sm")
+                        .attr("style","margin-left: 1.1em;")
+                        .attr("placeholder", function(d){return _userSetting.dimMark[d]!==undefined?_userSetting.dimMark[d].value:"Mark value";})
+                        .attr("type", "text")
+                        .attr("id", function(d){return "setting_markValue_"+string_as_unicode_escape(d);})
+                        .on("change", function(d){
+                            if(newUserSetting.dimMark[d] ===undefined){
+                                newUserSetting.dimMark[d] = {
+                                    value:"",
+                                    prefix:""
+                                    }
+                            }
+                            newUserSetting.dimMark[d].value = $(this).val();
+                        });
 
-                 if (userDimScale === undefined) {
-                     return;
-                 }
+            itemTickNumberSetting.append("input")
+                        .attr("class", "form-control input-sm")
+                        .attr("placeholder", function(d){return _userSetting.dimMark[d]!==undefined?_userSetting.dimMark[d].prefix:"Prefix text";} )
+                        .attr("type", "text")
+                        .attr("id", function(d){return "setting_markPrefix_"+string_as_unicode_escape(d);})
+                        .on("change", function(d){
+                            if(newUserSetting.dimMark[d] ===undefined){
+                                newUserSetting.dimMark[d] = {
+                                    value:"",
+                                    prefix:""
+                                    }
+                            }
+                            newUserSetting.dimMark[d].prefix = $(this).val();
+                        });
 
-                 d3.keys(userDimScale).forEach( function (d) {
-                     chart.dimensions()[d].yscale.domain(userDimScale[d]);
-                     chart.yscaleDomains()[d] = userDimScale[d];
-                 })
-                 
-                //  chart.reRender();
-                 update_colors(pcIsColoredBy);
-                 
+            itemTickNumberSetting.append("button")
+                        .attr("class", "btn btn-sm")
+                        .text("Remove")
+                        .attr("type", "button")
+                        .on("click", function(d){
+                            d3.select("#setting_markValue_"+string_as_unicode_escape(d)).attr("value", "ToBeRemoved");
+                            d3.select("#setting_markPrefix_"+string_as_unicode_escape(d)).attr("value", "ToBeRemoved");
+                            newUserSetting.dimMark[d] ={
+                                    value:"ToBeRemoved",
+                                    prefix:""
+                                    };
+                            
+                        });
 
-                 d3.select("#showSetting")
-                    .style("display", "none");
+
+            //set up button event
+            d3.select("#dataSetting #setUserSetting").on("click",function (d) {
+                setSettings(chart,newUserSetting);
+                d3.select("#showSetting")
+                .style("display", "none");
+            })
+
+             d3.select("#dataSetting  #saveUserSetting").on("click", function(d){
+                 saveSetting(_userSetting,newUserSetting);
+
              })
 
+        }
+
+        function setSettings(chart,userSetting) {
+
+            var isThereNewStudyInfo = Object.keys(userSetting.studyInfo).length >0;
+            var isThereNewDimScales = Object.keys(userSetting.dimScales).length >0;
+            var isThereNewDimTicks = Object.keys(userSetting.dimTicks).length >0;
+            
+
+            if (isThereNewStudyInfo) {
+                    setStudyInfo(userSetting.studyInfo);
+            }
+
+            if (isThereNewDimScales) {
+                    setAllScales(chart, userSetting.dimScales);
+            }
+
+            if (isThereNewDimTicks) {
+                    setAllTicks(chart, userSetting.dimTicks);
+            }
+
+            if(isThereNewDimScales || isThereNewDimTicks){
+                //only redraw the graph if any defined
+                graph.updateAxes();
+
+                //chart.reRender();
+                update_colors(pcIsColoredBy);
+                
+            }
+            
+            //set target mark must be after graph.updateAxes();
+            setAllTargetMarks(chart, userSetting.dimMark);
+            
+        }
+
+        function setStudyInfo(studyInfoData){
+            var studyInfo = d3.select("#navbar-studyInfo");
+            studyInfo.select("h4").text(studyInfoData.name);
+            studyInfo.select("h6").text(studyInfoData.date);
+
+            //update the global _userSetting
+            _userSetting.studyInfo.name = studyInfoData.name;
+            _userSetting.studyInfo.date = studyInfoData.date;
+            
+        }
+
+        function setAllScales(chart, scales){
+            d3.keys(scales).forEach( function (d) {
+                    //update scales
+                    chart.dimensions()[d].yscale.domain(scales[d]);
+                    chart.yscaleDomains()[d] = scales[d]; 
+
+                    //update the global _userSetting
+                    _userSetting.dimScales[d] = scales[d];
+                 })
+        }
+
+        function setAllTicks(chart, tickNumbers){
+            d3.keys(tickNumbers).forEach( function (d) {
+                    var scale = chart.dimensions()[d].yscale.domain();
+                    //update ticks
+                    chart.dimensions()[d].tickFormat = d3.format("");
+                    chart.dimensions()[d].tickValues = calTickValues(scale,tickNumbers[d]);
+
+                    //update the global _userSetting
+                    _userSetting.dimTicks[d] = tickNumbers[d];
+                 })
+        }
+
+        function setAllTargetMarks(chart, targetMark){
+            
+            d3.keys(targetMark).forEach( function (d) {
+                    //update the global _userSetting
+                    _userSetting.dimMark[d] = targetMark[d];
+                    
+            })
+            
+            //set marks based on global _userSetting
+            d3.keys(_userSetting.dimMark).forEach( function (d) {
+                    setMarkOnDim(chart, d, _userSetting.dimMark[d]);
+            })
+        }
+
+        function setMarkOnDim(chart,dim,dimMark){
+
+            markValue = dimMark.value;
+            markPrefix = "";
+
+            if (dimMark.prefix !==undefined){
+                markPrefix =dimMark.prefix
+            }
+
+
+            dimID = "dim_"+string_as_unicode_escape(dim); 
+            //remove the current first
+            d3.select("#"+dimID).select(".axis .mark").remove();
+
+            if (markValue=="ToBeRemoved") {
+                delete _userSetting.dimMark[dim];
+
+            } else {
+
+                var canvasHeight = d3.select("#graph canvas").style("height").replace("px","");
+
+                domain = chart.dimensions()[dim].yscale.domain();
+                yHeight = d3.scale.linear().domain(domain).range([canvasHeight,0])(markValue);
+                
+                //add mark
+                var dim = d3.select("#"+dimID).select(".axis").append("g").attr("class", "tick mark").attr("transform", "translate(0,"+yHeight+")");
+                dim.append("line").attr("x2", "-8").attr("x1", "8");
+                dim.append("text").attr("x", "-9").attr("y", "0").attr("dy", ".32em").attr("text-anchor","end").text(markPrefix+": "+markValue);
+            }
+
+
+            
+        }
+
+        function calTickValues (scale, tickNumber){
+            tickNumber--;
+
+            if(tickNumber<=0){
+                tickNumber = 5;
+            }
+            newDimTickValues = d3.range(scale[0], scale[1], (scale[1]-scale[0])/tickNumber)
+            newDimTickValues.push(scale[1]); // add the last
+
+            return newDimTickValues;
         }
 
         function OnScaleChanged(params,oldScale, userScale) {
@@ -2591,9 +2936,61 @@
             return newScale;
         }
 
-        function setDomains(params) {
+        function saveSetting(globalUserSetting,newUserSetting) {
+
+            Object.assign(globalUserSetting.dimMark,newUserSetting.dimMark)
+            Object.assign(globalUserSetting.dimScales,newUserSetting.dimScales)
+            Object.assign(globalUserSetting.dimTicks,newUserSetting.dimTicks)
+            Object.assign(globalUserSetting.studyInfo,newUserSetting.studyInfo)
+
+            var exportJson = globalUserSetting;
+
+            var JsonContent = "data:attachment/json;charset=utf-8,";
+            
+
+            JsonContent += encodeURI(JSON.stringify(exportJson));
+
+            var a = d3.select("body")
+                .append("a")
+                .attr("href", JsonContent)
+                .attr("target", '_blank')
+                .attr("download", 'settings.json');
+
+            a[0][0].click();
+
+        }
+
+        function loadSetting(settingFilePath) {
+            
+            var jsonFileLink = "";
+
+            if(settingFilePath!==undefined){
+                jsonFileLink =settingFilePath;
+            }else{
+
+                var settingFiles =  d3.keys(_googleReturnObj.settingFiles);
+                if (settingFiles.length ==0) {
+                     jsonFileLink = "design_explorer_data/settings.json"
+
+                }else {
+
+                    var jsonFile = settingFiles[0];
+                    jsonFileLink = _googleReturnObj.settingFiles[jsonFile];
+                }
+
+                
+            }
+
+            d3.json(jsonFileLink, function (d) {
+                //updata to global _userSetting
+                _userSetting = d;
+                setSettings(graph,_userSetting);
+            })
+
             
         }
+
+
 
     </script>
 

@@ -196,6 +196,8 @@ ScatterMatrix.prototype.render = function() {
                 d3.selectAll(".cell circle").attr("r", "1");
             }
 
+            
+
             self.__draw(self.__cell_size, svg, color_variable, selected_colors, to_include, drill_variables);
 
         });
@@ -566,6 +568,9 @@ ScatterMatrix.prototype.__draw = function(cell_size, container_el, color_variabl
                 })
                 .attr("r",function(d){
                     return isRightChartFullScreenToggled?2:1;
+                })
+                .style("fill", function (d) {
+                    return color(valueToNumber(d[pcIsColoredBy], pcIsColoredBy));
                 });
 
             // Add titles for x variables and drill variable values

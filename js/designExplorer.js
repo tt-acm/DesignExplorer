@@ -27,6 +27,16 @@ function unloadPageContent() {
 
 }
 
+function calWidthAndHeight() {
+    windowWidth = window.innerWidth,
+    windowHeight = window.innerHeight,
+    cleanHeight = windowHeight - 115, // 2
+    cleanWidth = windowWidth - 100,
+    graphHeight = (cleanHeight / 3)-24, //remove 22+2 top tool button
+    zoomedHeight = (cleanHeight*2 / 3); //remove 22+2 top tool button
+
+}
+
 function overwriteInitialGlobalValues() {
     /*
     	// This function initiates all the global values for the page
@@ -36,6 +46,7 @@ function overwriteInitialGlobalValues() {
 
     originalData = ""; //csv as it is imported
     cleanedData = []; //all the columns to be used for parallel coordinates
+    numericalData = [],
     inputData = []; // columns with input values - to be used for sliders
     outputData = []; // columns with output values - to be used for radar graph
     slidersInfo = []; // {name:'inputName', tickValues : [sorted set of values]},
@@ -43,8 +54,23 @@ function overwriteInitialGlobalValues() {
     allDataCollector = {};
     slidersMapping = {}; // I collect the data for all the input sliders here so I can use it to remap the sliders later
     ids = []; // Here I collect all data based on a unique ID from inputs
-	cleanedParams4pc = {};
+	cleanedKeys4pc = {};
 	googleFolderLink="";
+
+    inputDataKeys =[];
+    outputDataKeys =[];
+    imageLinkKeys = [];
+
+
+    _userSetting = {
+        studyInfo: {
+            name:"",
+            date:""
+        },
+        dimScales:{},
+        dimTicks:{},
+        dimMark:{}
+    };
 
     rcheight = height = d3.select("#graph").style("height").replace("px", "");
 
@@ -53,30 +79,23 @@ function overwriteInitialGlobalValues() {
     firstRating = true; // variable for star rating
 
     //set up heights of divs ro default
-    windowWidth = window.innerWidth;
-    windowHeight = window.innerHeight;
-    cleanHeight = windowHeight - 85 - 24; // 2
-    cleanWidth = windowWidth - 100;
-    graphHeight = cleanHeight / 3;
-    zoomedHeight = cleanHeight - graphHeight;
+    calWidthAndHeight();
 
     pcHeight = d3.select("#graph").style("height").replace("px", "");
     // hide zoomed area
-    d3.selectAll(".zoomed").transition().duration(1500).style("height", "0px");
+    d3.selectAll(".zoomed").style("height", "0px");
     // show btm thumbnail
-    d3.select("#thumbnails-btm_container").transition().duration(1000).style("height", (cleanHeight - pcHeight) + "px");
-    // hide side thumbnail
-    d3.select("#thumbnails-side_container").transition().duration(1500).style("height", "0px");
-
+    d3.select("#thumbnails-btm_container").style("height", zoomedHeight + "px");
     
+
     // re-set the viewer to 2D
     currentView = "2D";
     // set view toggle to 2D
     d3.select("input#toggleView").property("checked", "true");
 
     initit3DViewer = true;
-    d3.select("#zoomed").attr("class", "zoomed");
-    d3.select("#viewer3d").attr("class", "zoomed hidden");
+    d3.select("#zoomed").classed("hidden", false);
+    d3.select("#viewer3d").classed("hidden", true);
 }
 
 function getUrlVars(rawUrl) {
@@ -99,11 +118,12 @@ function prepareGFolder(folderLink) {
     };
 
     var folder = {
-        "DE_PW":"",
-        "inLink":"",
-        "url": "",
-        "type": ""
+        "DE_PW":"", // short code from google or base64 coded inLink
+        "inLink":"", //raw url
+        "url": "",  //url to load the list item inside the folder
+        "type": "" //folder type : GoogleDrive, OneDrive, or userServerLink
     }
+    //_folderInfo = folderLink;
 
     folder = folderLink;
 
@@ -143,7 +163,15 @@ function prepareGFolder(folderLink) {
             });
 
         } else if(folder.type=== "OneDrive") { //this is OneDrive returned obj
-            data.children.forEach(function (item) {
+            var files = [];
+
+            if(data.children !== undefined){
+                files=data.children;
+            }else if(data.value !== undefined){
+                files=data.value;
+            }
+
+            files.forEach(function (item) {
                 //googleReturnObj[item.name]=item.id
                 var fileName = item.name;
                 var fileType = item.file.mimeType;
@@ -171,21 +199,37 @@ function prepareGFolder(folderLink) {
             });
         }
 
-        $.extend(googleReturnObj.csvFiles, csvFiles);
-        $.extend(googleReturnObj.imgFiles, imgFiles);
-        $.extend(googleReturnObj.jsonFiles, jsonFiles);
-        $.extend(googleReturnObj.settingFiles, settingFiles);
+        $.extend(_googleReturnObj.csvFiles, csvFiles);
+        $.extend(_googleReturnObj.imgFiles, imgFiles);
+        $.extend(_googleReturnObj.jsonFiles, jsonFiles);
+        $.extend(_googleReturnObj.settingFiles, settingFiles);
+        //console.log(data);
 
         if (data.nextPageToken !== undefined) {
             
-            if (folderLink.search("&pageToken=") > 0) {
-                folderLink = folderLink.split("&pageToken=", 1)[0];
+            if (folder.url.search("&pageToken=") > 0) {
+                folder.url = folder.url.split("&pageToken=", 1)[0];
             }
-            prepareGFolder(folderLink + "&pageToken=" + data.nextPageToken);
 
-        } else { //this is the last page, so return googleReturnObj directly
+            folder.url +=  "&pageToken=" + data.nextPageToken
+
+            prepareGFolder(folder);
+
+        } else if (data["children@odata.nextLink"] !== undefined) {
             
-            var csvFile = googleReturnObj.csvFiles["data.csv"];
+            folder.url =  data["children@odata.nextLink"];
+
+            prepareGFolder(folder);
+
+        } else if (data["@odata.nextLink"] !== undefined) {
+            
+            folder.url =  data["odata.nextLink"];
+
+            prepareGFolder(folder);
+
+        }else { //this is the last page, so return googleReturnObj directly
+            
+            var csvFile = _googleReturnObj.csvFiles["data.csv"];
             
             if (csvFile === undefined) {
                 alert("Could not find the data.csv file in this folder, please double check!");
@@ -216,7 +260,6 @@ function MP_getGoogleIDandLoad(dataMethod) {
             }
         );
 
-        console.log("2:"+serverFolderLink)
 
     } else {
         serverFolderLink = document.getElementById("folderLink").value;
@@ -263,7 +306,7 @@ function checkInputLink(link, callback){
         "inLink":"",
         "url":"",
         "type":""
-    }
+    };
 
     if (link.includes("google.com")) {
 
@@ -282,25 +325,27 @@ function checkInputLink(link, callback){
 
     }else{
         //folderLinkObj.DE_PW = "DE_S";
+        if (link.slice(-1) !== "/") {
+            link +="/";
+        }
+
         folderLinkObj.url = link;
         folderLinkObj.type = "userServerLink";
     } 
 
-    // makeUrlId(link, function name(d) {
-    //     folderLinkObj.DE_PW +=d;
-    //     })
+
     folderLinkObj.inLink = link;
+    // console.log(folderLinkObj);
     callback(folderLinkObj);
 
 }
 
 function encodeUrl(url) {
-    var link = btoa(url).slice(0,-1).replace('/','_').replace('+','-');
+    var link = btoa(url).slice(0, -1).replace('/','_').replace('+','-');
     return link;
 }
 
 function decodeUrl(encodedString) {
-    
     var url = atob(encodedString.replace('_','/').replace('-','+')+"=");
     return url;
 }
@@ -329,13 +374,13 @@ function getGFolderID(link) {
     return linkID;
 }
 
-
-function CopyToClipboard(text,id) {
-    document.querySelector("#"+id).select();
-    // Copy to the clipboard
-    document.execCommand('copy');
+function CopyToClipboard(element) {
+  var $temp = $("<input>");
+  $("body").append($temp);
+  $temp.val($(element).text()).select();
+  document.execCommand("copy");
+  $temp.remove();
 }
-
 
  function makeUrlId(rawUrl,callback) {
      var longUrl=rawUrl;
@@ -352,27 +397,27 @@ function CopyToClipboard(text,id) {
           },
           dataType: 'json',
           success: function(response) {
-            var DE_PW ="";
+            var UrlID ="";
             if(response.id != null)
             {
                 //response.id:  https://goo.gl/bMOO
-                DE_PW = response.id.split("/");
-                DE_PW = DE_PW[DE_PW.length-1];  //DE_PW: bMOO
+                UrlID = response.id.split("/");
+                UrlID = UrlID[UrlID.length-1];  //UrlID: bMOO
                 
             }
-            callback(DE_PW);
+            callback(UrlID);
         	}
         });  
  }
 
 function decodeUrlID(rawUrl, callback) {
     var serverFolderLink="";
-    var urlVars = getUrlVars(rawUrl)
+    var urlVars = getUrlVars(rawUrl);
     var GfolderORUrl = urlVars.GFOLDER;
     var DEID = urlVars.ID;
 
     //old GFOLDER
-    if (GfolderORUrl != undefined) {
+    if (GfolderORUrl !== undefined) {
 
         if (GfolderORUrl.search("/") == -1) {
             //GfolderORUrl is google folder ID
@@ -383,7 +428,7 @@ function decodeUrlID(rawUrl, callback) {
 
         callback(serverFolderLink);
 
-    } else if(DEID != undefined) {
+    } else if(DEID !== undefined) {
 
         //linkID = rawUrl.split("/");
         //linkID = linkID[linkID.length - 1];
@@ -402,8 +447,6 @@ function decodeUrlID(rawUrl, callback) {
             serverFolderLink = decodeUrl(linkID);
             callback(serverFolderLink);
         }
-        
-
         
 
     }else {
