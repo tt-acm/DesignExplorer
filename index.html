@@ -90,6 +90,7 @@
     <script type="text/javascript" src="va3c_source_files/js/libs/stats.js"></script>
     <script type="text/javascript" src="va3c_source_files/js/libs/jquery-ui.js"></script>
     <script type="text/javascript" src="va3c_source_files/js/libs/SPECTACLES.js"></script>
+    
 
 
     <!-- Pace for loading bar-->
@@ -100,6 +101,8 @@
     <script src="./rating_source_files/jquery.rating.js" type="text/javascript" language="javascript"></script>
     <link href="./rating_source_files/jquery.rating.css" type="text/css" rel="stylesheet" />
 
+
+    <script src="./js/divgrid.js"></script>
     <!-- Design Explorer Scripts -->
     <script src="./js/designExplorer.js" type="text/javascript" language="javascript"></script>
     <!-- for clean parameters before new data comes in -->
@@ -462,6 +465,9 @@
                         <div class="col-lg-12 sorting"></div>
                         <div class="col-lg-12" id="thumbnails-btm"></div>
                     </div>
+
+                     <!--Here starts the thumbnails-btm_tbContainer-->
+                     <div id="tbContainer" class="col-lg-12"></div>
 
 
                 </div>
@@ -1182,6 +1188,9 @@
             if (imageLinkKeys.length ==0) { 
                 hasImgLink = false;
                 d3.select("#thumbnails-btm_container").remove();
+
+                drawTable(cleanedData);
+                
             }else{
                 hasImgLink = true;
                 
@@ -1196,6 +1205,18 @@
                 d3.select("#threeDLabel").classed("hidden", false);
             }
 
+        }
+
+        function drawTable(data){
+            var grid = d3.divgrid();
+                d3.select("#tbContainer")
+                .datum(data.slice(0,20))
+                .call(grid)
+                .selectAll(".row")
+                .on({
+                    "mouseover": function(d) { graph.highlight([d]) },
+                    "mouseout": function(d) {graph.unhighlight()}
+                });
         }
 
 
@@ -1751,6 +1772,7 @@
                 //rc.updateData(graph.brushed());   //-----TODO:here needs a switch for different charts-------
                 updateScatterChart();
                 updateImageGrid(d, false);
+                drawTable(d);
             });
 
             graph.on("brushend", function (d) {
@@ -1761,6 +1783,7 @@
 
                 if (graph.brushed() == false) {
                     updateLayoutOnDeselect();
+                    
                     return;
                 }
                 // in case highlighted data not in brused then deselect
@@ -1822,6 +1845,7 @@
                 updateLayoutOnDeselect();
                 updateImageGrid(newData, false);
                 updateSlidersTickValues(newData);
+                drawTable(newData);
             }
 
             //events for legend click

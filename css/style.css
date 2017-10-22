@@ -313,3 +313,41 @@ g.cell text {
 #vis .imgSwitch{
     float: right;
 }
+
+
+
+#tbContainer { padding-left: 60px;}
+/* .row, .header {clear: left;font-size: 12px;line-height: 18px;height: 18px;} */
+#tbContainer .row:nth-child(odd) { background: rgba(0,0,0,0.03); }
+#tbContainer .header {
+    font-weight: bold;
+    display: table;
+    margin-right: -15px;
+    margin-left: -15px;
+}
+/*
+.cell { float: left; overflow: hidden; white-space: nowrap; width: 100px; height: 18px; }
+*/
+.cell{ 
+  float:left;
+  /* border: 1px solid transparent;
+  border-right: 1px dotted silver;
+  border-bottom-color: silver; */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  width: 100px; 
+  /* height: 18px; */
+  padding: 1px 2px 2px 1px;
+  margin: 0;
+  white-space: nowrap;
+  cursor: default;
+}
+#tbContainer .row:hover {
+  background: lightskyblue;
+  -webkit-transition: all 0.2s;
+  -moz-transition: all 0.2s;
+  transition: all 0.2s;
+}
+
+.col-0 { width: 180px; }
