@@ -341,12 +341,14 @@ function checkInputLink(link, callback){
 }
 
 function encodeUrl(url) {
-    var link = btoa(url).slice(0, -1).replace('/','_').replace('+','-');
+    // var link = btoa(url).slice(0, -1).replace('/','_').replace('+','-');
+    var link = btoa(url);
     return link;
 }
 
 function decodeUrl(encodedString) {
-    var url = atob(encodedString.replace('_','/').replace('-','+')+"=");
+    // var url = atob(encodedString.replace('_','/').replace('-','+')+"=");
+    var url = atob(encodedString);
     return url;
 }
 
