@@ -348,7 +348,16 @@ function encodeUrl(url) {
 
 function decodeUrl(encodedString) {
     // var url = atob(encodedString.replace('_','/').replace('-','+')+"=");
-    var url = atob(encodedString);
+    var url = "";
+    try{
+        url = atob(encodedString);
+    }catch(err) {
+        console.log(err.message+" But fixed:>");
+       
+    }finally{
+        url = atob(encodedString.replace('_','/').replace('-','+')+"=");
+    }
+    
     return url;
 }
 
