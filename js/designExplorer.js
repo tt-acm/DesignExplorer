@@ -353,8 +353,6 @@ function decodeUrl(encodedString) {
         url = atob(encodedString);
     }catch(err) {
         console.log(err.message+" But fixed:>");
-       
-    }finally{
         url = atob(encodedString.replace('_','/').replace('-','+')+"=");
     }
     
