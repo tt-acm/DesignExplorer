@@ -277,7 +277,7 @@ function loadFromUrl(rawUrl) {
 
         if (d.type === "userServerLink") {
             //this is a user's server link, and load csv directly
-            readyToLoad(d.url + "/data.csv");
+            readyToLoad(d.url + "data.csv");
         }else {
             //this is from Google or MS
             prepareGFolder(d);
@@ -341,12 +341,21 @@ function checkInputLink(link, callback){
 }
 
 function encodeUrl(url) {
-    var link = btoa(url).slice(0, -1).replace('/','_').replace('+','-');
+    // var link = btoa(url).slice(0, -1).replace('/','_').replace('+','-');
+    var link = btoa(url);
     return link;
 }
 
 function decodeUrl(encodedString) {
-    var url = atob(encodedString.replace('_','/').replace('-','+')+"=");
+    // var url = atob(encodedString.replace('_','/').replace('-','+')+"=");
+    var url = "";
+    try{
+        url = atob(encodedString);
+    }catch(err) {
+        console.log(err.message+" But fixed:>");
+        url = atob(encodedString.replace('_','/').replace('-','+')+"=");
+    }
+    
     return url;
 }
 
