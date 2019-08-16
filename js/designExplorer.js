@@ -399,7 +399,9 @@ function CopyToClipboard(element) {
           type: 'POST',
           contentType: 'application/json',
           url: "https://api-ssl.bitly.com/v4/shorten",
-          data: "{ long_url: '"+longUrl+"'}",
+          data: JSON.stringify({
+            "long_url": longUrl
+        }),
           headers: {
             'Authorization': BitlyKey,
             'Content-Type':'application/json'

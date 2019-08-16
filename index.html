@@ -244,6 +244,9 @@
                 studyEncodedUrl = document.location.origin +"/DesignExplorer/?ID="+_folderInfo.DE_PW;
                 d3.select("#showShortUrl").html("https://goo.gl/"+ _folderInfo.DE_PW);
 
+            }else if(UrlId.length ==7){
+                studyEncodedUrl = document.location.origin +"/DesignExplorer/?ID="+_folderInfo.DE_PW;
+                d3.select("#showShortUrl").html("https://bit.ly/"+ _folderInfo.DE_PW);
             }else{
                 studyEncodedUrl = studyLongUrl;
             }
