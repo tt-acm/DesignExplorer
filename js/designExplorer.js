@@ -107,6 +107,7 @@ function getUrlVars(rawUrl) {
 }
 
 var Gkey = "AIzaSyCSrF08UMawxKIb0m4JsA1mYE5NMmP36bY";
+var BitlyKey = "52e99e2d788d32ae8ea99007d96917ac4ba50a5a";
 
 function prepareGFolder(folderLink) {
 
@@ -397,12 +398,16 @@ function CopyToClipboard(element) {
      $.ajax({
           type: 'POST',
           contentType: 'application/json',
-          url: "https://www.googleapis.com/urlshortener/v1/url?key="+Gkey,
-          data: "{ longUrl: '"+longUrl+"'}",
+          url: "https://api-ssl.bitly.com/v4/shorten",
+          data: JSON.stringify({
+            "long_url": longUrl
+        }),
+          headers: {
+            'Authorization': BitlyKey,
+            'Content-Type':'application/json'
+        },
           error: function(e) {
-
             callback(encodeUrl(longUrl));
-
           },
           dataType: 'json',
           success: function(response) {
@@ -414,10 +419,31 @@ function CopyToClipboard(element) {
                 UrlID = UrlID[UrlID.length-1];  //UrlID: bMOO
                 
             }
-            callback(UrlID);
+            callback("BL_"+UrlID);
         	}
         });  
  }
+
+function getUrlID(urlID,callback) {
+    $.ajax({
+        url: "https://api-ssl.bitly.com/v4/expand",
+        type: 'POST',
+        dataType: 'json',
+        data:JSON.stringify({
+            "bitlink_id": "bit.ly/"+urlID
+        }),
+        headers: {
+            'Authorization': BitlyKey
+        },
+        contentType: 'application/json',
+        success: function (result) {
+            callback(result.long_url);
+        },
+        error: function (error) {
+            
+        }
+    });
+}
 
 function decodeUrlID(rawUrl, callback) {
     var serverFolderLink="";
@@ -452,6 +478,12 @@ function decodeUrlID(rawUrl, callback) {
                     callback(serverFolderLink);
                 }
             )
+        }else if(linkID.startsWith("BL_")){
+            getUrlID(linkID.replace("BL_",""), function (d) {
+                var GID = (getUrlVars(d).ID);
+                serverFolderLink = decodeUrl(GID);
+                callback(serverFolderLink);
+            })
         } else {
             serverFolderLink = decodeUrl(linkID);
             callback(serverFolderLink);
