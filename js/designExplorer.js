@@ -107,6 +107,7 @@ function getUrlVars(rawUrl) {
 }
 
 var Gkey = "AIzaSyCSrF08UMawxKIb0m4JsA1mYE5NMmP36bY";
+var BitlyKey = "52e99e2d788d32ae8ea99007d96917ac4ba50a5a";
 
 function prepareGFolder(folderLink) {
 
@@ -397,12 +398,14 @@ function CopyToClipboard(element) {
      $.ajax({
           type: 'POST',
           contentType: 'application/json',
-          url: "https://www.googleapis.com/urlshortener/v1/url?key="+Gkey,
-          data: "{ longUrl: '"+longUrl+"'}",
+          url: "https://api-ssl.bitly.com/v4/shorten",
+          data: "{ long_url: '"+longUrl+"'}",
+          headers: {
+            'Authorization': BitlyKey,
+            'Content-Type':'application/json'
+        },
           error: function(e) {
-
             callback(encodeUrl(longUrl));
-
           },
           dataType: 'json',
           success: function(response) {
