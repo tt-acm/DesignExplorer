@@ -419,10 +419,31 @@ function CopyToClipboard(element) {
                 UrlID = UrlID[UrlID.length-1];  //UrlID: bMOO
                 
             }
-            callback(UrlID);
+            callback("BL_"+UrlID);
         	}
         });  
  }
+
+function getUrlID(urlID,callback) {
+    $.ajax({
+        url: "https://api-ssl.bitly.com/v4/expand",
+        type: 'POST',
+        dataType: 'json',
+        data:JSON.stringify({
+            "bitlink_id": "bit.ly/"+urlID
+        }),
+        headers: {
+            'Authorization': BitlyKey
+        },
+        contentType: 'application/json',
+        success: function (result) {
+            callback(result.long_url);
+        },
+        error: function (error) {
+            
+        }
+    });
+}
 
 function decodeUrlID(rawUrl, callback) {
     var serverFolderLink="";
@@ -457,6 +478,12 @@ function decodeUrlID(rawUrl, callback) {
                     callback(serverFolderLink);
                 }
             )
+        }else if(linkID.startsWith("BL_")){
+            getUrlID(linkID.replace("BL_",""), function (d) {
+                var GID = (getUrlVars(d).ID);
+                serverFolderLink = decodeUrl(GID);
+                callback(serverFolderLink);
+            })
         } else {
             serverFolderLink = decodeUrl(linkID);
             callback(serverFolderLink);
